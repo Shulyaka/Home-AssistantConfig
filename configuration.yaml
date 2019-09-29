@@ -22,3 +22,10 @@ recorder:
 
 logger:
   default: debug
+
+zha:
+  usb_path: /dev/ttyS1
+  database_path: /srv/hass/zigbee.db
+  radio_type: xbee
+  baudrate: 9600
+
