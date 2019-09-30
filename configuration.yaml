@@ -23,6 +23,10 @@ recorder:
 logger:
   default: debug
 
+google_assistant:
+  project_id: home-assistant-1404b
+  api_key: !secret google_assistant
+
 notify:
   - platform: html5
     name: html5
