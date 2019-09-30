@@ -23,6 +23,13 @@ recorder:
 logger:
   default: debug
 
+notify:
+  - platform: html5
+    name: html5
+    vapid_pub_key: BA0ufUCAkPCSdEJBl2sStgZNOQicKJyEZnlTZvgPEOVG4HkJrafP7IcWHa-OSOON0EAAEUa9YoDqpPA-N3OCYVU
+    vapid_prv_key: !secret web_push
+    vapid_email: Shulyaka@gmail.com
+
 zha:
   usb_path: /dev/ttyS1
   database_path: /srv/hass/zigbee.db
