@@ -34,6 +34,9 @@ notify:
     vapid_prv_key: !secret web_push
     vapid_email: Shulyaka@gmail.com
 
+shell_command:
+  hassd_update: /usr/lib/hassd/hassd_update.sh
+
 zha:
   usb_path: /dev/ttyS1
   database_path: /srv/hass/zigbee.db

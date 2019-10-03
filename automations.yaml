@@ -1,1 +1,8 @@
-[]
+- id: '1570109229223'
+  alias: Init device tracker
+  trigger:
+  - event: start
+    platform: homeassistant
+  condition: []
+  action:
+  - service: shell_command.hassd_update
