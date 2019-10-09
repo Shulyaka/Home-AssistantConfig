@@ -9,6 +9,8 @@ tts:
 group: !include groups.yaml
 automation: !include automations.yaml
 script: !include scripts.yaml
+homeassistant:
+  customize: !include customize.yaml
 
 http:
   use_x_forwarded_for: true
