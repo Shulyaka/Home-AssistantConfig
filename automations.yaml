@@ -1,8 +1,10 @@
 - id: '1570109229223'
-  alias: Init device tracker
+  alias: Update device tracker
   trigger:
   - event: start
     platform: homeassistant
+  - minutes: /5
+    platform: time_pattern
   condition: []
   action:
   - service: shell_command.hassd_update
