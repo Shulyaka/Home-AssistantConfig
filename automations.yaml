@@ -8,3 +8,20 @@
   condition: []
   action:
   - service: shell_command.hassd_update
+- id: '1571174383981'
+  alias: Disable counter decrease
+  description: Revert counter if decreased
+  trigger:
+  - entity_id:
+    - sensor.counter_0
+    - sensor.counter_1
+    - sensor.counter_2
+    platform: state
+  condition:
+  - condition: template
+    value_template: '{{trigger.from_state.state > trigger.to_state.state}}'
+  action:
+  - service: rest_command.set_counter
+    data_template:
+      name: '{{trigger.from_state.attributes.name}}'
+      value: '{{trigger.from_state.state}}'
