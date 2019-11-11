@@ -11,6 +11,38 @@ automation: !include automations.yaml
 script: !include scripts.yaml
 homeassistant:
   customize: !include customize.yaml
+  customize_glob:
+    "input_boolean.tosr0x_*_state":
+      hidden: true
+
+logbook:
+  exclude:
+    entities:
+      - automation.update_tosr0x
+      - automation.update_tosr0x_temp
+      - automation.update_tosr0x_switch
+
+# Internal hidden variables to hold TOSR0X relay state
+input_boolean:
+  tosr0x_1_state:
+    name: TOSR0X Relay 1 State
+  tosr0x_2_state:
+    name: TOSR0X Relay 2 State
+  tosr0x_3_state:
+    name: TOSR0X Relay 3 State
+  tosr0x_4_state:
+    name: TOSR0X Relay 4 State
+
+# Internal variable to hold TOSR0X-T temperature
+input_number:
+  tosr0x_temp:
+    name: TOSR0X-T Temperature State
+    min: -55
+    max: 125
+    step: 0.125
+    mode: box
+    unit_of_measurement: '°C'
+    icon: mdi:temperature-celsius
 
 http:
   use_x_forwarded_for: true
@@ -23,7 +55,7 @@ recorder:
   db_url: mysql+pymysql://@/hass_db?unix_socket=/var/run/mysql/mysql.sock&charset=utf8
 
 logger:
-  default: info
+  default: debug
 
 google_assistant:
   project_id: home-assistant-1404b
@@ -86,6 +118,14 @@ sensor:
           state: "{{'%d%%'|format(state_attr('sensor.wcounter', 'counters')[2].state*100/15)}}"
           lastaction: "{{state_attr('sensor.wcounter', 'counters')[2].lastaction}}"
           name: "{{state_attr('sensor.wcounter', 'counters')[2].name}}"
+  - platform: template
+    sensors:
+      tosr0x_temperature:
+        friendly_name: TOSR0X-T Temperature
+        entity_id: input_number.tosr0x_temp
+        value_template: "{{ states.input_number.tosr0x_temp.state }}"
+        device_class: temperature
+        unit_of_measurement: '°C'
 
 switch:
   - platform: rest
@@ -106,6 +146,124 @@ switch:
     body_on: '{"function": "open"}'
     body_off: '{"function": "close"}'
     is_on_template: '{{ value_json.lastaction == "open" }}'
+  - platform: template
+    switches:
+      tosr0x_1:
+        friendly_name: TOSR0X Relay 1
+        value_template: "{{ is_state('input_boolean.tosr0x_1_state', 'on') }}"
+        turn_on:
+          - service: zha.issue_zigbee_cluster_command
+            data:
+              ieee: 00:13:a2:00:40:f5:2a:be
+              endpoint_id: 232
+              cluster_id: 17
+              cluster_type: in
+              command: 0
+              command_type: server
+              args: "e["  # First character is to control the switch. Second character ('[') is to request an update of the switch states from the device in order to double confirm
+          - service: input_boolean.turn_on  # Update switch state instantly without waiting for the update from the device (aka optimistic mode)
+            data:
+              entity_id: input_boolean.tosr0x_1_state
+        turn_off:
+          - service: zha.issue_zigbee_cluster_command
+            data:
+              ieee: 00:13:a2:00:40:f5:2a:be
+              endpoint_id: 232
+              cluster_id: 17
+              cluster_type: in
+              command: 0
+              command_type: server
+              args: "o["
+          - service: input_boolean.turn_off
+            data:
+              entity_id: input_boolean.tosr0x_1_state
+      tosr0x_2:
+        friendly_name: TOSR0X Relay 2
+        value_template: "{{ is_state('input_boolean.tosr0x_2_state', 'on') }}"
+        turn_on:
+          - service: zha.issue_zigbee_cluster_command
+            data:
+              ieee: 00:13:a2:00:40:f5:2a:be
+              endpoint_id: 232
+              cluster_id: 17
+              cluster_type: in
+              command: 0
+              command_type: server
+              args: "f["
+          - service: input_boolean.turn_on
+            data:
+              entity_id: input_boolean.tosr0x_2_state
+        turn_off:
+          - service: zha.issue_zigbee_cluster_command
+            data:
+              ieee: 00:13:a2:00:40:f5:2a:be
+              endpoint_id: 232
+              cluster_id: 17
+              cluster_type: in
+              command: 0
+              command_type: server
+              args: "p["
+          - service: input_boolean.turn_off
+            data:
+              entity_id: input_boolean.tosr0x_2_state
+      tosr0x_3:
+        friendly_name: TOSR0X Relay 3
+        value_template: "{{ is_state('input_boolean.tosr0x_3_state', 'on') }}"
+        turn_on:
+          - service: zha.issue_zigbee_cluster_command
+            data:
+              ieee: 00:13:a2:00:40:f5:2a:be
+              endpoint_id: 232
+              cluster_id: 17
+              cluster_type: in
+              command: 0
+              command_type: server
+              args: "g["
+          - service: input_boolean.turn_on
+            data:
+              entity_id: input_boolean.tosr0x_3_state
+        turn_off:
+          - service: zha.issue_zigbee_cluster_command
+            data:
+              ieee: 00:13:a2:00:40:f5:2a:be
+              endpoint_id: 232
+              cluster_id: 17
+              cluster_type: in
+              command: 0
+              command_type: server
+              args: "q["
+          - service: input_boolean.turn_off
+            data:
+              entity_id: input_boolean.tosr0x_3_state
+      tosr0x_4:
+        friendly_name: TOSR0X Relay 4
+        value_template: "{{ is_state('input_boolean.tosr0x_4_state', 'on') }}"
+        turn_on:
+          - service: zha.issue_zigbee_cluster_command
+            data:
+              ieee: 00:13:a2:00:40:f5:2a:be
+              endpoint_id: 232
+              cluster_id: 17
+              cluster_type: in
+              command: 0
+              command_type: server
+              args: "h["
+          - service: input_boolean.turn_on
+            data:
+              entity_id: input_boolean.tosr0x_4_state
+        turn_off:
+          - service: zha.issue_zigbee_cluster_command
+            data:
+              ieee: 00:13:a2:00:40:f5:2a:be
+              endpoint_id: 232
+              cluster_id: 17
+              cluster_type: in
+              command: 0
+              command_type: server
+              args: "r["
+          - service: input_boolean.turn_off
+            data:
+              entity_id: input_boolean.tosr0x_4_state
 
 rest_command:
   set_counter:

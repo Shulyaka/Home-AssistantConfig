@@ -1,0 +1,8 @@
+tosr0x:
+  name: TOSR0X
+  entities:
+    - sensor.tosr0x_temperature
+    - switch.tosr0x_1
+    - switch.tosr0x_2
+    - switch.tosr0x_3
+    - switch.tosr0x_4

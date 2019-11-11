@@ -25,3 +25,82 @@
     data_template:
       name: '{{trigger.from_state.attributes.name}}'
       value: '{{trigger.from_state.state}}'
+- alias: update_tosr0x  # Request the temperature and relay states from TOSR0X
+  trigger:
+    - platform: time_pattern
+      minutes: '/5'
+    - platform: homeassistant
+      event: start
+  action:
+    service: zha.issue_zigbee_cluster_command 
+    data:
+      ieee: 00:13:a2:00:41:a0:7e:1a
+      endpoint_id: 232
+      cluster_id: 17
+      cluster_type: in
+      command: 0
+      command_type: server
+      args: "a["  # First character is for temperature, second character is for relay states, please see the TOSR0X manual
+- alias: update_tosr0x_switch  # Update relay states upon receiving them from TOSR0X
+  trigger:
+    platform: event
+    event_type: zha_event
+    event_data:
+      device_ieee: 00:13:a2:00:41:a0:7e:1a
+      command: receive_data
+  condition:
+    condition: template
+    value_template: "{{ trigger.event.data.args | length == 1 }}"  # A single byte response is probably a relay state update
+  action:
+    - service_template: >
+        {% if trigger.event.data.args.encode('latin1').hex() | int(base=16) | bitwise_and(2**0) %}
+        input_boolean.turn_on
+        {% else %}
+        input_boolean.turn_off
+        {% endif %}
+      data:
+        entity_id: input_boolean.tosr0x_1_state
+    - service_template: >
+        {% if trigger.event.data.args.encode('latin1').hex() | int(base=16) | bitwise_and(2**1) %}
+        input_boolean.turn_on
+        {% else %}
+        input_boolean.turn_off
+        {% endif %}
+      data:
+        entity_id: input_boolean.tosr0x_2_state
+    - service_template: >
+        {% if trigger.event.data.args.encode('latin1').hex() | int(base=16) | bitwise_and(2**2) %}
+        input_boolean.turn_on
+        {% else %}
+        input_boolean.turn_off
+        {% endif %}
+      data:
+        entity_id: input_boolean.tosr0x_3_state
+    - service_template: >
+        {% if trigger.event.data.args.encode('latin1').hex() | int(base=16) | bitwise_and(2**3) %}
+        input_boolean.turn_on
+        {% else %}
+        input_boolean.turn_off
+        {% endif %}
+      data:
+        entity_id: input_boolean.tosr0x_4_state
+- alias: update_tosr0x_temp  # Update temperature upon receiving it from TOSR0X
+  trigger:
+    platform: event
+    event_type: zha_event
+    event_data:
+      device_ieee: 00:13:a2:00:41:a0:7e:1a
+      command: receive_data
+  condition:
+    condition: template
+    value_template: "{{ trigger.event.data.args | length == 2 }}"  # A two-byte response is probably a temperature update (2's complement format)
+  action:
+    service: input_number.set_value
+    data_template:
+      entity_id: input_number.tosr0x_temp
+      value: >
+        {% if trigger.event.data.args.encode('latin1').hex() | int(base=16) > 32767 %}
+        {{ trigger.event.data.args.encode('latin1').hex() | int(base=16) / 16 - 4096 }}
+        {% else %}
+        {{ trigger.event.data.args.encode('latin1').hex() | int(base=16) / 16 }}
+        {% endif %}

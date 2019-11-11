@@ -8,3 +8,11 @@ switch.toilet_water:
   icon: mdi:pipe
 switch.cold_water:
   icon: mdi:pipe
+automation.update_tosr0x_switch:
+  hidden: true
+automation.update_tosr0x_temp:
+  hidden: true
+automation.update_tosr0x:
+  hidden: true
+input_number.tosr0x_temp:
+  hidden: true
