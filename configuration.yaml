@@ -32,6 +32,9 @@ input_boolean:
     name: TOSR0X Relay 3 State
   tosr0x_4_state:
     name: TOSR0X Relay 4 State
+  humidifier_pwm:
+    name: Humidifier simple PWM
+    initial: false
 
 # Internal variable to hold TOSR0X-T temperature
 input_number:

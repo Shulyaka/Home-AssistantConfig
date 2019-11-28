@@ -156,8 +156,8 @@
   condition: []
   action:
   - data:
-      entity_id: switch.humidifier_pump
-    service: switch.toggle
+      entity_id: input_number.humidifier_pwm
+    service: input_number.toggle
 - id: '1574013273869'
   alias: Humidifier max run time
   description: ''
@@ -180,25 +180,37 @@
     platform: state
     to: 'off'
   condition:
-  - below: '50'
-    condition: numeric_state
-    entity_id: sensor.lumi_lumi_weather_3bfcf003_1_1029
+    condition: state
+    entity_id: input_boolean.humidifier_pwm
+    state: 'on'
   action:
   - data:
       entity_id: switch.humidifier_pump
     service: switch.turn_on
 - id: '1574013961689'
-  alias: Turn Humidifier On 2
+  alias: Enable Humidifier
   description: ''
   trigger:
-  - below: '50'
+  - platform: numeric_state
+    below: '50'
     entity_id: sensor.lumi_lumi_weather_3bfcf003_1_1029
-    platform: numeric_state
   condition: []
   action:
   - data:
-      entity_id: switch.humidifier_pump
-    service: switch.turn_on
+      entity_id: input_boolean.humidifier_pwm
+    service: input_boolean.turn_on
+- id: '1574013961690'
+  alias: Disable Humidifier
+  description: ''
+  trigger:
+  - platform: numeric_state
+    above: '50'
+    entity_id: sensor.lumi_lumi_weather_3bfcf003_1_1029
+  condition: []
+  action:
+  - data:
+      entity_id: input_boolean.humidifier_pwm
+    service: input_boolean.turn_off
 - id: '1574205383149'
   alias: Set pump strength
   description: ''
@@ -225,5 +237,5 @@
   condition: []
   action:
   - data:
-      entity_id: automation.turn_humidifier_on, automation.turn_humidifier_on_2
+      entity_id: automation.enable_humidifier
     service: automation.turn_off
