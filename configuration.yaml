@@ -43,6 +43,11 @@ input_number:
     mode: box
     unit_of_measurement: '°C'
     icon: mdi:temperature-celsius
+  pump_strength:
+    name: Humidifier Pump Strength
+    min: 0
+    max: 1023
+    mode: slider
 
 http:
   use_x_forwarded_for: true
@@ -56,6 +61,7 @@ recorder:
 
 logger:
   default: debug
+#  default: info
 
 google_assistant:
   project_id: home-assistant-1404b
@@ -77,7 +83,7 @@ zha:
   usb_path: /dev/ttyS1
   database_path: /srv/hass/zigbee.db
   radio_type: xbee
-  baudrate: 9600
+  baudrate: 57600
 
 sensor:
   - platform: rest
@@ -154,7 +160,7 @@ switch:
         turn_on:
           - service: zha.issue_zigbee_cluster_command
             data:
-              ieee: 00:13:a2:00:40:f5:2a:be
+              ieee: 00:13:a2:00:41:a0:7e:1a
               endpoint_id: 232
               cluster_id: 17
               cluster_type: in
@@ -167,7 +173,7 @@ switch:
         turn_off:
           - service: zha.issue_zigbee_cluster_command
             data:
-              ieee: 00:13:a2:00:40:f5:2a:be
+              ieee: 00:13:a2:00:41:a0:7e:1a
               endpoint_id: 232
               cluster_id: 17
               cluster_type: in
@@ -183,7 +189,7 @@ switch:
         turn_on:
           - service: zha.issue_zigbee_cluster_command
             data:
-              ieee: 00:13:a2:00:40:f5:2a:be
+              ieee: 00:13:a2:00:41:a0:7e:1a
               endpoint_id: 232
               cluster_id: 17
               cluster_type: in
@@ -196,7 +202,7 @@ switch:
         turn_off:
           - service: zha.issue_zigbee_cluster_command
             data:
-              ieee: 00:13:a2:00:40:f5:2a:be
+              ieee: 00:13:a2:00:41:a0:7e:1a
               endpoint_id: 232
               cluster_id: 17
               cluster_type: in
@@ -212,7 +218,7 @@ switch:
         turn_on:
           - service: zha.issue_zigbee_cluster_command
             data:
-              ieee: 00:13:a2:00:40:f5:2a:be
+              ieee: 00:13:a2:00:41:a0:7e:1a
               endpoint_id: 232
               cluster_id: 17
               cluster_type: in
@@ -225,7 +231,7 @@ switch:
         turn_off:
           - service: zha.issue_zigbee_cluster_command
             data:
-              ieee: 00:13:a2:00:40:f5:2a:be
+              ieee: 00:13:a2:00:41:a0:7e:1a
               endpoint_id: 232
               cluster_id: 17
               cluster_type: in
@@ -241,7 +247,7 @@ switch:
         turn_on:
           - service: zha.issue_zigbee_cluster_command
             data:
-              ieee: 00:13:a2:00:40:f5:2a:be
+              ieee: 00:13:a2:00:41:a0:7e:1a
               endpoint_id: 232
               cluster_id: 17
               cluster_type: in
@@ -254,7 +260,7 @@ switch:
         turn_off:
           - service: zha.issue_zigbee_cluster_command
             data:
-              ieee: 00:13:a2:00:40:f5:2a:be
+              ieee: 00:13:a2:00:41:a0:7e:1a
               endpoint_id: 232
               cluster_id: 17
               cluster_type: in
@@ -270,3 +276,12 @@ rest_command:
     url: "http://watercounter/cgi-bin/wcontrol.sh?function=set&valve={{name}}&value={{'%d'|format(value|float*1000)}}"
   mos_ru_update:
     url: "http://watercounter/cgi-bin/mos_ru_update.sh"
+
+climate:
+  - platform: generic_thermostat
+    name: Humidifier fan
+    target_sensor: sensor.tosr0x_temperature
+    heater: switch.humidifier_fan
+    min_temp: 20
+    max_temp: 40
+    ac_mode: true
