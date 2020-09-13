@@ -144,132 +144,100 @@
   - data:
       entity_id: humidifier.uvlazhnitel_zone_1, humidifier.uvlazhnitel_zone_2, humidifier.uvlazhnitel_zone_3
     service: humidifier.toggle
-- id: duty_cycle_off_zone_1
-  alias: Zone 1 Duty Cycle Off
+- id: pump_duty_cycle_off
+  alias: Humidifier Pump Duty Cycle Off
   description: ''
   trigger:
-  - entity_id: switch.tosr0x_1
+  - entity_id: switch.humidifier_pump
     for: 0:02:00
     platform: state
     to: 'on'
   condition: []
   action:
-  - data:
-      entity_id: switch.tosr0x_1
+  - data: {}
+    entity_id: switch.humidifier_pump
     service: switch.turn_off
-- id: duty_cycle_on_zone_1
-  alias: Zone 1 Duty Cycle On
+  mode: single
+- id: pump_duty_cycle_on
+  alias: Humidifier Pump Duty Cycle On
   description: ''
   trigger:
-  - entity_id: switch.tosr0x_1
+  - entity_id: switch.humidifier_pump
     for: 0:03:00
     platform: state
     to: 'off'
   condition:
-    condition: state
-    entity_id: input_boolean.humidifier_pwm_zone_1
+  - condition: state
+    entity_id: group.humidifier_zones
     state: 'on'
   action:
-  - data:
-      entity_id: switch.tosr0x_1
+  - data: {}
+    entity_id: switch.humidifier_pump
     service: switch.turn_on
-- id: duty_cycle_off_zone_2
-  alias: Zone 2 Duty Cycle Off
-  description: ''
+  mode: single
+- id: valve_control_pump_off
+  alias: Valve Control on Pump Off
+  description: Close all valves on pump off
   trigger:
-  - entity_id: switch.tosr0x_2
-    for: 0:02:00
+  - entity_id: switch.humidifier_pump
     platform: state
-    to: 'on'
+    to: 'off'
   condition: []
   action:
-  - data:
-      entity_id: switch.tosr0x_2
-    service: switch.turn_off
-- id: duty_cycle_on_zone_2
-  alias: Zone 2 Duty Cycle On
-  description: ''
-  trigger:
-  - entity_id: switch.tosr0x_2
-    for: 0:03:00
-    platform: state
-    to: 'off'
-  condition:
-    condition: state
-    entity_id: input_boolean.humidifier_pwm_zone_2
-    state: 'on'
-  action:
-  - data:
-      entity_id: switch.tosr0x_2
+  - data: {}
+    entity_id: switch.tosr0x_4
     service: switch.turn_on
-- id: duty_cycle_off_zone_3
-  alias: Zone 3 Duty Cycle Off
-  description: ''
-  trigger:
-  - entity_id: switch.tosr0x_3
-    for: 0:02:00
-    platform: state
-    to: 'on'
-  condition: []
-  action:
-  - data:
-      entity_id: switch.tosr0x_3
+  - delay:
+      seconds: 1
+  - data: {}
+    entity_id: switch.tosr0x_1,switch.tosr0x_2,switch.tosr0x_3,switch.tosr0x_4
     service: switch.turn_off
-- id: duty_cycle_on_zone_3
-  alias: Zone 3 Duty Cycle On
-  description: ''
-  trigger:
-  - entity_id: switch.tosr0x_3
-    for: 0:03:00
-    platform: state
-    to: 'off'
-  condition:
-    condition: state
-    entity_id: input_boolean.humidifier_pwm_zone_3
-    state: 'on'
-  action:
-  - data:
-      entity_id: switch.tosr0x_3
-    service: switch.turn_on
+  mode: single
 - id: valve_control_zone_1
   alias: Zone 1 Control
   description: Zone 1 valve to follow the state of its controlling input_boolean
   trigger:
-  - entity_id: input_boolean.humidifier_pwm_zone_1
+  - entity_id: switch.humidifier_pump
     platform: state
-  condition: []
+    to: 'on'
+  condition:
+  - condition: state
+    entity_id: input_boolean.humidifier_zone_1
+    state: 'on'
   action:
-  - service: automation.trigger
-    data_template:
-      entity_id: '{% if is_state(''input_boolean.humidifier_pwm_zone_1'', ''on'')
-        %} automation.zone_1_duty_cycle_on {% else %} automation.zone_1_duty_cycle_off
-        {% endif %}'
+  - service: switch.turn_on
+    entity_id: switch.tosr0x_1
+  mode: single
 - id: valve_control_zone_2
   alias: Zone 2 Control
   description: Zone 2 valve to follow the state of its controlling input_boolean
   trigger:
-  - entity_id: input_boolean.humidifier_pwm_zone_2
+  - entity_id: switch.humidifier_pump
     platform: state
-  condition: []
+    to: 'on'
+  condition:
+  - condition: state
+    entity_id: input_boolean.humidifier_zone_2
+    state: 'on'
   action:
-  - service: automation.trigger
-    data_template:
-      entity_id: '{% if is_state(''input_boolean.humidifier_pwm_zone_2'', ''on'')
-        %} automation.zone_2_duty_cycle_on {% else %} automation.zone_2_duty_cycle_off
-        {% endif %}'
+  - service: switch.turn_on
+    entity_id: switch.tosr0x_2
+  mode: single
 - id: valve_control_zone_3
   alias: Zone 3 Control
   description: Zone 3 valve to follow the state of its controlling input_boolean
   trigger:
-  - entity_id: input_boolean.humidifier_pwm_zone_3
+  - entity_id: switch.humidifier_pump
     platform: state
-  condition: []
+    to: 'on'
+  condition:
+  - condition: state
+    entity_id: input_boolean.humidifier_zone_3
+    state: 'on'
   action:
-  - service: automation.trigger
-    data_template:
-      entity_id: '{% if is_state(''input_boolean.humidifier_pwm_zone_3'', ''on'')
-        %} automation.zone_3_duty_cycle_on {% else %} automation.zone_3_duty_cycle_off
-        {% endif %}'
+  - service: switch.turn_on
+    entity_id: switch.tosr0x_3
+  mode: single
 - id: '1574205383149'
   alias: Set pump strength
   description: ''
@@ -299,19 +267,19 @@
     service: humidifier.turn_off
 - id: pump_control
   alias: Pump control
-  description: Turn on pump when any of the zone valves open
+  description: Turn on pump when any of the zones start humidifying
   trigger:
-  - entity_id: switch.tosr0x_1, switch.tosr0x_2, switch.tosr0x_3
+  - entity_id: group.humidifier_zones
     platform: state
+  - event: start
+    platform: homeassistant
   condition: []
   action:
   - data:
       entity_id: switch.humidifier_pump
-    service_template: '{% if is_state(''switch.tosr0x_1'', ''on'') or is_state(''switch.tosr0x_2'',
-      ''on'') or is_state(''switch.tosr0x_3'', ''on'') %} switch.turn_on {% else %}
-      switch.turn_off {% endif %}
-
-      '
+    service_template: switch.turn_{{ trigger.to_state.state }}
+  mode: queued
+  max: 10
 - id: close_on_shutdown
   alias: Close on shutdown
   description: turn off everything when HA stops
@@ -321,7 +289,8 @@
   action:
   - service: switch.turn_off
     data:
-      entity_id: switch.tosr0x_1, switch.tosr0x_2, switch.tosr0x_3, switch.humidifier_pump
+      entity_id: switch.tosr0x_1, switch.tosr0x_2, switch.tosr0x_3, switch.tosr0x_4,
+        switch.humidifier_pump, switch.humidifier_fan
 - id: '1587844118867'
   alias: Cube Brightness
   description: ''

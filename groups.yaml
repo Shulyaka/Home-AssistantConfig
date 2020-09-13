@@ -6,3 +6,9 @@ tosr0x:
     - switch.tosr0x_2
     - switch.tosr0x_3
     - switch.tosr0x_4
+humidifier_zones:
+  name: Humidifier Zones
+  entities:
+    - input_boolean.humidifier_zone_1
+    - input_boolean.humidifier_zone_2
+    - input_boolean.humidifier_zone_3

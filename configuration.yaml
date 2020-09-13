@@ -42,14 +42,14 @@ input_boolean:
     name: TOSR0X Relay 3 State
   tosr0x_4_state:
     name: TOSR0X Relay 4 State
-  humidifier_pwm_zone_1:
-    name: Humidifier simple PWM Zone 1
+  humidifier_zone_1:
+    name: Humidifier Zone 1
     initial: false
-  humidifier_pwm_zone_2:
-    name: Humidifier simple PWM Zone 2
+  humidifier_zone_2:
+    name: Humidifier Zone 2
     initial: false
-  humidifier_pwm_zone_3:
-    name: Humidifier simple PWM Zone 3
+  humidifier_zone_3:
+    name: Humidifier Zone 3
     initial: false
 
 # Internal variable to hold TOSR0X-T temperature
@@ -169,11 +169,11 @@ google_assistant:
       expose: false
     sensor.tosr0x_temperature:
       expose: false
-    input_boolean.humidifier_pwm_zone_1:
+    input_boolean.humidifier_zone_1:
       expose: false
-    input_boolean.humidifier_pwm_zone_2:
+    input_boolean.humidifier_zone_2:
       expose: false
-    input_boolean.humidifier_pwm_zone_3:
+    input_boolean.humidifier_zone_3:
       expose: false
     input_boolean.tosr0x_1_state:
       expose: false
@@ -476,7 +476,7 @@ climate:
 
 generic_hygrostat:
   - name: Увлажнитель в спальне
-    humidifier: input_boolean.humidifier_pwm_zone_1
+    humidifier: input_boolean.humidifier_zone_1
     target_sensor: sensor.lumi_lumi_weather_3bfcf003_humidity
     min_humidity: 15
     max_humidity: 100
@@ -488,7 +488,7 @@ generic_hygrostat:
     initial_state: false
     away_humidity: 25
   - name: Увлажнитель в детской
-    humidifier: input_boolean.humidifier_pwm_zone_2
+    humidifier: input_boolean.humidifier_zone_2
     target_sensor: sensor.lumi_lumi_sens_48945e02_humidity
     min_humidity: 15
     max_humidity: 100
@@ -499,7 +499,7 @@ generic_hygrostat:
       minutes: 1
     initial_state: false
   - name: Увлажнитель в гостиной
-    humidifier: input_boolean.humidifier_pwm_zone_3
+    humidifier: input_boolean.humidifier_zone_3
     target_sensor: sensor.lumi_lumi_sens_02fbebbd_1_1029
     min_humidity: 15
     max_humidity: 100
