@@ -107,7 +107,7 @@
   alias: fan always on
   description: ''
   trigger:
-  - entity_id: light.lumi_lumi_relay_c2acn01_2321e803_1
+  - entity_id: light.lumi_lumi_relay_fan
     platform: state
     to: 'off'
   - event: start
@@ -116,11 +116,11 @@
   action:
   - device_id: d69bbd276fbb41be9d7072e227a348ab
     domain: light
-    entity_id: light.lumi_lumi_relay_c2acn01_2321e803_1
+    entity_id: light.lumi_lumi_relay_fan
     type: turn_on
 - id: '1573980062944'
   alias: Humidifier fan on
-  description: ''
+  description: Turn on fan when pump is active
   trigger:
   - entity_id: switch.humidifier_pump
     platform: state
@@ -130,23 +130,9 @@
   - data:
       entity_id: switch.humidifier_fan
     service: switch.turn_on
-- id: '1573980200984'
-  alias: Humidifier fan off
-  description: ''
-  trigger:
-  - entity_id: switch.humidifier_pump
-    for:
-      minutes: 5
-    platform: state
-    to: 'off'
-  condition: []
-  action:
-  - data:
-      entity_id: switch.humidifier_fan
-    service: switch.turn_off
 - id: '1573981070471'
   alias: Humidifier toggle
-  description: ''
+  description: Swich on and off on button press
   trigger:
   - event_data:
       device_ieee: 00:15:8d:00:02:d4:40:bf
@@ -156,61 +142,134 @@
   condition: []
   action:
   - data:
-      entity_id: input_number.humidifier_pwm
-    service: input_number.toggle
-- id: '1574013273869'
-  alias: Humidifier max run time
+      entity_id: humidifier.uvlazhnitel_zone_1, humidifier.uvlazhnitel_zone_2, humidifier.uvlazhnitel_zone_3
+    service: humidifier.toggle
+- id: duty_cycle_off_zone_1
+  alias: Zone 1 Duty Cycle Off
   description: ''
   trigger:
-  - entity_id: switch.humidifier_pump
+  - entity_id: switch.tosr0x_1
     for: 0:02:00
     platform: state
     to: 'on'
   condition: []
   action:
   - data:
-      entity_id: switch.humidifier_pump
+      entity_id: switch.tosr0x_1
     service: switch.turn_off
-- id: '1574013738564'
-  alias: Turn Humidifier On
+- id: duty_cycle_on_zone_1
+  alias: Zone 1 Duty Cycle On
   description: ''
   trigger:
-  - entity_id: switch.humidifier_pump
+  - entity_id: switch.tosr0x_1
     for: 0:03:00
     platform: state
     to: 'off'
   condition:
     condition: state
-    entity_id: input_boolean.humidifier_pwm
+    entity_id: input_boolean.humidifier_pwm_zone_1
     state: 'on'
   action:
   - data:
-      entity_id: switch.humidifier_pump
+      entity_id: switch.tosr0x_1
     service: switch.turn_on
-- id: '1574013961689'
-  alias: Enable Humidifier
+- id: duty_cycle_off_zone_2
+  alias: Zone 2 Duty Cycle Off
   description: ''
   trigger:
-  - platform: numeric_state
-    below: '50'
-    entity_id: sensor.lumi_lumi_weather_3bfcf003_1_1029
+  - entity_id: switch.tosr0x_2
+    for: 0:02:00
+    platform: state
+    to: 'on'
   condition: []
   action:
   - data:
-      entity_id: input_boolean.humidifier_pwm
-    service: input_boolean.turn_on
-- id: '1574013961690'
-  alias: Disable Humidifier
+      entity_id: switch.tosr0x_2
+    service: switch.turn_off
+- id: duty_cycle_on_zone_2
+  alias: Zone 2 Duty Cycle On
   description: ''
   trigger:
-  - platform: numeric_state
-    above: '50'
-    entity_id: sensor.lumi_lumi_weather_3bfcf003_1_1029
+  - entity_id: switch.tosr0x_2
+    for: 0:03:00
+    platform: state
+    to: 'off'
+  condition:
+    condition: state
+    entity_id: input_boolean.humidifier_pwm_zone_2
+    state: 'on'
+  action:
+  - data:
+      entity_id: switch.tosr0x_2
+    service: switch.turn_on
+- id: duty_cycle_off_zone_3
+  alias: Zone 3 Duty Cycle Off
+  description: ''
+  trigger:
+  - entity_id: switch.tosr0x_3
+    for: 0:02:00
+    platform: state
+    to: 'on'
   condition: []
   action:
   - data:
-      entity_id: input_boolean.humidifier_pwm
-    service: input_boolean.turn_off
+      entity_id: switch.tosr0x_3
+    service: switch.turn_off
+- id: duty_cycle_on_zone_3
+  alias: Zone 3 Duty Cycle On
+  description: ''
+  trigger:
+  - entity_id: switch.tosr0x_3
+    for: 0:03:00
+    platform: state
+    to: 'off'
+  condition:
+    condition: state
+    entity_id: input_boolean.humidifier_pwm_zone_3
+    state: 'on'
+  action:
+  - data:
+      entity_id: switch.tosr0x_3
+    service: switch.turn_on
+- id: valve_control_zone_1
+  alias: Zone 1 Control
+  description: Zone 1 valve to follow the state of its controlling input_boolean
+  trigger:
+  - entity_id: input_boolean.humidifier_pwm_zone_1
+    platform: state
+  condition: []
+  action:
+  - service: automation.trigger
+    data_template:
+      entity_id: '{% if is_state(''input_boolean.humidifier_pwm_zone_1'', ''on'')
+        %} automation.zone_1_duty_cycle_on {% else %} automation.zone_1_duty_cycle_off
+        {% endif %}'
+- id: valve_control_zone_2
+  alias: Zone 2 Control
+  description: Zone 2 valve to follow the state of its controlling input_boolean
+  trigger:
+  - entity_id: input_boolean.humidifier_pwm_zone_2
+    platform: state
+  condition: []
+  action:
+  - service: automation.trigger
+    data_template:
+      entity_id: '{% if is_state(''input_boolean.humidifier_pwm_zone_2'', ''on'')
+        %} automation.zone_2_duty_cycle_on {% else %} automation.zone_2_duty_cycle_off
+        {% endif %}'
+- id: valve_control_zone_3
+  alias: Zone 3 Control
+  description: Zone 3 valve to follow the state of its controlling input_boolean
+  trigger:
+  - entity_id: input_boolean.humidifier_pwm_zone_3
+    platform: state
+  condition: []
+  action:
+  - service: automation.trigger
+    data_template:
+      entity_id: '{% if is_state(''input_boolean.humidifier_pwm_zone_3'', ''on'')
+        %} automation.zone_3_duty_cycle_on {% else %} automation.zone_3_duty_cycle_off
+        {% endif %}'
 - id: '1574205383149'
   alias: Set pump strength
   description: ''
@@ -219,15 +278,14 @@
     platform: state
   condition: []
   action:
-  - service: zha.issue_zigbee_cluster_command
+  - service: zha.set_zigbee_cluster_attribute
     data_template:
       ieee: 00:13:a2:00:41:a0:7e:1a
       endpoint_id: 219
       cluster_id: 13
       cluster_type: in
-      command: 0
-      command_type: server
-      args: '{{ trigger.to_state.state|int }}'
+      attribute: 85
+      value: '{{ trigger.to_state.state|int }}'
 - id: '1574587123101'
   alias: Humidifier sleep time
   description: ''
@@ -237,5 +295,220 @@
   condition: []
   action:
   - data:
-      entity_id: automation.enable_humidifier
-    service: automation.turn_off
+      entity_id: humidifier.uvlazhnitel_zone_1, humidifier.uvlazhnitel_zone_2, humidifier.uvlazhnitel_zone_3
+    service: humidifier.turn_off
+- id: pump_control
+  alias: Pump control
+  description: Turn on pump when any of the zone valves open
+  trigger:
+  - entity_id: switch.tosr0x_1, switch.tosr0x_2, switch.tosr0x_3
+    platform: state
+  condition: []
+  action:
+  - data:
+      entity_id: switch.humidifier_pump
+    service_template: '{% if is_state(''switch.tosr0x_1'', ''on'') or is_state(''switch.tosr0x_2'',
+      ''on'') or is_state(''switch.tosr0x_3'', ''on'') %} switch.turn_on {% else %}
+      switch.turn_off {% endif %}
+
+      '
+- id: close_on_shutdown
+  alias: Close on shutdown
+  description: turn off everything when HA stops
+  trigger:
+  - platform: homeassistant
+    event: shutdown
+  action:
+  - service: switch.turn_off
+    data:
+      entity_id: switch.tosr0x_1, switch.tosr0x_2, switch.tosr0x_3, switch.humidifier_pump
+- id: '1587844118867'
+  alias: Cube Brightness
+  description: ''
+  trigger:
+  - device_id: 3a6580cb094441b48c058d4168e3f021
+    domain: zha
+    platform: device
+    subtype: left
+    type: device_rotated
+  - device_id: 3a6580cb094441b48c058d4168e3f021
+    domain: zha
+    platform: device
+    subtype: right
+    type: device_rotated
+  condition: []
+  action:
+  - data_template:
+      brightness_step: '{{[[trigger.event.data.args.relative_degrees | round | int,
+        -255] | max, 255] | min}}'
+    entity_id: light.children_room
+    service: light.turn_on
+- id: '1587847162438'
+  alias: Cube Red
+  description: ''
+  trigger:
+  - device_id: 3a6580cb094441b48c058d4168e3f021
+    domain: zha
+    platform: device
+    subtype: face_1
+    type: device_flipped
+  condition: []
+  action:
+  - data:
+      color_name: red
+    entity_id: light.children_room
+    service: light.turn_on
+- id: '1587847941151'
+  alias: Cube Green
+  description: ''
+  trigger:
+  - device_id: 3a6580cb094441b48c058d4168e3f021
+    domain: zha
+    platform: device
+    subtype: face_2
+    type: device_flipped
+  condition: []
+  action:
+  - data:
+      color_name: green
+    entity_id: light.children_room
+    service: light.turn_on
+- id: '1587848002690'
+  alias: Cube Blue
+  description: ''
+  trigger:
+  - device_id: 3a6580cb094441b48c058d4168e3f021
+    domain: zha
+    platform: device
+    subtype: face_5
+    type: device_flipped
+  condition: []
+  action:
+  - data:
+      color_name: blue
+    entity_id: light.children_room
+    service: light.turn_on
+- id: '1587848113116'
+  alias: Cube Yellow
+  description: ''
+  trigger:
+  - device_id: 3a6580cb094441b48c058d4168e3f021
+    domain: zha
+    platform: device
+    subtype: face_6
+    type: device_flipped
+  condition: []
+  action:
+  - data:
+      color_name: yellow
+    entity_id: light.children_room
+    service: light.turn_on
+- id: '1587848220263'
+  alias: Cube BlueViolet
+  description: ''
+  trigger:
+  - device_id: 3a6580cb094441b48c058d4168e3f021
+    domain: zha
+    platform: device
+    subtype: face_3
+    type: device_flipped
+  condition: []
+  action:
+  - data:
+      color_name: blueviolet
+    entity_id: light.children_room
+    service: light.turn_on
+- id: '1587848685851'
+  alias: Cube Magenta
+  description: ''
+  trigger:
+  - device_id: 3a6580cb094441b48c058d4168e3f021
+    domain: zha
+    platform: device
+    subtype: face_4
+    type: device_flipped
+  condition: []
+  action:
+  - data:
+      color_name: magenta
+    entity_id: light.children_room
+    service: light.turn_on
+- id: '1587848812070'
+  alias: Cube Random
+  description: ''
+  trigger:
+  - device_id: 3a6580cb094441b48c058d4168e3f021
+    domain: zha
+    platform: device
+    subtype: turn_on
+    type: device_shaken
+  condition: []
+  action:
+  - data:
+      effect: random
+    entity_id: light.children_room
+    service: light.turn_on
+- id: '1587849275342'
+  alias: Cube Default
+  description: ''
+  trigger:
+  - device_id: 3a6580cb094441b48c058d4168e3f021
+    domain: zha
+    platform: device
+    subtype: face_any
+    type: device_knocked
+  condition: []
+  action:
+  - data:
+      kelvin: 3000
+    entity_id: light.children_room
+    service: light.turn_on
+- id: '1587850084499'
+  alias: Cube Drop
+  description: ''
+  trigger:
+  - device_id: 3a6580cb094441b48c058d4168e3f021
+    domain: zha
+    platform: device
+    subtype: turn_on
+    type: device_dropped
+  condition: []
+  action:
+  - data:
+      effect: random
+      flash: short
+    entity_id:
+    - light.hue_color_candle_1
+    - light.hue_color_candle_2
+    - light.hue_color_candle_3
+    - light.hue_color_candle_4
+    - light.hue_color_candle_5
+    - light.hue_color_candle_6
+    - light.hue_color_candle_7
+    - light.hue_color_candle_8
+    service: light.turn_on
+- id: '1594502365341'
+  alias: Ensure bathroom color temperature
+  description: ''
+  trigger:
+  - device_id: ec863b8c8c384379a8185a51b3a8080c
+    domain: light
+    entity_id: light.hue_color_lamp_1
+    platform: device
+    type: turned_on
+  - device_id: 6f2b7025f9ff4822b12db8c779420f00
+    domain: light
+    entity_id: light.hue_color_lamp_2
+    platform: device
+    type: turned_on
+  - device_id: d69bbd276fbb41be9d7072e227a348ab
+    domain: light
+    entity_id: light.lumi_lumi_relay_fan
+    platform: device
+    type: turned_on
+  condition: []
+  action:
+  - data:
+      kelvin: 3500
+    entity_id: light.hue_color_lamp_1,light.hue_color_lamp_2
+    service: light.turn_on

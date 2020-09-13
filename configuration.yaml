@@ -2,9 +2,19 @@
 # Configure a default setup of Home Assistant (frontend, api, etc)
 default_config:
 
+frontend:
+#  development_repo: /usr/share/nas/other/home-assistant-polymer
+
+conversation:
+
+discovery:
+  enable:
+    - dlna_dmr
+
 # Text to speech
 tts:
   - platform: google_translate
+    base_url: https://shulyaka.org.ru
 
 group: !include groups.yaml
 automation: !include automations.yaml
@@ -32,8 +42,14 @@ input_boolean:
     name: TOSR0X Relay 3 State
   tosr0x_4_state:
     name: TOSR0X Relay 4 State
-  humidifier_pwm:
-    name: Humidifier simple PWM
+  humidifier_pwm_zone_1:
+    name: Humidifier simple PWM Zone 1
+    initial: false
+  humidifier_pwm_zone_2:
+    name: Humidifier simple PWM Zone 2
+    initial: false
+  humidifier_pwm_zone_3:
+    name: Humidifier simple PWM Zone 3
     initial: false
 
 # Internal variable to hold TOSR0X-T temperature
@@ -56,19 +72,172 @@ http:
   use_x_forwarded_for: true
   trusted_proxies: 127.0.0.1
   server_host: 127.0.0.1
-  base_url: https://shulyaka.org.ru
   cors_allowed_origins: https://shulyaka.org.ru
 
 recorder:
   db_url: mysql+pymysql://@/hass_db?unix_socket=/var/run/mysql/mysql.sock&charset=utf8
 
 logger:
-  default: debug
-#  default: info
+#  default: debug
+  default: info
+#  logs:
+#    pyipp.parser: info
+#    haphilipsjs: info
+#    zeroconf: info
+#    async_upnp_client.traffic: info
+#    homeassistant.helpers.storage: info
+#    homeassistant.components.sun: info
+#    homeassistant.components.ipp: info
+#    homeassistant.components.hue: info
+#    homeassistant.components.ssdp: info
+#    homeassistant.components.history: info
+#    homeassistant.components.recorder: info
+#    homeassistant.components.websocket_api: info
+#    homeassistant.components.webhook: info
+#    homeassistant.components.mobile_app.webhook: info
+#    homeassistant.components.neato: info
+#    homeassistant.components.neato.camera: info
+#    homeassistant.components.neato.switch: info
+#    homeassistant.components.neato.vacuum: info
+#    homeassistant.components.neato.sensor: info
+#    homeassistant.components.http.auth: info
+#    homeassistant.components.http.view: info
+#    homeassistant.components.rest.sensor: info
+#    homeassistant.components.dlna_dmr.media_player: info
 
 google_assistant:
   project_id: home-assistant-1404b
-  api_key: !secret google_assistant
+#  api_key: !secret google_assistant
+  service_account: !include service_account.json
+  report_state: true
+  entity_config:
+    vacuum.robot:
+      expose: false
+    light.hue_color_candle_1:
+      expose: false
+    light.hue_color_candle_2:
+      expose: false
+    light.hue_color_candle_3:
+      expose: false
+    light.hue_color_candle_4:
+      expose: false
+    light.hue_color_candle_5:
+      expose: false
+    light.hue_color_candle_6:
+      expose: false
+    light.hue_color_candle_7:
+      expose: false
+    light.hue_color_candle_8:
+      expose: false
+    light.hue_color_lamp_1:
+      expose: false
+    light.hue_color_lamp_2:
+      expose: false
+    light.hue_color_lamp_3:
+      expose: false
+    light.hue_color_spot_1:
+      expose: false
+    light.hue_color_spot_2:
+      expose: false
+    light.bathroom:
+      expose: false
+    light.children_room:
+      expose: false
+    light.custom_group_for_roombl:
+      expose: false
+    light.custom_group_for_roombl_2:
+      expose: false
+    light.custom_group_for_roombr:
+      expose: false
+    light.custom_group_for_roombr_2:
+      expose: false
+    light.custom_group_for_roomtl:
+      expose: false
+    light.custom_group_for_roomtl_2:
+      expose: false
+    light.custom_group_for_roomtr:
+      expose: false
+    light.custom_group_for_roomtr_2:
+      expose: false
+    light.kitchen:
+      expose: false
+    light.living_room:
+      expose: false
+    light.razvlecheniia_1:
+      expose: false
+    light.sleeping_room:
+      expose: false
+    sensor.tosr0x_temperature:
+      expose: false
+    input_boolean.humidifier_pwm_zone_1:
+      expose: false
+    input_boolean.humidifier_pwm_zone_2:
+      expose: false
+    input_boolean.humidifier_pwm_zone_3:
+      expose: false
+    input_boolean.tosr0x_1_state:
+      expose: false
+    input_boolean.tosr0x_2_state:
+      expose: false
+    input_boolean.tosr0x_3_state:
+      expose: false
+    input_boolean.tosr0x_4_state:
+      expose: false
+    switch.tosr0x_1:
+      expose: false
+    switch.tosr0x_2:
+      expose: false
+    switch.tosr0x_3:
+      expose: false
+    switch.tosr0x_4:
+      expose: false
+    group.tosr0x:
+      expose: false
+    switch.humidifier_pump:
+      expose: false
+    switch.humidifier_aux_led:
+      expose: false
+    switch.humidifier_fan:
+      expose: false
+    light.lumi_lumi_relay_c2acn01_2321e803_2:
+      expose: false
+
+alexa:
+  smart_home:
+    endpoint: https://api.amazonalexa.com/v3/events
+    client_id: amzn1.application-oa2-client.a9df13cdb9ec4b5a8c0ff2cf941f782a
+    client_secret: !secret alexa_client_secret
+    filter:
+      exclude_domains:
+        - input_number
+        - input_boolean
+        - automation
+        - group
+      exclude_entity_globs:
+        - light.hue_*
+        - light.custom_group_for_room*
+        - switch.tosr0x_*
+        - switch.humidifier_*
+      exclude_entities:
+        - light.bathroom
+        - light.children_room
+        - light.kitchen
+        - light.living_room
+        - light.sleeping_room
+        - light.razvlecheniia_1
+        - light.lumi_lumi_relay_c2acn01_2321e803_2
+        - sensor.tosr0x_temperature
+        - binary_sensor.updater
+    entity_config:
+      light.lumi_lumi_relay_fan:
+        display_categories: FAN
+
+mycroft:
+  host: speaker
+
+almond:
+  type: local
+  host: http://speaker:3000
 
 notify:
   - platform: html5
@@ -78,19 +247,35 @@ notify:
     vapid_email: Shulyaka@gmail.com
   - platform: syslog
     name: syslog
+  - platform: mycroft
+    name: mycroft
 
 shell_command:
   hassd_update: /usr/lib/hassd/hassd_update.sh
 
 zha:
-  usb_path: /dev/ttyS1
   database_path: /srv/hass/zigbee.db
-  radio_type: xbee
-  baudrate: 57600
+
+media_player:
+  - platform: philips_js
+    host: 192.168.1.103
+    name: Philips TV JS
+  - platform: dlna_dmr
+    url: http://192.168.1.103:49153/nmrDescription.xml
+    name: Philips TV DLNA
+  - platform: universal
+    name: Philips TV
+    children:
+      - media_player.philips_tv_js
+      - media_player.philips_tv_2
+  - platform: mpd
+    host: speaker
+
+media_extractor:
 
 sensor:
   - platform: rest
-    resource: http://watercounter/cgi-bin/wcounter.sh
+    resource: http://watercounter.atlantis/cgi-bin/wcounter.sh
     name: wcounter
     value_template: 'Available'
     device_class: signal_strength
@@ -138,19 +323,19 @@ sensor:
 
 switch:
   - platform: rest
-    resource: http://watercounter/cgi-bin/wcontrol.sh?valve=hot
+    resource: http://watercounter.atlantis/cgi-bin/wcontrol.sh?valve=hot
     name: Hot water
     body_on: '{"function": "open"}'
     body_off: '{"function": "close"}'
     is_on_template: '{{ value_json.lastaction == "open" }}'
   - platform: rest
-    resource: http://watercounter/cgi-bin/wcontrol.sh?valve=cold
+    resource: http://watercounter.atlantis/cgi-bin/wcontrol.sh?valve=cold
     name: Cold water
     body_on: '{"function": "open"}'
     body_off: '{"function": "close"}'
     is_on_template: '{{ value_json.lastaction == "open" }}'
   - platform: rest
-    resource: http://watercounter/cgi-bin/wcontrol.sh?valve=toilet
+    resource: http://watercounter.atlantis/cgi-bin/wcontrol.sh?valve=toilet
     name: Toilet water
     body_on: '{"function": "open"}'
     body_off: '{"function": "close"}'
@@ -276,9 +461,9 @@ switch:
 
 rest_command:
   set_counter:
-    url: "http://watercounter/cgi-bin/wcontrol.sh?function=set&valve={{name}}&value={{'%d'|format(value|float*1000)}}"
+    url: "http://watercounter.atlantis/cgi-bin/wcontrol.sh?function=set&valve={{name}}&value={{'%d'|format(value|float*1000)}}"
   mos_ru_update:
-    url: "http://watercounter/cgi-bin/mos_ru_update.sh"
+    url: "http://watercounter.atlantis/cgi-bin/mos_ru_update.sh"
 
 climate:
   - platform: generic_thermostat
@@ -288,3 +473,58 @@ climate:
     min_temp: 20
     max_temp: 40
     ac_mode: true
+
+generic_hygrostat:
+  - name: Увлажнитель в спальне
+    humidifier: input_boolean.humidifier_pwm_zone_1
+    target_sensor: sensor.lumi_lumi_weather_3bfcf003_humidity
+    min_humidity: 15
+    max_humidity: 100
+    target_humidity: 50
+    dry_tolerance: 3
+    wet_tolerance: 3
+    min_cycle_duration:
+      minutes: 1
+    initial_state: false
+    away_humidity: 25
+  - name: Увлажнитель в детской
+    humidifier: input_boolean.humidifier_pwm_zone_2
+    target_sensor: sensor.lumi_lumi_sens_48945e02_humidity
+    min_humidity: 15
+    max_humidity: 100
+    target_humidity: 50
+    dry_tolerance: 3
+    wet_tolerance: 3
+    min_cycle_duration:
+      minutes: 1
+    initial_state: false
+  - name: Увлажнитель в гостиной
+    humidifier: input_boolean.humidifier_pwm_zone_3
+    target_sensor: sensor.lumi_lumi_sens_02fbebbd_1_1029
+    min_humidity: 15
+    max_humidity: 100
+    target_humidity: 50
+    dry_tolerance: 3
+    wet_tolerance: 3
+    min_cycle_duration:
+      minutes: 1
+    initial_state: false
+    away_humidity: 25
+
+hue:
+  bridges:
+    - host: 192.168.1.179
+      allow_hue_groups: true
+
+#light:
+#  - platform: group
+#    name: Children Room
+#    entities:
+#      - light.hue_color_candle_1
+#      - light.hue_color_candle_2
+#      - light.hue_color_candle_3
+#      - light.hue_color_candle_4
+#      - light.hue_color_candle_5
+#      - light.hue_color_candle_6
+#      - light.hue_color_candle_7
+#      - light.hue_color_candle_8
