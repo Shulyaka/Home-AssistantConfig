@@ -8,12 +8,6 @@ switch.toilet_water:
   icon: mdi:pipe
 switch.cold_water:
   icon: mdi:pipe
-automation.update_tosr0x_switch:
-  hidden: true
-automation.update_tosr0x_temp:
-  hidden: true
-input_number.tosr0x_temp:
-  hidden: true
 sensor.unk_manufacturer_unk_model_1a7ea041_210_12:
   device_class: power
   unit_of_measurement: V
