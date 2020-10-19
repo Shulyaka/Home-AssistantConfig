@@ -28,6 +28,10 @@ logbook:
       - automation.tosr0x_request
       - automation.tosr0x_response_temp
       - automation.tosr0x_response_switch
+      - input_boolean.tosr0x_1_state
+      - input_boolean.tosr0x_2_state
+      - input_boolean.tosr0x_3_state
+      - input_boolean.tosr0x_4_state
 
 # Internal hidden variables to hold TOSR0X relay state
 input_boolean:
@@ -78,7 +82,7 @@ logger:
 #  default: debug
   default: info
   logs:
-    homeassistant.components.shell_command: debug
+#    homeassistant.components.shell_command: debug
 #    pyipp.parser: info
 #    haphilipsjs: info
 #    zeroconf: info
@@ -102,6 +106,9 @@ logger:
 #    homeassistant.components.http.view: info
 #    homeassistant.components.rest.sensor: info
 #    homeassistant.components.dlna_dmr.media_player: info
+    zigpy_xbee.uart: debug
+    zigpy_xbee.api: debug
+    zigpy.zcl: debug
 
 google_assistant:
   project_id: home-assistant-1404b
@@ -484,7 +491,7 @@ generic_hygrostat:
     min_cycle_duration:
       minutes: 1
     initial_state: false
-    away_humidity: 25
+    away_humidity: 35
   - name: Увлажнитель в детской
     humidifier: input_boolean.humidifier_zone_2
     target_sensor: sensor.lumi_lumi_sens_48945e02_humidity
@@ -496,6 +503,7 @@ generic_hygrostat:
     min_cycle_duration:
       minutes: 1
     initial_state: false
+    away_humidity: 35
   - name: Увлажнитель в гостиной
     humidifier: input_boolean.humidifier_zone_3
     target_sensor: sensor.lumi_lumi_sens_02fbebbd_1_1029
@@ -507,7 +515,7 @@ generic_hygrostat:
     min_cycle_duration:
       minutes: 1
     initial_state: false
-    away_humidity: 25
+    away_humidity: 35
 
 hue:
   bridges:

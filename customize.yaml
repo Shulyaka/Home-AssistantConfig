@@ -11,3 +11,13 @@ switch.cold_water:
 sensor.unk_manufacturer_unk_model_1a7ea041_210_12:
   device_class: power
   unit_of_measurement: V
+sensor.humidifier_pressure_in:
+  unit_of_measurement: '%'
+  device_class: pressure
+sensor.9bb56a41_input_voltage:
+  unit_of_measurement: V
+sensor.input_voltage:
+  unit_of_measurement: V
+sensor.humidifier_pressure_out:
+  device_class: pressure
+  unit_of_measurement: '%'

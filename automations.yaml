@@ -143,43 +143,47 @@
   action:
   - service: humidifier.toggle
     data: {}
-    entity_id: humidifier.uvlazhnitel_zone_1, humidifier.uvlazhnitel_zone_2, humidifier.uvlazhnitel_zone_3
+    entity_id: humidifier.uvlazhnitel_v_detskoi,humidifier.uvlazhnitel_v_gostinoi,humidifier.uvlazhnitel_v_spalne
   mode: single
 - id: pump_duty_cycle_off
-  alias: Humidifier Pump Duty Cycle Off
+  alias: Humidifier Duty Cycle Off
   description: ''
   trigger:
   - platform: state
     entity_id: switch.humidifier_pump
-    for: 0:03:00
+    for: 0:02:00
     to: 'on'
   - platform: state
-    entity_id: switch.humidifier_pump
+    entity_id: group.humidifier_zones
     to: 'off'
-  - platform: homeassistant
-    event: start
+  - platform: state
+    entity_id: humidifier.uvlazhnitel_v_spalne,humidifier.uvlazhnitel_v_gostinoi,humidifier.uvlazhnitel_v_detskoi
+    to: 'off'
   condition: []
   action:
   - service: homeassistant.turn_off
     entity_id: switch.humidifier_pump
     data: {}
   - delay: 00:00:02
-  - service: switch.turn_on
+  - service: homeassistant.turn_on
     entity_id: switch.tosr0x_4
     data: {}
-  - delay: 00:00:02
-  - service: switch.turn_off
+  - delay: 00:00:10
+  - service: homeassistant.turn_off
     entity_id: switch.tosr0x_1,switch.tosr0x_2,switch.tosr0x_3,switch.tosr0x_4
     data: {}
   mode: single
 - id: pump_duty_cycle_on
-  alias: Humidifier Pump Duty Cycle On
+  alias: Humidifier Duty Cycle On
   description: ''
   trigger:
   - platform: state
     entity_id: switch.humidifier_pump
     for: 0:05:00
     to: 'off'
+  - platform: state
+    entity_id: group.humidifier_zones
+    to: 'on'
   condition:
   - condition: state
     entity_id: group.humidifier_zones
@@ -191,7 +195,7 @@
         entity_id: input_boolean.humidifier_zone_1
         state: 'on'
       sequence:
-      - service: switch.turn_on
+      - service: homeassistant.turn_on
         entity_id: switch.tosr0x_1
         data: {}
     default: []
@@ -201,7 +205,7 @@
         entity_id: input_boolean.humidifier_zone_2
         state: 'on'
       sequence:
-      - service: switch.turn_on
+      - service: homeassistant.turn_on
         entity_id: switch.tosr0x_2
         data: {}
     default: []
@@ -211,7 +215,7 @@
         entity_id: input_boolean.humidifier_zone_3
         state: 'on'
       sequence:
-      - service: switch.turn_on
+      - service: homeassistant.turn_on
         entity_id: switch.tosr0x_3
         data: {}
     default: []
@@ -253,38 +257,28 @@
   description: ''
   trigger:
   - platform: time
-    at: '18:55:00'
-  condition: []
+    at: '19:25:00'
+  condition:
+  - condition: state
+    entity_id: humidifier.uvlazhnitel_v_detskoi,humidifier.uvlazhnitel_v_gostinoi,humidifier.uvlazhnitel_v_spalne
+    state: 'on'
   action:
   - service: humidifier.turn_off
     data: {}
-    entity_id: humidifier.uvlazhnitel_zone_1, humidifier.uvlazhnitel_zone_2, humidifier.uvlazhnitel_zone_3
+    entity_id: humidifier.uvlazhnitel_v_detskoi,humidifier.uvlazhnitel_v_gostinoi,humidifier.uvlazhnitel_v_spalne
+  - service: input_number.set_value
+    data:
+      value: 320
+    entity_id: input_number.pump_strength
+  - delay: 0:40:00
+  - service: humidifier.set_mode
+    data:
+      mode: away
+    entity_id: humidifier.uvlazhnitel_v_gostinoi,humidifier.uvlazhnitel_v_spalne
+  - service: humidifier.turn_on
+    data: {}
+    entity_id: humidifier.uvlazhnitel_v_gostinoi,humidifier.uvlazhnitel_v_spalne
   mode: single
-- id: pump_control
-  alias: Pump control
-  description: Turn on pump when any of the zones start humidifying
-  trigger:
-  - platform: state
-    entity_id: group.humidifier_zones
-  - event: start
-    platform: homeassistant
-  condition: []
-  action:
-  - choose:
-    - conditions:
-      - condition: state
-        entity_id: group.humidifier_zones
-        state: 'on'
-      sequence:
-      - service: automation.trigger
-        entity_id: automation.humidifier_pump_duty_cycle_on
-        data: {}
-    default:
-    - service: automation.trigger
-      entity_id: automation.humidifier_pump_duty_cycle_off
-      data: {}
-  mode: queued
-  max: 10
 - id: close_on_shutdown
   alias: Close on shutdown
   description: turn off everything when HA stops
@@ -296,178 +290,6 @@
     entity_id: switch.tosr0x_1, switch.tosr0x_2, switch.tosr0x_3, switch.tosr0x_4,
       switch.humidifier_pump, switch.humidifier_fan
     data: {}
-  mode: single
-- id: '1587844118867'
-  alias: Cube Brightness
-  description: ''
-  trigger:
-  - device_id: 3a6580cb094441b48c058d4168e3f021
-    domain: zha
-    platform: device
-    subtype: left
-    type: device_rotated
-  - device_id: 3a6580cb094441b48c058d4168e3f021
-    domain: zha
-    platform: device
-    subtype: right
-    type: device_rotated
-  condition: []
-  action:
-  - service: light.turn_on
-    entity_id: light.children_room
-    data:
-      brightness_step: '{{[[trigger.event.data.args.relative_degrees | round | int,
-        -255] | max, 255] | min}}'
-  mode: single
-- id: '1587847162438'
-  alias: Cube Red
-  description: ''
-  trigger:
-  - device_id: 3a6580cb094441b48c058d4168e3f021
-    domain: zha
-    platform: device
-    subtype: face_1
-    type: device_flipped
-  condition: []
-  action:
-  - service: light.turn_on
-    entity_id: light.children_room
-    data:
-      color_name: red
-  mode: single
-- id: '1587847941151'
-  alias: Cube Green
-  description: ''
-  trigger:
-  - device_id: 3a6580cb094441b48c058d4168e3f021
-    domain: zha
-    platform: device
-    subtype: face_2
-    type: device_flipped
-  condition: []
-  action:
-  - service: light.turn_on
-    entity_id: light.children_room
-    data:
-      color_name: green
-- id: '1587848002690'
-  alias: Cube Blue
-  description: ''
-  trigger:
-  - device_id: 3a6580cb094441b48c058d4168e3f021
-    domain: zha
-    platform: device
-    subtype: face_5
-    type: device_flipped
-  condition: []
-  action:
-  - service: light.turn_on
-    entity_id: light.children_room
-    data:
-      color_name: blue
-  mode: single
-- id: '1587848113116'
-  alias: Cube Yellow
-  description: ''
-  trigger:
-  - device_id: 3a6580cb094441b48c058d4168e3f021
-    domain: zha
-    platform: device
-    subtype: face_6
-    type: device_flipped
-  condition: []
-  action:
-  - service: light.turn_on
-    entity_id: light.children_room
-    data:
-      color_name: yellow
-  mode: single
-- id: '1587848220263'
-  alias: Cube BlueViolet
-  description: ''
-  trigger:
-  - device_id: 3a6580cb094441b48c058d4168e3f021
-    domain: zha
-    platform: device
-    subtype: face_3
-    type: device_flipped
-  condition: []
-  action:
-  - service: light.turn_on
-    entity_id: light.children_room
-    data:
-      color_name: blueviolet
-  mode: single
-- id: '1587848685851'
-  alias: Cube Magenta
-  description: ''
-  trigger:
-  - device_id: 3a6580cb094441b48c058d4168e3f021
-    domain: zha
-    platform: device
-    subtype: face_4
-    type: device_flipped
-  condition: []
-  action:
-  - service: light.turn_on
-    entity_id: light.children_room
-    data:
-      color_name: magenta
-- id: '1587848812070'
-  alias: Cube Random
-  description: ''
-  trigger:
-  - device_id: 3a6580cb094441b48c058d4168e3f021
-    domain: zha
-    platform: device
-    subtype: turn_on
-    type: device_shaken
-  condition: []
-  action:
-  - service: light.turn_on
-    entity_id: light.children_room
-    data:
-      effect: random
-- id: '1587849275342'
-  alias: Cube Default
-  description: ''
-  trigger:
-  - device_id: 3a6580cb094441b48c058d4168e3f021
-    domain: zha
-    platform: device
-    subtype: face_any
-    type: device_knocked
-  condition: []
-  action:
-  - service: light.turn_on
-    entity_id: light.children_room
-    data:
-      kelvin: 3000
-  mode: single
-- id: '1587850084499'
-  alias: Cube Drop
-  description: ''
-  trigger:
-  - device_id: 3a6580cb094441b48c058d4168e3f021
-    domain: zha
-    platform: device
-    subtype: turn_on
-    type: device_dropped
-  condition: []
-  action:
-  - service: light.turn_on
-    entity_id:
-    - light.hue_color_candle_1
-    - light.hue_color_candle_2
-    - light.hue_color_candle_3
-    - light.hue_color_candle_4
-    - light.hue_color_candle_5
-    - light.hue_color_candle_6
-    - light.hue_color_candle_7
-    - light.hue_color_candle_8
-    data:
-      effect: random
-      flash: short
   mode: single
 - id: '1594502365341'
   alias: Ensure bathroom color temperature
@@ -512,4 +334,27 @@
   - service: notify.mobile_app_sm_t725
     data:
       message: Water leak detected!
+  mode: single
+- id: '1602765181559'
+  alias: Humidifier wake time
+  description: ''
+  trigger:
+  - platform: time
+    at: '10:00:00'
+  condition:
+  - condition: state
+    entity_id: humidifier.uvlazhnitel_v_gostinoi,humidifier.uvlazhnitel_v_spalne
+    state: 'on'
+  action:
+  - service: input_number.set_value
+    data:
+      value: 520
+    entity_id: input_number.pump_strength
+  - service: humidifier.set_mode
+    data:
+      mode: normal
+    entity_id: humidifier.uvlazhnitel_v_gostinoi,humidifier.uvlazhnitel_v_spalne
+  - service: humidifier.turn_on
+    data: {}
+    entity_id: humidifier.uvlazhnitel_v_detskoi
   mode: single
