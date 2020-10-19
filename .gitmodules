@@ -1,0 +1,9 @@
+[submodule ".submodules/yandex_smart_home"]
+	path = .submodules/yandex_smart_home
+	url = https://github.com/dmitry-k/yandex_smart_home.git
+[submodule ".submodules/YandexStation"]
+	path = .submodules/YandexStation
+	url = https://github.com/AlexxIT/YandexStation.git
+[submodule ".submodules/MorphNumbers"]
+	path = .submodules/MorphNumbers
+	url = https://github.com/AlexxIT/MorphNumbers.git

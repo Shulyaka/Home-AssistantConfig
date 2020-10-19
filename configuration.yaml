@@ -237,6 +237,28 @@ alexa:
       light.lumi_lumi_relay_fan:
         display_categories: FAN
 
+yandex_smart_home:
+  filter:
+    exclude_domains:
+      - input_number
+      - input_boolean
+      - automation
+      - group
+      - light
+    exclude_entities:
+      - sensor.tosr0x_temperature
+      - switch.humidifier_aux_led
+      - switch.humidifier_fan
+      - switch.humidifier_pump
+      - switch.tosr0x_1
+      - switch.tosr0x_2
+      - switch.tosr0x_3
+      - switch.tosr0x_4
+      - climate.humidifier_fan
+    include_entities:
+      - light.philips_lct003_a93fdc04_level_light_color_on_off
+      - light.lumi_lumi_relay_fan
+
 mycroft:
   host: speaker
 
@@ -278,6 +300,13 @@ media_player:
     host: speaker
 
 media_extractor:
+
+yandex_station:
+  username: !secret yandex_username
+  password: !secret yandex_password
+  tts_service_name: alice_say
+
+morph_numbers:
 
 sensor:
   - platform: rest
