@@ -21,3 +21,17 @@ sensor.input_voltage:
 sensor.humidifier_pressure_out:
   device_class: pressure
   unit_of_measurement: '%'
+number.digi_xbee3_9bb56a41_analog_output_2:
+  mode: slider
+number.digi_xbee3_f9239841_analog_output_2:
+  mode: slider
+number.digi_xbee3_1a7ea041_analog_output:
+  mode: slider
+number.digi_xbee3_1a7ea041_analog_output_2:
+  mode: slider
+number.digi_xbee3_9bb56a41_analog_output:
+  mode: slider
+number.digi_xbee3_f9239841_analog_output:
+  mode: slider
+number.humidifier_pump_speed:
+  mode: slider

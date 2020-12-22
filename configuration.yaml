@@ -25,13 +25,12 @@ homeassistant:
 logbook:
   exclude:
     entities:
-      - automation.tosr0x_request
-      - automation.tosr0x_response_temp
-      - automation.tosr0x_response_switch
+      - automation.update_tosr0x
       - input_boolean.tosr0x_1_state
       - input_boolean.tosr0x_2_state
       - input_boolean.tosr0x_3_state
       - input_boolean.tosr0x_4_state
+      - input_number.tosr0x_temp
 
 # Internal hidden variables to hold TOSR0X relay state
 input_boolean:
@@ -77,35 +76,44 @@ http:
 
 recorder:
   db_url: mysql+pymysql://@/hass_db?unix_socket=/var/run/mysql/mysql.sock&charset=utf8
+  exclude:
+    entities:
+      - automation.update_tosr0x
 
 logger:
-#  default: debug
-  default: info
+  default: debug
+#  default: info
   logs:
-#    homeassistant.components.shell_command: debug
-#    pyipp.parser: info
-#    haphilipsjs: info
-#    zeroconf: info
-#    async_upnp_client.traffic: info
-#    homeassistant.helpers.storage: info
-#    homeassistant.components.sun: info
-#    homeassistant.components.ipp: info
-#    homeassistant.components.hue: info
-#    homeassistant.components.ssdp: info
-#    homeassistant.components.history: info
-#    homeassistant.components.recorder: info
-#    homeassistant.components.websocket_api: info
-#    homeassistant.components.webhook: info
-#    homeassistant.components.mobile_app.webhook: info
-#    homeassistant.components.neato: info
-#    homeassistant.components.neato.camera: info
-#    homeassistant.components.neato.switch: info
-#    homeassistant.components.neato.vacuum: info
-#    homeassistant.components.neato.sensor: info
-#    homeassistant.components.http.auth: info
-#    homeassistant.components.http.view: info
-#    homeassistant.components.rest.sensor: info
-#    homeassistant.components.dlna_dmr.media_player: info
+    pyipp.parser: info
+    haphilipsjs: info
+    aiosqlite: info
+    zeroconf: info
+    mpd.base: info
+    async_upnp_client.traffic: info
+    homeassistant.helpers.storage: info
+    homeassistant.components.sun: info
+    homeassistant.components.ipp: info
+    homeassistant.components.hue: info
+    homeassistant.components.ssdp: info
+    homeassistant.components.history: info
+    homeassistant.components.recorder: info
+    homeassistant.components.websocket_api: info
+    homeassistant.components.webhook: info
+    homeassistant.components.mobile_app.webhook: info
+    homeassistant.components.neato: info
+    homeassistant.components.neato.camera: info
+    homeassistant.components.neato.switch: info
+    homeassistant.components.neato.vacuum: info
+    homeassistant.components.neato.sensor: info
+    homeassistant.components.http.auth: info
+    homeassistant.components.http.view: info
+    homeassistant.components.rest.sensor: info
+    homeassistant.components.dlna_dmr.media_player: info
+    homeassistant.components.shell_command: debug
+    homeassistant.components.zha.core.channels.base: debug
+    homeassistant.components.zha.core.device: debug
+    homeassistant.components.zha.number: debug
+    zigpy_xbee.zigbee.application: debug
     zigpy_xbee.uart: debug
     zigpy_xbee.api: debug
     zigpy.zcl: debug
@@ -255,9 +263,61 @@ yandex_smart_home:
       - switch.tosr0x_3
       - switch.tosr0x_4
       - climate.humidifier_fan
+      - sensor.lumi_lumi_weather_3bfcf003_temperature
+      - sensor.lumi_lumi_weather_3bfcf003_humidity
+      - sensor.lumi_lumi_sens_48945e02_temperature
+      - sensor.lumi_lumi_sens_48945e02_humidity
+      - sensor.lumi_lumi_sens_02fbebbd_1_1026
+      - sensor.lumi_lumi_sens_02fbebbd_1_1029
+      - sensor.humidifier_pressure_in
     include_entities:
       - light.philips_lct003_a93fdc04_level_light_color_on_off
       - light.lumi_lumi_relay_fan
+  entity_config:
+    humidifier.uvlazhnitel_v_spalne:
+      modes:
+        program:
+          normal:
+            - normal
+          quiet:
+            - away
+      properties:
+        - type: temperature
+          entity: sensor.lumi_lumi_weather_3bfcf003_temperature
+        - type: humidity
+          entity: sensor.lumi_lumi_weather_3bfcf003_humidity
+        - type: water_level
+          entity: sensor.humidifier_pressure_in
+    humidifier.uvlazhnitel_v_detskoi:
+      modes:
+        program:
+          normal:
+            - normal
+          quiet:
+            - away
+      properties:
+        - type: temperature
+          entity: sensor.lumi_lumi_sens_48945e02_temperature
+        - type: humidity
+          entity: sensor.lumi_lumi_sens_48945e02_humidity
+        - type: water_level
+          entity: sensor.humidifier_pressure_in
+    humidifier.uvlazhnitel_v_gostinoi:
+      modes:
+        program:
+          normal:
+            - normal
+          quiet:
+            - away
+      properties:
+        - type: temperature
+          entity: sensor.lumi_lumi_sens_02fbebbd_1_1026
+        - type: humidity
+          entity: sensor.lumi_lumi_sens_02fbebbd_1_1029
+        - type: water_level
+          entity: sensor.humidifier_pressure_in
+    light.lumi_lumi_relay_fan:
+      type: devices.types.purifier
 
 mycroft:
   host: speaker

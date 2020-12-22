@@ -1,1 +1,20 @@
-{}
+test:
+  alias: test
+  variables:
+    test_b: Failed
+    test_c: Passed
+  sequence:
+  - variables:
+      test_a: Passed
+  - choose:
+    - conditions: '{{ 1==1 }}'
+      sequence:
+      - variables:
+          test_b: Passed
+      - service: notify.persistent_notification
+        data:
+          message: test_c = {% if test_c is defined -%} {{test_c}} {%- else -%} Failed {%- endif %}
+  - service: notify.persistent_notification
+    data:
+      message: test_a = {{ test_a }}, test_b = {{ test_b }}
+  mode: single

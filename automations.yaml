@@ -28,77 +28,103 @@
       value: '{{trigger.from_state.state}}'
   mode: single
 - id: d4da33cf91214b9bac5eb89d40138f7c
-  alias: tosr0x_request
+  alias: tosr0x_update
   trigger:
   - platform: time_pattern
-    minutes: /5
+    seconds: /30
   - platform: homeassistant
     event: start
-  action:
-  - service: zha.issue_zigbee_cluster_command
-    data:
-      args: a[
-      cluster_id: 17
-      cluster_type: in
-      command: 0
-      command_type: server
-      endpoint_id: 232
-      ieee: 00:13:a2:00:41:a0:7e:1a
-  mode: queued
-  max: 10
-- id: 1005e8c7b33a4bac8bc5a19134ab67d6
-  alias: tosr0x_response_switch
-  trigger:
   - platform: event
     event_type: zha_event
     event_data:
       command: receive_data
       device_ieee: 00:13:a2:00:41:a0:7e:1a
-  condition:
-  - condition: template
-    value_template: '{{ trigger.event.data.args | length == 1 }}'
+  variables:
+    switches: '{% if trigger is defined and trigger.platform == "event" and trigger.event.event_type
+      == "zha_event" and trigger.event.data.args | length == 1 -%} {{ trigger.event.data.args.encode(''latin1'').hex()
+      | int(base=16) }} {%- elif trigger is defined and trigger.platform == "event"
+      and trigger.event.event_type == "zha_event" and trigger.event.data.args | length
+      == 3 -%} {{ trigger.event.data.args.encode(''latin1'').hex()[4:] | int(base=16)
+      }} {%- endif %}'
+    temp: '{% if trigger is defined and trigger.platform == "event" and trigger.event.event_type
+      == "zha_event" and trigger.event.data.args | length == 2 -%} {{ trigger.event.data.args.encode(''latin1'').hex()
+      | int(base=16) }} {%- elif trigger is defined and trigger.platform == "event"
+      and trigger.event.event_type == "zha_event" and trigger.event.data.args | length
+      == 3 -%} {{ trigger.event.data.args.encode(''latin1'').hex()[:4] | int(base=16)
+      }} {%- endif %}'
   action:
-  - service: '{% if trigger.event.data.args.encode(''latin1'').hex() | int(base=16)
-      | bitwise_and(2**0) %} input_boolean.turn_on {% else %} input_boolean.turn_off
-      {% endif %}'
-    data:
-      entity_id: input_boolean.tosr0x_1_state
-  - service: '{% if trigger.event.data.args.encode(''latin1'').hex() | int(base=16)
-      | bitwise_and(2**1) %} input_boolean.turn_on {% else %} input_boolean.turn_off
-      {% endif %}'
-    data:
-      entity_id: input_boolean.tosr0x_2_state
-  - service: '{% if trigger.event.data.args.encode(''latin1'').hex() | int(base=16)
-      | bitwise_and(2**2) %} input_boolean.turn_on {% else %} input_boolean.turn_off
-      {% endif %}'
-    data:
-      entity_id: input_boolean.tosr0x_3_state
-  - service: '{% if trigger.event.data.args.encode(''latin1'').hex() | int(base=16)
-      | bitwise_and(2**3) %} input_boolean.turn_on {% else %} input_boolean.turn_off
-      {% endif %}'
-    data:
-      entity_id: input_boolean.tosr0x_4_state
-  mode: queued
-  max: 10
-- id: 3d1d3ac37181489c90b2866016bb74ff
-  alias: tosr0x_response_temp
-  trigger:
-  - platform: event
-    event_type: zha_event
-    event_data:
-      command: receive_data
-      device_ieee: 00:13:a2:00:41:a0:7e:1a
-  condition:
-  - condition: template
-    value_template: '{{ trigger.event.data.args | length == 2 }}'
-  action:
-  - service: input_number.set_value
-    data:
-      value: '{% if trigger.event.data.args.encode(''latin1'').hex() | int(base=16)
-        > 32767 %} {{ trigger.event.data.args.encode(''latin1'').hex() | int(base=16)
-        / 16 - 4096 }} {% else %} {{ trigger.event.data.args.encode(''latin1'').hex()
-        | int(base=16) / 16 }} {% endif %}'
-    entity_id: input_number.tosr0x_temp
+  - choose:
+    - conditions:
+      - condition: template
+        value_template: '{{ trigger is defined and trigger.platform == "event" and
+          trigger.event.event_type == "zha_event"}}'
+      sequence:
+      - choose:
+        - conditions:
+          - condition: template
+            value_template: '{{ trigger.event.data.args | length == 1 }}'
+          sequence:
+          - variables:
+              switches: '{{ trigger.event.data.args.encode(''latin1'').hex() | int(base=16)
+                }}'
+        - conditions:
+          - condition: template
+            value_template: '{{ trigger.event.data.args | length == 2 }}'
+          sequence:
+          - variables:
+              temp: '{{ trigger.event.data.args.encode(''latin1'').hex() | int(base=16)
+                }}'
+        - conditions:
+          - condition: template
+            value_template: '{{ trigger.event.data.args | length == 3 }}'
+          sequence:
+          - variables:
+              temp: '{{ trigger.event.data.args.encode(''latin1'').hex()[:4] | int(base=16)
+                }}'
+              switches: '{{ trigger.event.data.args.encode(''latin1'').hex()[4:] |
+                int(base=16) }}'
+      - choose:
+        - conditions:
+          - condition: template
+            value_template: '{{ switches is defined and switches is integer }}'
+          sequence:
+          - service: '{% if switches | bitwise_and(2**0) %} input_boolean.turn_on
+              {% else %} input_boolean.turn_off {% endif %}'
+            data:
+              entity_id: input_boolean.tosr0x_1_state
+          - service: '{% if switches | bitwise_and(2**1) %} input_boolean.turn_on
+              {% else %} input_boolean.turn_off {% endif %}'
+            data:
+              entity_id: input_boolean.tosr0x_2_state
+          - service: '{% if switches | bitwise_and(2**2) %} input_boolean.turn_on
+              {% else %} input_boolean.turn_off {% endif %}'
+            data:
+              entity_id: input_boolean.tosr0x_3_state
+          - service: '{% if switches | bitwise_and(2**3) %} input_boolean.turn_on
+              {% else %} input_boolean.turn_off {% endif %}'
+            data:
+              entity_id: input_boolean.tosr0x_4_state
+      - choose:
+        - conditions:
+          - condition: template
+            value_template: '{{ temp is defined and temp is integer and temp != 65535
+              }}'
+          sequence:
+          - service: input_number.set_value
+            entity_id: input_number.tosr0x_temp
+            data:
+              value: '{% if temp > 32767 %} {{ temp / 16 - 4096 }} {% else %} {{ temp
+                / 16 }} {% endif %}'
+    default:
+    - service: zha.issue_zigbee_cluster_command
+      data:
+        args: a[
+        cluster_id: 17
+        cluster_type: in
+        command: 0
+        command_type: server
+        endpoint_id: 232
+        ieee: 00:13:a2:00:41:a0:7e:1a
   mode: queued
   max: 10
 - id: '1573979827206'
@@ -151,7 +177,7 @@
   trigger:
   - platform: state
     entity_id: switch.humidifier_pump
-    for: 0:02:00
+    for: 0:03:00
     to: 'on'
   - platform: state
     entity_id: group.humidifier_zones
@@ -164,11 +190,11 @@
   - service: homeassistant.turn_off
     entity_id: switch.humidifier_pump
     data: {}
-  - delay: 00:00:02
+  - delay: 00:00:03
   - service: homeassistant.turn_on
     entity_id: switch.tosr0x_4
     data: {}
-  - delay: 00:00:10
+  - delay: 00:00:15
   - service: homeassistant.turn_off
     entity_id: switch.tosr0x_1,switch.tosr0x_2,switch.tosr0x_3,switch.tosr0x_4
     data: {}
@@ -179,16 +205,21 @@
   trigger:
   - platform: state
     entity_id: switch.humidifier_pump
-    for: 0:05:00
+    for: 0:06:00
     to: 'off'
   - platform: state
     entity_id: group.humidifier_zones
     to: 'on'
+  - platform: event
+    event_type: automation_reloaded
   condition:
   - condition: state
     entity_id: group.humidifier_zones
     state: 'on'
   action:
+  - service: homeassistant.turn_off
+    data: {}
+    entity_id: switch.tosr0x_4
   - choose:
     - conditions:
       - condition: state
@@ -257,7 +288,7 @@
   description: ''
   trigger:
   - platform: time
-    at: '19:25:00'
+    at: '19:20:00'
   condition:
   - condition: state
     entity_id: humidifier.uvlazhnitel_v_detskoi,humidifier.uvlazhnitel_v_gostinoi,humidifier.uvlazhnitel_v_spalne
@@ -270,7 +301,10 @@
     data:
       value: 320
     entity_id: input_number.pump_strength
-  - delay: 0:40:00
+  - service: homeassistant.update_entity
+    data: {}
+    entity_id: number.humidifier_pump_speed
+  - delay: 0:45:00
   - service: humidifier.set_mode
     data:
       mode: away
@@ -350,6 +384,9 @@
     data:
       value: 520
     entity_id: input_number.pump_strength
+  - service: homeassistant.update_entity
+    data: {}
+    entity_id: number.humidifier_pump_speed
   - service: humidifier.set_mode
     data:
       mode: normal
@@ -357,4 +394,64 @@
   - service: humidifier.turn_on
     data: {}
     entity_id: humidifier.uvlazhnitel_v_detskoi
+  mode: single
+- id: '1604671440067'
+  alias: Humidifier fan off
+  description: ''
+  trigger:
+  - platform: state
+    entity_id: humidifier.uvlazhnitel_v_spalne,humidifier.uvlazhnitel_v_detskoi,humidifier.uvlazhnitel_v_gostinoi
+    to: 'off'
+  condition:
+  - condition: state
+    entity_id: humidifier.uvlazhnitel_v_spalne,humidifier.uvlazhnitel_v_detskoi,humidifier.uvlazhnitel_v_gostinoi
+    state: 'off'
+  action:
+  - type: turn_off
+    device_id: d62ae9c5579f4bd682a506f6a7e00c2a
+    entity_id: switch.humidifier_fan
+    domain: switch
+  mode: single
+- id: '1606381449060'
+  alias: Alisa volume down
+  description: ''
+  trigger:
+  - platform: time
+    at: '20:00'
+  condition: []
+  action:
+  - service: media_player.volume_set
+    data:
+      volume_level: 0.2
+    entity_id: media_player.yandex_station_ff98f0293c2e0ee4e18dc30d
+  mode: single
+- id: '1606381492447'
+  alias: Alisa volume up
+  description: ''
+  trigger:
+  - platform: time
+    at: '10:00'
+  condition: []
+  action:
+  - service: media_player.volume_set
+    data:
+      volume_level: 0.5
+    entity_id: media_player.yandex_station_ff98f0293c2e0ee4e18dc30d
+  mode: single
+- id: '1606666024898'
+  alias: Tag cebd1830-b810-41c6-818e-a97962bd9d1c is scanned
+  description: ''
+  trigger:
+  - platform: tag
+    tag_id: cebd1830-b810-41c6-818e-a97962bd9d1c
+  condition: []
+  action:
+  - type: toggle
+    device_id: ec863b8c8c384379a8185a51b3a8080c
+    entity_id: light.hue_color_lamp_1
+    domain: light
+  - type: toggle
+    device_id: 6f2b7025f9ff4822b12db8c779420f00
+    entity_id: light.hue_color_lamp_2
+    domain: light
   mode: single
