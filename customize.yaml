@@ -1,7 +1,6 @@
 person.denis_shulyaka:
   entity_picture: https://ru.gravatar.com/userimage/155967148/3fe9a1d49e444ba7f9a36a07980bf76a.png
-person.ksusha:
-  entity_picture: https://www.google.com/s2/u/0/photos/private/AIbEiAIAAAAhCNr3gJGwoZmBNBCDmInI6ezp8DUYnZHqmbn-6a-jATABPLS1jIJLjBQSw1sASokfL9VIpvI?sz=100
+person.ksusha: {}
 switch.hot_water:
   icon: mdi:pipe
 switch.toilet_water:
@@ -11,7 +10,7 @@ switch.cold_water:
 sensor.unk_manufacturer_unk_model_1a7ea041_210_12:
   device_class: power
   unit_of_measurement: V
-sensor.humidifier_pressure_in:
+sensor.humidifier_pressure_in_pct:
   unit_of_measurement: '%'
   device_class: pressure
 sensor.9bb56a41_input_voltage:
@@ -35,3 +34,4 @@ number.digi_xbee3_f9239841_analog_output:
   mode: slider
 number.humidifier_pump_speed:
   mode: slider
+  unit_of_measurement: pt

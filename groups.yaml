@@ -12,3 +12,22 @@ humidifier_zones:
     - input_boolean.humidifier_zone_1
     - input_boolean.humidifier_zone_2
     - input_boolean.humidifier_zone_3
+tosr0x_states_cache:
+  name: TOSR0X state cache
+  entities:
+    - input_boolean.tosr0x_1_state
+    - input_boolean.tosr0x_2_state
+    - input_boolean.tosr0x_3_state
+    - input_boolean.tosr0x_4_state
+sleep_tracking:
+  name: Sleep tracking
+  entities:
+    - input_boolean.sleep_denis
+    - input_boolean.sleep_ksenia
+    - input_boolean.sleep_daria
+all_people:
+  name: All people
+  entities:
+    - person.denis_shulyaka
+    - person.ksusha
+    - person.dasha

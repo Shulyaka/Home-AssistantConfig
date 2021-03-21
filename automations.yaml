@@ -152,6 +152,9 @@
     to: 'on'
   condition: []
   action:
+  - service: climate.turn_on
+    data: {}
+    entity_id: climate.humidifier_fan
   - service: switch.turn_on
     data:
       entity_id: switch.humidifier_fan
@@ -171,8 +174,8 @@
     data: {}
     entity_id: humidifier.uvlazhnitel_v_detskoi,humidifier.uvlazhnitel_v_gostinoi,humidifier.uvlazhnitel_v_spalne
   mode: single
-- id: pump_duty_cycle_off
-  alias: Humidifier Duty Cycle Off
+- id: pump_duty_cycle
+  alias: Humidifier Duty Cycle
   description: ''
   trigger:
   - platform: state
@@ -180,138 +183,146 @@
     for: 0:03:00
     to: 'on'
   - platform: state
-    entity_id: group.humidifier_zones
+    entity_id: switch.humidifier_pump
+    for: 0:04:00
     to: 'off'
+  - platform: state
+    entity_id: group.humidifier_zones
   - platform: state
     entity_id: humidifier.uvlazhnitel_v_spalne,humidifier.uvlazhnitel_v_gostinoi,humidifier.uvlazhnitel_v_detskoi
     to: 'off'
-  condition: []
-  action:
-  - service: homeassistant.turn_off
-    entity_id: switch.humidifier_pump
-    data: {}
-  - delay: 00:00:03
-  - service: homeassistant.turn_on
-    entity_id: switch.tosr0x_4
-    data: {}
-  - delay: 00:00:15
-  - service: homeassistant.turn_off
-    entity_id: switch.tosr0x_1,switch.tosr0x_2,switch.tosr0x_3,switch.tosr0x_4
-    data: {}
-  mode: single
-- id: pump_duty_cycle_on
-  alias: Humidifier Duty Cycle On
-  description: ''
-  trigger:
   - platform: state
-    entity_id: switch.humidifier_pump
-    for: 0:06:00
-    to: 'off'
-  - platform: state
-    entity_id: group.humidifier_zones
+    entity_id: humidifier.uvlazhnitel_v_spalne,humidifier.uvlazhnitel_v_gostinoi,humidifier.uvlazhnitel_v_detskoi
     to: 'on'
   - platform: event
     event_type: automation_reloaded
-  condition:
-  - condition: state
-    entity_id: group.humidifier_zones
-    state: 'on'
-  action:
-  - service: homeassistant.turn_off
-    data: {}
-    entity_id: switch.tosr0x_4
-  - choose:
-    - conditions:
-      - condition: state
-        entity_id: input_boolean.humidifier_zone_1
-        state: 'on'
-      sequence:
-      - service: homeassistant.turn_on
-        entity_id: switch.tosr0x_1
-        data: {}
-    default: []
-  - choose:
-    - conditions:
-      - condition: state
-        entity_id: input_boolean.humidifier_zone_2
-        state: 'on'
-      sequence:
-      - service: homeassistant.turn_on
-        entity_id: switch.tosr0x_2
-        data: {}
-    default: []
-  - choose:
-    - conditions:
-      - condition: state
-        entity_id: input_boolean.humidifier_zone_3
-        state: 'on'
-      sequence:
-      - service: homeassistant.turn_on
-        entity_id: switch.tosr0x_3
-        data: {}
-    default: []
-  - choose:
-    - conditions:
-      - condition: state
-        entity_id: group.tosr0x
-        state: 'off'
-      sequence:
-      - wait_for_trigger:
-        - platform: state
-          entity_id: group.tosr0x
-          to: 'on'
-        timeout: ''
-    default: []
-  - service: homeassistant.turn_on
-    entity_id: switch.humidifier_pump
-    data: {}
-  mode: single
-- id: '1574205383149'
-  alias: Set pump strength
-  description: ''
-  trigger:
-  - platform: state
-    entity_id: input_number.pump_strength
   condition: []
   action:
-  - service: zha.set_zigbee_cluster_attribute
-    data:
-      ieee: 00:13:a2:00:41:a0:7e:1a
-      endpoint_id: 219
-      cluster_id: 13
-      cluster_type: in
-      attribute: 85
-      value: '{{ trigger.to_state.state|int }}'
-  mode: single
+  - choose:
+    - conditions:
+      - condition: state
+        entity_id: switch.humidifier_pump
+        state: 'on'
+      sequence:
+      - condition: template
+        value_template: '{{ not (trigger is defined and trigger.platform == "state"
+          and trigger.to_state.domain in ("humidifier", "group") and trigger.to_state.state
+          == "on") }}'
+      - service: homeassistant.turn_off
+        entity_id: switch.humidifier_pump
+        data: {}
+      - delay: 00:00:03
+      - service: homeassistant.turn_on
+        entity_id: switch.tosr0x_4
+        data: {}
+      - delay: 00:00:10
+      - service: homeassistant.turn_off
+        entity_id: switch.tosr0x_1,switch.tosr0x_2,switch.tosr0x_3,switch.tosr0x_4
+        data: {}
+    default:
+    - condition: state
+      entity_id: group.humidifier_zones
+      state: 'on'
+    - condition: template
+      value_template: '{{ not (trigger is defined and trigger.platform == "state"
+        and trigger.to_state.domain == "humidifier" and trigger.to_state.state ==
+        "off") }}'
+    - service: homeassistant.turn_off
+      data: {}
+      entity_id: switch.tosr0x_4
+    - choose:
+      - conditions:
+        - condition: state
+          entity_id: input_boolean.humidifier_zone_1
+          state: 'on'
+        sequence:
+        - service: homeassistant.turn_on
+          entity_id: switch.tosr0x_1
+          data: {}
+      default: []
+    - choose:
+      - conditions:
+        - condition: state
+          entity_id: input_boolean.humidifier_zone_2
+          state: 'on'
+        sequence:
+        - service: homeassistant.turn_on
+          entity_id: switch.tosr0x_2
+          data: {}
+      default: []
+    - choose:
+      - conditions:
+        - condition: state
+          entity_id: input_boolean.humidifier_zone_3
+          state: 'on'
+        sequence:
+        - service: homeassistant.turn_on
+          entity_id: switch.tosr0x_3
+          data: {}
+      default: []
+    - choose:
+      - conditions:
+        - condition: state
+          entity_id: group.tosr0x
+          state: 'off'
+        sequence:
+        - wait_for_trigger:
+          - platform: state
+            entity_id: group.tosr0x
+            to: 'on'
+          timeout: ''
+      default: []
+    - service: homeassistant.turn_on
+      entity_id: switch.humidifier_pump
+      data: {}
+    - choose:
+      - conditions:
+        - condition: state
+          entity_id: switch.humidifier_pump
+          state: 'off'
+        sequence:
+        - wait_for_trigger:
+          - platform: state
+            entity_id: switch.humidifier_pump
+            to: 'on'
+      default: []
+  mode: queued
+  max: 10
 - id: '1574587123101'
-  alias: Humidifier sleep time
+  alias: Sleep time
   description: ''
   trigger:
   - platform: time
     at: '19:20:00'
-  condition:
-  - condition: state
-    entity_id: humidifier.uvlazhnitel_v_detskoi,humidifier.uvlazhnitel_v_gostinoi,humidifier.uvlazhnitel_v_spalne
-    state: 'on'
+  condition: []
   action:
-  - service: humidifier.turn_off
-    data: {}
-    entity_id: humidifier.uvlazhnitel_v_detskoi,humidifier.uvlazhnitel_v_gostinoi,humidifier.uvlazhnitel_v_spalne
-  - service: input_number.set_value
+  - choose:
+    - conditions:
+      - condition: or
+        conditions:
+        - condition: state
+          entity_id: humidifier.uvlazhnitel_v_detskoi
+          state: 'on'
+        - condition: state
+          entity_id: humidifier.uvlazhnitel_v_gostinoi
+          state: 'on'
+        - condition: state
+          entity_id: humidifier.uvlazhnitel_v_spalne
+          state: 'on'
+      sequence:
+      - service: humidifier.turn_off
+        data: {}
+        entity_id: humidifier.uvlazhnitel_v_detskoi,humidifier.uvlazhnitel_v_gostinoi,humidifier.uvlazhnitel_v_spalne
+      - delay: 0:45:00
+      - service: humidifier.turn_on
+        data: {}
+        entity_id: humidifier.uvlazhnitel_v_gostinoi,humidifier.uvlazhnitel_v_spalne
+    default:
+    - delay: 0:45:00
+  - service: media_player.volume_set
     data:
-      value: 320
-    entity_id: input_number.pump_strength
-  - service: homeassistant.update_entity
-    data: {}
-    entity_id: number.humidifier_pump_speed
-  - delay: 0:45:00
-  - service: humidifier.set_mode
-    data:
-      mode: away
-    entity_id: humidifier.uvlazhnitel_v_gostinoi,humidifier.uvlazhnitel_v_spalne
-  - service: humidifier.turn_on
-    data: {}
-    entity_id: humidifier.uvlazhnitel_v_gostinoi,humidifier.uvlazhnitel_v_spalne
+      volume_level: 0.2
+    entity_id: media_player.yandex_station_ff98f0293c2e0ee4e18dc30d
   mode: single
 - id: close_on_shutdown
   alias: Close on shutdown
@@ -368,32 +379,33 @@
   - service: notify.mobile_app_sm_t725
     data:
       message: Water leak detected!
+  - service: notify.telegram_114122164
+    data:
+      message: Water leak detected!
   mode: single
 - id: '1602765181559'
-  alias: Humidifier wake time
+  alias: Ksusha wake routine
   description: ''
   trigger:
   - platform: time
-    at: '10:00:00'
-  condition:
-  - condition: state
-    entity_id: humidifier.uvlazhnitel_v_gostinoi,humidifier.uvlazhnitel_v_spalne
-    state: 'on'
+    at: '10:01'
+  condition: []
   action:
-  - service: input_number.set_value
-    data:
-      value: 520
-    entity_id: input_number.pump_strength
-  - service: homeassistant.update_entity
-    data: {}
-    entity_id: number.humidifier_pump_speed
-  - service: humidifier.set_mode
-    data:
-      mode: normal
-    entity_id: humidifier.uvlazhnitel_v_gostinoi,humidifier.uvlazhnitel_v_spalne
-  - service: humidifier.turn_on
-    data: {}
-    entity_id: humidifier.uvlazhnitel_v_detskoi
+  - choose:
+    - conditions:
+      - condition: or
+        conditions:
+        - condition: state
+          entity_id: humidifier.uvlazhnitel_v_gostinoi
+          state: 'on'
+        - condition: state
+          entity_id: humidifier.uvlazhnitel_v_spalne
+          state: 'on'
+      sequence:
+      - service: humidifier.turn_on
+        data: {}
+        entity_id: humidifier.uvlazhnitel_v_detskoi
+    default: []
   mode: single
 - id: '1604671440067'
   alias: Humidifier fan off
@@ -407,36 +419,13 @@
     entity_id: humidifier.uvlazhnitel_v_spalne,humidifier.uvlazhnitel_v_detskoi,humidifier.uvlazhnitel_v_gostinoi
     state: 'off'
   action:
+  - service: climate.turn_off
+    data: {}
+    entity_id: climate.humidifier_fan
   - type: turn_off
     device_id: d62ae9c5579f4bd682a506f6a7e00c2a
     entity_id: switch.humidifier_fan
     domain: switch
-  mode: single
-- id: '1606381449060'
-  alias: Alisa volume down
-  description: ''
-  trigger:
-  - platform: time
-    at: '20:00'
-  condition: []
-  action:
-  - service: media_player.volume_set
-    data:
-      volume_level: 0.2
-    entity_id: media_player.yandex_station_ff98f0293c2e0ee4e18dc30d
-  mode: single
-- id: '1606381492447'
-  alias: Alisa volume up
-  description: ''
-  trigger:
-  - platform: time
-    at: '10:00'
-  condition: []
-  action:
-  - service: media_player.volume_set
-    data:
-      volume_level: 0.5
-    entity_id: media_player.yandex_station_ff98f0293c2e0ee4e18dc30d
   mode: single
 - id: '1606666024898'
   alias: Tag cebd1830-b810-41c6-818e-a97962bd9d1c is scanned
@@ -454,4 +443,541 @@
     device_id: 6f2b7025f9ff4822b12db8c779420f00
     entity_id: light.hue_color_lamp_2
     domain: light
+  mode: single
+- id: '1610489963666'
+  alias: youtube_dl
+  description: ''
+  trigger:
+  - platform: event
+    event_type: telegram_text
+  - platform: event
+    event_type: mobile_app.share
+  condition:
+  - condition: template
+    value_template: '{{ trigger is defined and trigger.platform == "event" and ((trigger.event.event_type
+      == "telegram_text" and trigger.event.data.text | regex_search("https://youtu.*"))
+      or (trigger.event.event_type == "mobile_app.share" and trigger.event.data.url
+      | regex_search("^https://youtu.*"))) }}'
+  variables:
+    callback: '{% if trigger.event.event_type == "telegram_text" %} telegram_{{ trigger.event.data.user_id
+      }} {% else %} mobile_app_sm_t725 {% endif %}'
+    message: '{% if trigger.event.event_type == "telegram_text" %} {{ trigger.event.data.text
+      }} {% else %} {{ trigger.event.data.url }} {% endif %}'
+  action:
+  - service: notify.{{ callback }}
+    data:
+      message: Скачиваю...
+  - service: notify.{{ callback }}
+    data:
+      message: '{{ message }}'
+  - service: shell_command.youtube_dl
+    data:
+      callback: '{{ callback }}'
+      message: '{{ message }}'
+  mode: single
+- id: '1611260806043'
+  alias: Humidifier sleep time
+  description: ''
+  trigger:
+  - platform: time
+    at: '19:55:00'
+  condition: []
+  action:
+  - service: number.set_value
+    data:
+      value: 256
+    entity_id: number.humidifier_pump_speed
+  - service: humidifier.set_mode
+    data:
+      mode: away
+    entity_id: humidifier.uvlazhnitel_v_gostinoi,humidifier.uvlazhnitel_v_spalne,humidifier.uvlazhnitel_v_detskoi
+  mode: single
+- id: '1611261033754'
+  alias: Humidifier wake time
+  description: ''
+  trigger:
+  - platform: time
+    at: '10:00:00'
+  condition: []
+  action:
+  - service: humidifier.set_mode
+    data:
+      mode: normal
+    entity_id: humidifier.uvlazhnitel_v_gostinoi,humidifier.uvlazhnitel_v_spalne,humidifier.uvlazhnitel_v_detskoi
+  - service: number.set_value
+    data:
+      value: 320
+    entity_id: number.humidifier_pump_speed
+  mode: single
+- id: '1611436271715'
+  alias: Ksusha awake tracking
+  description: ''
+  trigger:
+  - platform: state
+    entity_id: sensor.sm_g970f_sleduiushchii_budilnik
+    to: unavailable
+  - platform: state
+    entity_id: sensor.sm_g970f_rezhim_zvonka
+    to: normal
+  - platform: state
+    entity_id: sensor.sm_g970f_sensor_proidennykh_shagov
+  - type: plugged_in
+    platform: device
+    device_id: 484a3695699a615e8d4dba18da1ea929
+    entity_id: binary_sensor.sm_g970f_zariadka_ustroistva
+    domain: binary_sensor
+  - platform: state
+    entity_id: sensor.sm_g970f_obnaruzhennaia_aktivnost
+    from: still
+  condition:
+  - condition: time
+    after: 06:50
+    before: '12:00'
+  action:
+  - service: input_boolean.turn_off
+    data: {}
+    entity_id: input_boolean.sleep_ksenia
+  mode: single
+- id: '1611438816445'
+  alias: Ksusha sleep tracking
+  description: ''
+  trigger:
+  - platform: state
+    entity_id: sensor.sm_g970f_sleduiushchii_budilnik
+    from: unavailable
+    for: 00:03
+  condition:
+  - condition: not
+    conditions:
+    - condition: time
+      after: 05:00
+      before: '22:30'
+  action:
+  - service: input_boolean.turn_on
+    data: {}
+    entity_id: input_boolean.sleep_ksenia
+  mode: single
+- id: '1611440290283'
+  alias: Denis sleep tracking
+  description: ''
+  trigger:
+  - type: value
+    platform: device
+    device_id: 2f911064d0864fa08cb643dff22bdc36
+    entity_id: sensor.sm_t725_bluetooth_connection
+    domain: sensor
+    below: 1
+  condition:
+  - condition: not
+    conditions:
+    - condition: time
+      after: 05:00
+      before: '22:30'
+  action:
+  - service: input_boolean.turn_on
+    data: {}
+    entity_id: input_boolean.sleep_denis
+  mode: single
+- id: '1611441328005'
+  alias: Denis awake tracking
+  description: ''
+  trigger:
+  - platform: state
+    entity_id: sensor.sm_t725_steps_sensor
+  - type: not_plugged_in
+    platform: device
+    device_id: 2f911064d0864fa08cb643dff22bdc36
+    entity_id: binary_sensor.sm_t725_is_charging
+    domain: binary_sensor
+  - platform: state
+    entity_id: sensor.sm_t725_detected_activity
+    from: still
+  - platform: state
+    entity_id: binary_sensor.sm_t725_ustroistvo_zablokirovano
+    to: 'off'
+    for: 00:20
+  - platform: state
+    entity_id: sensor.sm_t725_bluetooth_connection
+    attribute: connected_paired_devices
+    to: '[04:5D:4B:DF:33:E3]'
+  condition:
+  - condition: time
+    after: 06:50
+    before: '13:00'
+  action:
+  - service: input_boolean.turn_off
+    data: {}
+    entity_id: input_boolean.sleep_denis
+  mode: single
+- id: '1611442347158'
+  alias: Daria awake tracking
+  description: ''
+  trigger:
+  - platform: state
+    entity_id: media_player.philips_tv
+    to: 'on'
+  - platform: state
+    entity_id: light.hue_color_candle_1,light.hue_color_candle_5,light.hue_color_candle_10,light.hue_color_ceiling_1,light.hue_color_lamp_3
+    to: 'on'
+  condition:
+  - condition: time
+    after: 07:15
+    before: '11:00'
+  action:
+  - service: input_boolean.turn_off
+    data: {}
+    entity_id: input_boolean.sleep_daria
+  mode: single
+- id: '1611442597726'
+  alias: Daria awake tracking workday
+  description: ''
+  trigger:
+  - platform: state
+    to: 'on'
+    entity_id: input_boolean.sleep_ksenia
+  condition:
+  - condition: time
+    after: 07:10
+    before: 07:35
+    weekday:
+    - mon
+    - tue
+    - wed
+    - thu
+    - fri
+  action:
+  - service: input_boolean.turn_off
+    data: {}
+    entity_id: input_boolean.sleep_daria
+  mode: single
+- id: '1611442721404'
+  alias: Daria sleep tracking
+  description: ''
+  trigger:
+  - platform: time
+    at: '20:00'
+  condition: []
+  action:
+  - service: input_boolean.turn_on
+    data: {}
+    entity_id: input_boolean.sleep_daria
+  mode: single
+- id: '1611475603975'
+  alias: Denis wake routine
+  description: ''
+  trigger:
+  - platform: state
+    entity_id: input_boolean.sleep_denis
+    to: 'off'
+  condition: []
+  action:
+  - service: media_player.volume_set
+    data:
+      volume_level: 0.5
+    entity_id: media_player.yandex_station_ff98f0293c2e0ee4e18dc30d
+  - service: notify.telegram_114122164
+    data:
+      message: Доброе утро! Вы спали {{sleep_duration_hours|format(morph='час', as_text=false)}}
+        {{sleep_duration_minutes|format(morph='минуту', as_text=false)}}
+  variables:
+    sleep_duration: '{{(trigger.to_state.last_changed - trigger.from_state.last_changed).total_seconds()}}'
+    sleep_duration_hours: '{{(sleep_duration/3600)|int}}'
+    sleep_duration_minutes: '{{(sleep_duration/60-sleep_duration_hours*60)|round}}'
+  mode: single
+- id: '1612218193244'
+  alias: Moskvenok_scan
+  description: ''
+  trigger:
+  - platform: state
+    entity_id: sensor.email
+    to: Вход в детский сад
+  - platform: state
+    entity_id: sensor.email
+    to: Выход из детского сада
+  condition: []
+  action:
+  - choose:
+    - conditions:
+      - condition: state
+        entity_id: sensor.email
+        state: Вход в детский сад
+      sequence:
+      - service: device_tracker.see
+        data:
+          dev_id: moskvenok
+          location_name: Сад
+          source_type: bluetooth_le
+    default:
+    - service: device_tracker.see
+      data:
+        dev_id: parents
+        location_name: '{{ states("person.ksusha") }}'
+    - service: device_tracker.see
+      data:
+        dev_id: moskvenok
+        location_name: not_home
+        source_type: bluetooth_le
+  mode: queued
+  max: 10
+- id: '1612291379009'
+  alias: Dasha parents tracking
+  description: Since Dasha has no active device trackers, we use the parent's position
+  trigger:
+  - platform: state
+    entity_id: person.ksusha
+  condition:
+  - condition: state
+    entity_id: device_tracker.moskvenok
+    state: not_home
+  action:
+  - service: device_tracker.see
+    data:
+      dev_id: parents
+      location_name: '{{ trigger.to_state.state }}'
+  mode: single
+- id: '1612638418194'
+  alias: Storeroom Light
+  description: ''
+  trigger:
+  - device_id: d41addb2e3f4464f8c977131e84b0b4f
+    domain: zha
+    platform: device
+    type: remote_button_short_press
+    subtype: remote_button_short_press
+  condition: []
+  action:
+  - type: toggle
+    device_id: d69bbd276fbb41be9d7072e227a348ab
+    entity_id: light.lumi_lumi_relay_c2acn01_2321e803_2
+    domain: light
+  mode: queued
+  max: 10
+- id: '1612906113281'
+  alias: Bathroom lamp 1
+  description: ''
+  trigger:
+  - type: opened
+    platform: device
+    device_id: 0c0d522ab2f3a087faa4e9b6acc1a9a5
+    entity_id: binary_sensor.lumi_lumi_sensor_magnet_aq2_6b2b4205_on_off
+    domain: binary_sensor
+  - type: not_opened
+    platform: device
+    device_id: 0c0d522ab2f3a087faa4e9b6acc1a9a5
+    entity_id: binary_sensor.lumi_lumi_sensor_magnet_aq2_6b2b4205_on_off
+    domain: binary_sensor
+  condition: []
+  action:
+  - choose:
+    - conditions:
+      - condition: template
+        value_template: '{{trigger.to_state.state == "off"}}'
+      sequence:
+      - service: light.turn_on
+        data:
+          transition: 0
+          brightness_pct: 90
+        entity_id: light.hue_color_lamp_1
+    default:
+    - service: light.turn_off
+      data:
+        transition: 0
+      entity_id: light.hue_color_lamp_1
+  mode: queued
+  max: 10
+- id: '1612906551865'
+  alias: Bathroom lamp 2
+  description: ''
+  trigger:
+  - type: opened
+    platform: device
+    device_id: 4396709177f65d8d9a7c951b2ff22555
+    entity_id: binary_sensor.lumi_lumi_sensor_magnet_aq2_c4702205_on_off
+    domain: binary_sensor
+  - type: not_opened
+    platform: device
+    device_id: 4396709177f65d8d9a7c951b2ff22555
+    entity_id: binary_sensor.lumi_lumi_sensor_magnet_aq2_c4702205_on_off
+    domain: binary_sensor
+  condition: []
+  action:
+  - choose:
+    - conditions:
+      - condition: template
+        value_template: '{{trigger.to_state.state == "off"}}'
+      sequence:
+      - service: light.turn_on
+        data:
+          transition: 0
+          brightness_pct: 90
+        entity_id: light.hue_color_lamp_2
+    default:
+    - service: light.turn_off
+      data:
+        transition: 0
+      entity_id: light.hue_color_lamp_2
+  mode: queued
+  max: 10
+- id: '1612906999318'
+  alias: Bathroom fan
+  description: ''
+  trigger:
+  - platform: homeassistant
+    event: start
+  - platform: state
+    entity_id: sensor.lumi_lumi_sens_02029350_1_1026,sensor.lumi_lumi_sens_02029350_1_1029
+  - platform: device
+    type: turned_on
+    device_id: 289346234dfe8f0cbce76be920f36854
+    entity_id: light.lumi_lumi_relay_fan
+    domain: light
+    for:
+      hours: 0
+      minutes: 15
+      seconds: 0
+  condition: []
+  action:
+  - choose:
+    - conditions:
+      - condition: template
+        value_template: '{{ states("sensor.lumi_lumi_sens_02029350_1_1029")|float
+          - states("sensor.lumi_lumi_sens_02fbebbd_1_1029")|float > 2 or states("sensor.lumi_lumi_sens_02029350_1_1026")|float
+          - states("sensor.lumi_lumi_sens_02fbebbd_1_1026")|float > 2}}'
+      sequence:
+      - type: turn_on
+        device_id: 289346234dfe8f0cbce76be920f36854
+        entity_id: light.lumi_lumi_relay_fan
+        domain: light
+    default:
+    - condition: device
+      type: is_on
+      device_id: 289346234dfe8f0cbce76be920f36854
+      entity_id: light.lumi_lumi_relay_fan
+      domain: light
+      for:
+        hours: 0
+        minutes: 5
+        seconds: 0
+    - type: turn_off
+      device_id: 289346234dfe8f0cbce76be920f36854
+      entity_id: light.lumi_lumi_relay_fan
+      domain: light
+  mode: single
+- id: '1613076660468'
+  alias: Exhaust_light
+  description: ''
+  trigger:
+  - device_id: 93683cc8ed7eec6ef5a89aacbc14c5f7
+    domain: zha
+    platform: device
+    type: remote_button_short_press
+    subtype: remote_button_short_press
+  condition: []
+  action:
+  - service: light.toggle
+    data:
+      transition: 0
+      brightness_pct: 50
+    entity_id: light.philips_lct003_a93fdc04_level_light_color_on_off,light.hue_color_spot_1
+  mode: queued
+  max: 10
+- id: '1613344626221'
+  alias: Bathroom fan 2
+  description: ''
+  trigger:
+  - platform: device
+    type: turned_on
+    device_id: ec863b8c8c384379a8185a51b3a8080c
+    entity_id: light.hue_color_lamp_1
+    domain: light
+  - platform: device
+    type: turned_on
+    device_id: 6f2b7025f9ff4822b12db8c779420f00
+    entity_id: light.hue_color_lamp_2
+    domain: light
+  - type: opened
+    platform: device
+    device_id: 88cf7cb09ea74676a1afbca9c0bb8aa6
+    entity_id: binary_sensor.lumi_lumi_sensor_magnet_aq2_033b73a9_1_6
+    domain: binary_sensor
+  - type: not_opened
+    platform: device
+    device_id: 88cf7cb09ea74676a1afbca9c0bb8aa6
+    entity_id: binary_sensor.lumi_lumi_sensor_magnet_aq2_033b73a9_1_6
+    domain: binary_sensor
+  condition: []
+  action:
+  - type: turn_on
+    device_id: 289346234dfe8f0cbce76be920f36854
+    entity_id: light.lumi_lumi_relay_fan
+    domain: light
+  mode: single
+- id: '1613604396234'
+  alias: Ksusha bedtime routine
+  description: ''
+  trigger:
+  - platform: state
+    entity_id: input_boolean.sleep_ksenia
+    to: 'on'
+  condition: []
+  action:
+  - choose:
+    - conditions:
+      - condition: device
+        type: is_on
+        device_id: 32abff1439d940f9951e2427e0cdbeee
+        entity_id: light.hue_color_lamp_3
+        domain: light
+      sequence:
+      - service: light.turn_on
+        data:
+          brightness_pct: 50
+          transition: 5
+        entity_id: light.hue_color_lamp_3
+    default: []
+  mode: single
+- id: '1615134996785'
+  alias: Humidifier off when no one home
+  description: ''
+  trigger:
+  - platform: state
+    entity_id: group.all_people
+    to: not_home
+  condition: []
+  action:
+  - service: scene.create
+    data:
+      scene_id: humidifier_everyone_out
+      snapshot_entities:
+      - humidifier.uvlazhnitel_v_spalne
+      - humidifier.uvlazhnitel_v_gostinoi
+      - humidifier.uvlazhnitel_v_detskoi
+  - service: homeassistant.turn_off
+    data: {}
+    entity_id: humidifier.uvlazhnitel_v_spalne,humidifier.uvlazhnitel_v_gostinoi,humidifier.uvlazhnitel_v_detskoi
+  mode: single
+- id: '1615135156848'
+  alias: Humidifier back on when someone home
+  description: ''
+  trigger:
+  - platform: state
+    entity_id: group.all_people
+    to: home
+  condition: []
+  action:
+  - scene: scene.humidifier_everyone_out
+  mode: single
+- id: '1615135486424'
+  alias: Children room humidity alert
+  description: ''
+  trigger:
+  - platform: numeric_state
+    entity_id: sensor.lumi_lumi_sens_48945e02_humidity
+    below: '45'
+    for: 00:05
+  condition: []
+  action:
+  - service: notify.telegram_114122164
+    data:
+      message: Влажность в детской понизилась
   mode: single

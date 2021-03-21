@@ -7,3 +7,12 @@
 [submodule ".submodules/MorphNumbers"]
 	path = .submodules/MorphNumbers
 	url = https://github.com/AlexxIT/MorphNumbers.git
+[submodule ".submodules/adaptive-lighting"]
+	path = .submodules/adaptive-lighting
+	url = https://github.com/basnijholt/adaptive-lighting.git
+[submodule ".submodules/fasthue"]
+	path = .submodules/fasthue
+	url = https://github.com/azogue/fasthue.git
+[submodule ".submodules/ytube_music_player"]
+	path = .submodules/ytube_music_player
+	url = https://github.com/KoljaWindeler/ytube_music_player.git
