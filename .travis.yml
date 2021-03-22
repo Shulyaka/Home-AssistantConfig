@@ -7,7 +7,8 @@ install:
 before_script:
   - mv travis_secrets.yaml secrets.yaml
   - mv travis_service_account.json service_account.json
-  - mkdir -p /usr/share/nas/video /usr/share/nas/photo /usr/share/nas/music
+  - mkdir -p /tmp/video /tmp/photo /tmp/music
+  - sed -e 's%usr/share/nas%tmp%g' -i configuration.yaml
   - hass --version
 script:
   - hass -c . --script check_config
