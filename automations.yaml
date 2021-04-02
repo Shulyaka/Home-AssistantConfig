@@ -210,25 +210,24 @@
           == "on") }}'
       - service: homeassistant.turn_off
         entity_id: switch.humidifier_pump
-        data: {}
       - delay: 00:00:03
       - service: homeassistant.turn_on
         entity_id: switch.tosr0x_4
-        data: {}
       - delay: 00:00:10
       - service: homeassistant.turn_off
         entity_id: switch.tosr0x_1,switch.tosr0x_2,switch.tosr0x_3,switch.tosr0x_4
-        data: {}
     default:
     - condition: state
       entity_id: group.humidifier_zones
+      state: 'on'
+    - condition: state
+      entity_id: humidifier.uvlazhnitel_v_gostinoi
       state: 'on'
     - condition: template
       value_template: '{{ not (trigger is defined and trigger.platform == "state"
         and trigger.to_state.domain == "humidifier" and trigger.to_state.state ==
         "off") }}'
     - service: homeassistant.turn_off
-      data: {}
       entity_id: switch.tosr0x_4
     - choose:
       - conditions:
@@ -238,7 +237,6 @@
         sequence:
         - service: homeassistant.turn_on
           entity_id: switch.tosr0x_1
-          data: {}
       default: []
     - choose:
       - conditions:
@@ -248,7 +246,6 @@
         sequence:
         - service: homeassistant.turn_on
           entity_id: switch.tosr0x_2
-          data: {}
       default: []
     - choose:
       - conditions:
@@ -258,8 +255,10 @@
         sequence:
         - service: homeassistant.turn_on
           entity_id: switch.tosr0x_3
-          data: {}
-      default: []
+      default:
+      - service: homeassistant.turn_on
+        target:
+          entity_id: switch.tosr0x_3
     - choose:
       - conditions:
         - condition: state
@@ -274,7 +273,6 @@
       default: []
     - service: homeassistant.turn_on
       entity_id: switch.humidifier_pump
-      data: {}
     - choose:
       - conditions:
         - condition: state
