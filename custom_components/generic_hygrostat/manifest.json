@@ -7,5 +7,6 @@
     "switch"
   ],
   "codeowners": ["@Shulyaka"],
+  "version": "2021.06.00",
   "quality_scale": "internal"
 }
