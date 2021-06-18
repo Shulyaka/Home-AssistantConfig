@@ -9,6 +9,7 @@ before_script:
   - mv travis_service_account.json service_account.json
   - mkdir -p /tmp/video /tmp/photo /tmp/music
   - sed -e 's%usr/share/nas%tmp%g' -i configuration.yaml
+  - sed -e 's%/home/homeassistant/homeassistant/.*%/dev/zero%g' -i configuration.yaml
   - hass --version
 script:
   - hass -c . --script check_config
