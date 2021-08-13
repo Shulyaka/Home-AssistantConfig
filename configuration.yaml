@@ -681,3 +681,10 @@ hue:
 #      - light.hue_color_candle_6
 #      - light.hue_color_candle_7
 #      - light.hue_color_candle_8
+
+mosportal:
+  username: !secret mosportal_login
+  password: !secret mosportal_passwd
+  flats:
+    - flat: Home
+      paycode: !secret mosportal_paycode

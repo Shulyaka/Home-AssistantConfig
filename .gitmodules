@@ -16,3 +16,6 @@
 [submodule ".submodules/ytube_music_player"]
 	path = .submodules/ytube_music_player
 	url = https://github.com/KoljaWindeler/ytube_music_player.git
+[submodule ".submodules/ha_mosportal"]
+	path = .submodules/ha_mosportal
+	url = https://github.com/kkuryshev/ha_mosportal.git
