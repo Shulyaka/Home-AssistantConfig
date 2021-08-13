@@ -686,5 +686,5 @@ mosportal:
   username: !secret mosportal_login
   password: !secret mosportal_passwd
   flats:
-    - flat: Home
+    - flat: !secret mosportal_flat
       paycode: !secret mosportal_paycode
