@@ -290,6 +290,10 @@ yandex_smart_home:
     include_entities:
       - light.philips_lct003_a93fdc04_level_light_color_on_off
       - light.lumi_lumi_relay_fan
+  notifier:
+    - oauth_token: !secret yandex_smart_home_oauth_token
+      skill_id: !secret yandex_smart_home_skill_id
+      user_id: 2adbd618c4f44e28ae091db107c59870
   entity_config:
     humidifier.uvlazhnitel_v_spalne:
       modes:
@@ -369,7 +373,6 @@ notify:
 
 shell_command:
   hassd_update: 'ssh shulyaka.org.ru /usr/lib/hassd/hassd_update.sh'
-  #hass_upgrade: ash -c "nohup /srv/homeassistant/upgrade.sh restart 0<&- &>/dev/null &"
   hass_upgrade: ash -c "nohup /srv/homeassistant/upgrade.sh restart 0<&- &>/tmp/upgrade.log &"
   youtube_dl: 'ssh ananas /usr/local/bin/youtube_dl.sh -d {{ callback }} {{ message }}'
 
