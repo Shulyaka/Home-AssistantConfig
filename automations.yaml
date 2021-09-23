@@ -442,9 +442,6 @@
   - service: notify.{{ callback }}
     data:
       message: Скачиваю...
-  - service: notify.{{ callback }}
-    data:
-      message: '{{ message }}'
   - service: shell_command.youtube_dl
     data:
       callback: '{{ callback }}'

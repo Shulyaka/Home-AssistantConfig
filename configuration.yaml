@@ -368,8 +368,8 @@ notify:
     chat_id: 1560910091
 
 shell_command:
-  hassd_update: /usr/lib/hassd/hassd_update.sh
-  hass_upgrade: bash -c "nohup /home/homeassistant/upgrade.sh restart 0<&- &>/dev/null &"
+  hassd_update: 'ssh shulyaka.org.ru /usr/lib/hassd/hassd_update.sh'
+  hass_upgrade: bash -c "nohup /srv/homeassistant/upgrade.sh restart 0<&- &>/dev/null &"
   youtube_dl: 'ssh ananas /usr/local/bin/youtube_dl.sh -d {{ callback }} {{ message }}'
 
 zha:
