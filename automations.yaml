@@ -210,10 +210,18 @@
           == "on") }}'
       - service: homeassistant.turn_off
         entity_id: switch.humidifier_pump
-      - delay: 00:00:03
+      - delay:
+          hours: 0
+          minutes: 0
+          seconds: 3
+          milliseconds: 0
       - service: homeassistant.turn_on
         entity_id: switch.tosr0x_4
-      - delay: 00:00:10
+      - delay:
+          hours: 0
+          minutes: 0
+          seconds: 5
+          milliseconds: 0
       - service: homeassistant.turn_off
         entity_id: switch.tosr0x_1,switch.tosr0x_2,switch.tosr0x_3,switch.tosr0x_4
     default:
