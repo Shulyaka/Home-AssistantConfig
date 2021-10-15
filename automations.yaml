@@ -304,13 +304,24 @@
   - condition: state
     entity_id: group.all_people
     state: home
+  - condition: state
+    entity_id: binary_sensor.lumi_lumi_sensor_wleak_aq1_035acf68_1_1280
+    state: 'off'
   action:
   - service: humidifier.turn_off
-    data:
-      entity_id: humidifier.uvlazhnitel_v_detskoi,humidifier.uvlazhnitel_v_gostinoi,humidifier.uvlazhnitel_v_spalne
+    data: {}
+    target:
+      entity_id:
+      - humidifier.uvlazhnitel_v_detskoi
+      - humidifier.uvlazhnitel_v_gostinoi
+      - humidifier.uvlazhnitel_v_spalne
   - delay: 0:45:00
   - service: humidifier.turn_on
-    entity_id: humidifier.uvlazhnitel_v_gostinoi,humidifier.uvlazhnitel_v_spalne
+    data: {}
+    target:
+      entity_id:
+      - humidifier.uvlazhnitel_v_gostinoi
+      - humidifier.uvlazhnitel_v_spalne
   mode: single
 - id: close_on_shutdown
   alias: Close on shutdown
@@ -362,8 +373,12 @@
   condition: []
   action:
   - service: homeassistant.turn_off
-    entity_id: humidifier.uvlazhnitel_zone_1,humidifier.uvlazhnitel_zone_2,humidifier.uvlazhnitel_zone_3
     data: {}
+    target:
+      entity_id:
+      - humidifier.uvlazhnitel_v_detskoi
+      - humidifier.uvlazhnitel_v_gostinoi
+      - humidifier.uvlazhnitel_v_spalne
   - service: notify.mobile_app_sm_t725
     data:
       message: Water leak detected!
