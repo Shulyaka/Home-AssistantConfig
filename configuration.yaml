@@ -407,6 +407,51 @@ yandex_station:
 
 morph_numbers:
 
+template:
+  - sensor:
+    - name: "{{state_attr('sensor.wcounter', 'counters')[0].name.capitalize()}} counter"
+      unique_id: watercounter_0
+      unit_of_measurement: 'm³'
+      icon: mdi:speedometer
+      state: "{{'%.3f'|format(state_attr('sensor.wcounter', 'counters')[0].value/1000)}}"
+      attributes:
+        serial: "{{state_attr('sensor.wcounter', 'counters')[0].serial}}"
+        state: "{{'%d%%'|format(state_attr('sensor.wcounter', 'counters')[0].state*100/15)}}"
+        lastaction: "{{state_attr('sensor.wcounter', 'counters')[0].lastaction}}"
+        name: "{{state_attr('sensor.wcounter', 'counters')[0].name}}"
+    - name: "{{state_attr('sensor.wcounter', 'counters')[1].name.capitalize()}} counter"
+      unique_id: watercounter_1
+      unit_of_measurement: 'm³'
+      icon: mdi:speedometer
+      state: "{{'%.3f'|format(state_attr('sensor.wcounter', 'counters')[1].value/1000)}}"
+      attributes:
+        serial: "{{state_attr('sensor.wcounter', 'counters')[1].serial}}"
+        state: "{{'%d%%'|format(state_attr('sensor.wcounter', 'counters')[1].state*100/15)}}"
+        lastaction: "{{state_attr('sensor.wcounter', 'counters')[1].lastaction}}"
+        name: "{{state_attr('sensor.wcounter', 'counters')[1].name}}"
+    - name: "{{state_attr('sensor.wcounter', 'counters')[2].name.capitalize()}} counter"
+      unique_id: watercounter_2
+      unit_of_measurement: 'm³'
+      icon: mdi:speedometer
+      state: "{{'%.3f'|format(state_attr('sensor.wcounter', 'counters')[2].value/1000)}}"
+      attributes:
+        serial: "{{state_attr('sensor.wcounter', 'counters')[2].serial}}"
+        state: "{{'%d%%'|format(state_attr('sensor.wcounter', 'counters')[2].state*100/15)}}"
+        lastaction: "{{state_attr('sensor.wcounter', 'counters')[2].lastaction}}"
+        name: "{{state_attr('sensor.wcounter', 'counters')[2].name}}"
+    - name: TOSR0X-T Temperature
+      unique_id: tosr0x_temperature0
+      state: "{{ states('input_number.tosr0x_temp') }}"
+      device_class: temperature
+      unit_of_measurement: '°C'
+    - name: Humidifier Pressure In
+      unique_id: humidifier_pressure_in_bar
+      availability: "{{ not is_state('sensor.humidifier_pressure_in_pct', 'unavailable') }}"
+      state: "{{ ((float(states('sensor.humidifier_pressure_in_pct')) * float(states('sensor.input_voltage')) * 8 - 400) / 300) | round(2)}}"
+#      state: "{{ ((float(states('sensor.humidifier_pressure_in_pct')) * 3.3 * 8 - 400) / 300) | round(2)}}"
+      device_class: pressure
+      unit_of_measurement: 'bar'
+
 sensor:
   - platform: rest
     resource: http://watercounter.atlantis/cgi-bin/wcounter.sh
@@ -414,59 +459,6 @@ sensor:
     value_template: 'Available'
     device_class: signal_strength
     json_attributes: counters
-  - platform: template
-    sensors:
-      counter_0:
-        friendly_name_template: "{{state_attr('sensor.wcounter', 'counters')[0].name.capitalize()}} counter"
-        unique_id: watercounter_0
-        unit_of_measurement: 'm³'
-        icon_template: mdi:speedometer
-        value_template: "{{'%.3f'|format(state_attr('sensor.wcounter', 'counters')[0].value/1000)}}"
-        attribute_templates:
-          serial: "{{state_attr('sensor.wcounter', 'counters')[0].serial}}"
-          state: "{{'%d%%'|format(state_attr('sensor.wcounter', 'counters')[0].state*100/15)}}"
-          lastaction: "{{state_attr('sensor.wcounter', 'counters')[0].lastaction}}"
-          name: "{{state_attr('sensor.wcounter', 'counters')[0].name}}"
-      counter_1:
-        friendly_name_template: "{{state_attr('sensor.wcounter', 'counters')[1].name.capitalize()}} counter"
-        unique_id: watercounter_1
-        unit_of_measurement: 'm³'
-        icon_template: mdi:speedometer
-        value_template: "{{'%.3f'|format(state_attr('sensor.wcounter', 'counters')[1].value/1000)}}"
-        attribute_templates:
-          serial: "{{state_attr('sensor.wcounter', 'counters')[1].serial}}"
-          state: "{{'%d%%'|format(state_attr('sensor.wcounter', 'counters')[1].state*100/15)}}"
-          lastaction: "{{state_attr('sensor.wcounter', 'counters')[1].lastaction}}"
-          name: "{{state_attr('sensor.wcounter', 'counters')[1].name}}"
-      counter_2:
-        friendly_name_template: "{{state_attr('sensor.wcounter', 'counters')[2].name.capitalize()}} counter"
-        unique_id: watercounter_2
-        unit_of_measurement: 'm³'
-        icon_template: mdi:speedometer
-        value_template: "{{'%.3f'|format(state_attr('sensor.wcounter', 'counters')[2].value/1000)}}"
-        attribute_templates:
-          serial: "{{state_attr('sensor.wcounter', 'counters')[2].serial}}"
-          state: "{{'%d%%'|format(state_attr('sensor.wcounter', 'counters')[2].state*100/15)}}"
-          lastaction: "{{state_attr('sensor.wcounter', 'counters')[2].lastaction}}"
-          name: "{{state_attr('sensor.wcounter', 'counters')[2].name}}"
-  - platform: template
-    sensors:
-      tosr0x_temperature:
-        friendly_name: TOSR0X-T Temperature
-        unique_id: tosr0x_temperature0
-        value_template: "{{ states('input_number.tosr0x_temp') }}"
-        device_class: temperature
-        unit_of_measurement: '°C'
-  - platform: template
-    sensors:
-      humidifier_pressure_in:
-        friendly_name: Humidifier Pressure In
-        unique_id: humidifier_pressure_in_bar
-        availability_template: "{{ not is_state('sensor.humidifier_pressure_in_pct', 'unavailable') }}"
-        value_template: "{{ ((float(states('sensor.humidifier_pressure_in_pct')) * float(states('sensor.input_voltage')) * 8 - 400) / 300) | round(2)}}"
-#        value_template: "{{ ((float(states('sensor.humidifier_pressure_in_pct')) * 3.3 * 8 - 400) / 300) | round(2)}}"
-        device_class: pressure
-        unit_of_measurement: 'bar'
   - platform: imap_email_content
     name: Email
     server: shulyaka.org.ru
