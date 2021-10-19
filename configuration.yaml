@@ -451,6 +451,19 @@ template:
 #      state: "{{ ((float(states('sensor.humidifier_pressure_in_pct')) * 3.3 * 8 - 400) / 300) | round(2)}}"
       device_class: pressure
       unit_of_measurement: 'bar'
+  - trigger:
+    - platform: event
+      event_type: zha_event
+      event_data:
+        device_ieee: 00:13:a2:00:41:a0:7e:1a
+        command: tp_command_response
+    sensor:
+      - name: "Humidifier Internal Temperature"
+        unique_id: humidifier_internal_temperature
+        state: '{{ trigger.event.data.args }}'
+        unit_of_measurement: "°C"
+        device_class: temperature
+        state_class: measurement
 
 sensor:
   - platform: rest

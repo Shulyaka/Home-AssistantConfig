@@ -125,6 +125,15 @@
         command_type: server
         endpoint_id: 232
         ieee: 00:13:a2:00:41:a0:7e:1a
+    - service: zha.issue_zigbee_cluster_command
+      data:
+        ieee: 00:13:a2:00:41:a0:7e:1a
+        endpoint_id: 230
+        command: 0x43
+        command_type: server
+        cluster_type: out
+        cluster_id: 33
+
   mode: queued
   max: 10
 - id: '1573979827206'
