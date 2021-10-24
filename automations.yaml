@@ -186,97 +186,140 @@
   alias: Humidifier Duty Cycle
   description: ''
   trigger:
-  - platform: state
+  - id: "pump_on_time_expired"
+    platform: state
     entity_id: switch.humidifier_pump
     for: 0:03:00
     to: 'on'
-  - platform: state
+  - id: "pump_off_time_expired"
+    platform: state
     entity_id: switch.humidifier_pump
     for: 0:04:00
     to: 'off'
-  - platform: state
+  - id: "humidifier_zones_changed"
+    platform: state
     entity_id: group.humidifier_zones
-  - platform: state
+  - id: "humidifier_turned_off"
+    platform: state
     entity_id: humidifier.uvlazhnitel_v_spalne,humidifier.uvlazhnitel_v_gostinoi,humidifier.uvlazhnitel_v_detskoi
     to: 'off'
-  - platform: state
+  - id: "humidifier_turned_on"
+    platform: state
     entity_id: humidifier.uvlazhnitel_v_spalne,humidifier.uvlazhnitel_v_gostinoi,humidifier.uvlazhnitel_v_detskoi
     to: 'on'
-  - platform: event
+  - id: "automation_reloaded"
+    platform: event
     event_type: automation_reloaded
   condition: []
   action:
-  - choose:
-    - conditions:
+  - alias: "Check if the current phase is on or off and switch the phase if needed"
+    choose:
+    - alias: "Pump and all valves are off, consider the 'off' phase of the duty cycle"
+      conditions:
       - condition: state
         entity_id:
         - switch.humidifier_pump
         - group.tosr0x
         state: 'off'
       sequence:
-      - condition: state
+      - alias: "Check if more humidity is needed"
+        condition: state
         entity_id: group.humidifier_zones
         state: 'on'
-      - condition: state
+      - alias: "Only continue if the living room humidifier is on. This is a temporary workaround"
+        condition: state
         entity_id: humidifier.uvlazhnitel_v_gostinoi
         state: 'on'
-      - condition: template
+      - alias: "Do not switch on when a humidifier is being switched off"
+        condition: template
         value_template: '{{ not (trigger is defined and trigger.platform == "state"
           and trigger.to_state.domain == "humidifier" and trigger.to_state.state ==
           "off") }}'
-      - service: homeassistant.turn_off
+      - alias: "Ensure that preassure dropping valve is off"
+        service: homeassistant.turn_off
         entity_id: switch.tosr0x_4
-      - service: homeassistant.turn_{{ states('input_boolean.humidifier_zone_1') }}
-        entity_id: switch.tosr0x_1
-      - service: homeassistant.turn_{{ states('input_boolean.humidifier_zone_2') }}
-        entity_id: switch.tosr0x_2
-      - service: homeassistant.turn_{{ states('input_boolean.humidifier_zone_3') }}
-        entity_id: switch.tosr0x_3
-      - choose:
+      - alias: "Check if valve changes applied"
+        choose:
         - conditions:
-          - condition: state
+          - alias: "Wait till valve changes applied"
+            condition: state
+            entity_id: switch.tosr0x_4
+            state: 'on'
+          sequence:
+          - alias: "Wait for valve 4 state to be off"
+            wait_for_trigger:
+            - platform: state
+              entity_id: switch.tosr0x_4
+              to: 'off'
+            timeout: ''
+        default: []
+      - alias: "Set correct state for valve 1"
+        service: homeassistant.turn_{{ states('input_boolean.humidifier_zone_1') }}
+        entity_id: switch.tosr0x_1
+      - alias: "Set correct state for valve 2"
+        service: homeassistant.turn_{{ states('input_boolean.humidifier_zone_2') }}
+        entity_id: switch.tosr0x_2
+      - alias: "Set correct state for valve 3"
+        service: homeassistant.turn_{{ states('input_boolean.humidifier_zone_3') }}
+        entity_id: switch.tosr0x_3
+      - alias: "Check if valve changes applied"
+        choose:
+        - conditions:
+          - alias: "Wait till valve changes applied"
+            condition: state
             entity_id: group.tosr0x
             state: 'off'
           sequence:
-          - wait_for_trigger:
+          - alias: "Wait for at least one valve to switch on"
+            wait_for_trigger:
             - platform: state
               entity_id: group.tosr0x
               to: 'on'
             timeout: ''
         default: []
-      - service: homeassistant.turn_on
+      - alias: "Turn on the pump"
+        service: homeassistant.turn_on
         entity_id: switch.humidifier_pump
-      - choose:
+      - alias: "Check if pump turned on"
+        choose:
         - conditions:
-          - condition: state
+          - alias: "Wait till the pump switch changes applied"
+            condition: state
             entity_id: switch.humidifier_pump
             state: 'off'
           sequence:
-          - wait_for_trigger:
+          - alias: "Wait for the pump state"
+            wait_for_trigger:
             - platform: state
               entity_id: switch.humidifier_pump
               to: 'on'
         default: []
     default:
-    - condition: template
+    - alias: "Do not switch off when a humidifier is being switched on"
+      condition: template
       value_template: '{{ not (trigger is defined and trigger.platform == "state"
         and trigger.to_state.domain in ("humidifier", "group") and trigger.to_state.state
         == "on") }}'
-    - service: homeassistant.turn_off
+    - alias: "Turn off the pump"
+      service: homeassistant.turn_off
       entity_id: switch.humidifier_pump
-    - delay:
+    - alias: "Wait till preassure drops a bit"
+      delay:
         hours: 0
         minutes: 0
         seconds: 3
         milliseconds: 0
-    - service: homeassistant.turn_on
+    - alias: "Drop the remaining preassure"
+      service: homeassistant.turn_on
       entity_id: switch.tosr0x_4
-    - delay:
+    - alias: "Wait a little longer to ensure that no preassure left"
+      delay:
         hours: 0
         minutes: 0
         seconds: 7
         milliseconds: 0
-    - service: homeassistant.turn_off
+    - alias: "Close all valves"
+      service: homeassistant.turn_off
       data: {}
       target:
         entity_id:
