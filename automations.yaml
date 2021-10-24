@@ -53,70 +53,93 @@
       == 3 -%} {{ trigger.event.data.args.encode(''latin1'').hex()[:4] | int(base=16)
       }} {%- endif %}'
   action:
-  - choose:
-    - conditions:
-      - condition: template
+  - alias: "Check run option: request or response"
+    choose:
+    - alias: "Response"
+      conditions:
+      - alias: "trigger event is zha_event"
+        condition: template
         value_template: '{{ trigger is defined and trigger.platform == "event" and
           trigger.event.event_type == "zha_event"}}'
       sequence:
-      - choose:
-        - conditions:
-          - condition: template
+      - alias: "Check the data received"
+        choose:
+        - alias: "1 byte (switches status) received"
+          conditions:
+          - alias: "arg length is 1"
+            condition: template
             value_template: '{{ trigger.event.data.args | length == 1 }}'
           sequence:
-          - variables:
+          - alias: "Read switch states"
+            variables:
               switches: '{{ trigger.event.data.args.encode(''latin1'').hex() | int(base=16)
                 }}'
-        - conditions:
-          - condition: template
+        - alias: "2 bytes (temperature) received"
+          conditions:
+          - alias: "arg length is 2"
+            condition: template
             value_template: '{{ trigger.event.data.args | length == 2 }}'
           sequence:
-          - variables:
+          - alias: "Read temperature"
+            variables:
               temp: '{{ trigger.event.data.args.encode(''latin1'').hex() | int(base=16)
                 }}'
-        - conditions:
-          - condition: template
+        - alias: "3 bytes (temperature + switches status) received"
+          conditions:
+          - alias: "arg length is 3"
+            condition: template
             value_template: '{{ trigger.event.data.args | length == 3 }}'
           sequence:
-          - variables:
+          - alias: "Read temperature and switch states"
+            variables:
               temp: '{{ trigger.event.data.args.encode(''latin1'').hex()[:4] | int(base=16)
                 }}'
               switches: '{{ trigger.event.data.args.encode(''latin1'').hex()[4:] |
                 int(base=16) }}'
       - choose:
-        - conditions:
-          - condition: template
+        - alias: "New switch states available"
+          conditions:
+          - alias: "switches variabe defined"
+            condition: template
             value_template: '{{ switches is defined and switches is integer }}'
           sequence:
-          - service: '{% if switches | bitwise_and(2**0) %} input_boolean.turn_on
+          - alias: "Update switch 1 state"
+            service: '{% if switches | bitwise_and(2**0) %} input_boolean.turn_on
               {% else %} input_boolean.turn_off {% endif %}'
             data:
               entity_id: input_boolean.tosr0x_1_state
-          - service: '{% if switches | bitwise_and(2**1) %} input_boolean.turn_on
+          - alias: "Update switch 2 state"
+            service: '{% if switches | bitwise_and(2**1) %} input_boolean.turn_on
               {% else %} input_boolean.turn_off {% endif %}'
             data:
               entity_id: input_boolean.tosr0x_2_state
-          - service: '{% if switches | bitwise_and(2**2) %} input_boolean.turn_on
+          - alias: "Update switch 3 state"
+            service: '{% if switches | bitwise_and(2**2) %} input_boolean.turn_on
               {% else %} input_boolean.turn_off {% endif %}'
             data:
               entity_id: input_boolean.tosr0x_3_state
-          - service: '{% if switches | bitwise_and(2**3) %} input_boolean.turn_on
+          - alias: "Update switch 4 state"
+            service: '{% if switches | bitwise_and(2**3) %} input_boolean.turn_on
               {% else %} input_boolean.turn_off {% endif %}'
             data:
               entity_id: input_boolean.tosr0x_4_state
       - choose:
-        - conditions:
-          - condition: template
+        - alias: "Temperature update available"
+          conditions:
+          - alias: "temp variable is defined"
+            condition: template
             value_template: '{{ temp is defined and temp is integer and temp != 65535
               }}'
           sequence:
-          - service: input_number.set_value
+          - alias: "Update TOSR0X temperature"
+            service: input_number.set_value
             entity_id: input_number.tosr0x_temp
             data:
               value: '{% if temp > 32767 %} {{ temp / 16 - 4096 }} {% else %} {{ temp
                 / 16 }} {% endif %}'
     default:
-    - service: zha.issue_zigbee_cluster_command
+    - alias: "Request TOSR0X update"
+      service: zha.issue_zigbee_cluster_command
       data:
         args: a[
         cluster_id: 17
@@ -125,7 +148,8 @@
         command_type: server
         endpoint_id: 232
         ieee: 00:13:a2:00:41:a0:7e:1a
-    - service: zha.issue_zigbee_cluster_command
+    - alias: "Request XBee temperature update"
+      service: zha.issue_zigbee_cluster_command
       data:
         ieee: 00:13:a2:00:41:a0:7e:1a
         endpoint_id: 230
@@ -216,7 +240,8 @@
     choose:
     - alias: "Pump and all valves are off, consider the 'off' phase of the duty cycle"
       conditions:
-      - condition: state
+      - alias: "switch.humidifier_pump and group.tosr0x state is off"
+        condition: state
         entity_id:
         - switch.humidifier_pump
         - group.tosr0x
@@ -240,8 +265,9 @@
         entity_id: switch.tosr0x_4
       - alias: "Check if valve changes applied"
         choose:
-        - conditions:
-          - alias: "Wait till valve changes applied"
+        - alias: "Wait till valve changes applied"
+          conditions:
+          - alias: "switch.tosr0x_4 state is on"
             condition: state
             entity_id: switch.tosr0x_4
             state: 'on'
@@ -264,8 +290,9 @@
         entity_id: switch.tosr0x_3
       - alias: "Check if valve changes applied"
         choose:
-        - conditions:
-          - alias: "Wait till valve changes applied"
+        - alias: "Wait till valve changes applied"
+          conditions:
+          - alias: "group.tosr0x state is off"
             condition: state
             entity_id: group.tosr0x
             state: 'off'
@@ -282,8 +309,9 @@
         entity_id: switch.humidifier_pump
       - alias: "Check if pump turned on"
         choose:
-        - conditions:
-          - alias: "Wait till the pump switch changes applied"
+        - alias: "Wait till the pump switch changes applied"
+          conditions:
+          - alias: "switch.humidifier_pump is off"
             condition: state
             entity_id: switch.humidifier_pump
             state: 'off'
