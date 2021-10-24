@@ -209,103 +209,111 @@
   - choose:
     - conditions:
       - condition: state
-        entity_id: switch.humidifier_pump
-        state: 'on'
+        entity_id:
+        - switch.humidifier_pump
+        - group.tosr0x
+        state: 'off'
       sequence:
+      - condition: state
+        entity_id: group.humidifier_zones
+        state: 'on'
+      - condition: state
+        entity_id: humidifier.uvlazhnitel_v_gostinoi
+        state: 'on'
       - condition: template
         value_template: '{{ not (trigger is defined and trigger.platform == "state"
-          and trigger.to_state.domain in ("humidifier", "group") and trigger.to_state.state
-          == "on") }}'
+          and trigger.to_state.domain == "humidifier" and trigger.to_state.state ==
+          "off") }}'
       - service: homeassistant.turn_off
-        entity_id: switch.humidifier_pump
-      - delay:
-          hours: 0
-          minutes: 0
-          seconds: 3
-          milliseconds: 0
-      - service: homeassistant.turn_on
         entity_id: switch.tosr0x_4
-      - delay:
-          hours: 0
-          minutes: 0
-          seconds: 7
-          milliseconds: 0
-      - service: homeassistant.turn_off
-        data: {}
-        target:
-          entity_id:
-          - switch.tosr0x_1
-          - switch.tosr0x_2
-          - switch.tosr0x_3
-          - switch.tosr0x_4
+      - choose:
+        - conditions:
+          - condition: state
+            entity_id: input_boolean.humidifier_zone_1
+            state: 'on'
+          sequence:
+          - service: homeassistant.turn_on
+            entity_id: switch.tosr0x_1
+        default:
+        - service: homeassistant.turn_off
+          target:
+            entity_id: switch.tosr0x_1
+      - choose:
+        - conditions:
+          - condition: state
+            entity_id: input_boolean.humidifier_zone_2
+            state: 'on'
+          sequence:
+          - service: homeassistant.turn_on
+            entity_id: switch.tosr0x_2
+        default:
+        - service: homeassistant.turn_off
+          target:
+            entity_id: switch.tosr0x_2
+      - choose:
+        - conditions:
+          - condition: state
+            entity_id: input_boolean.humidifier_zone_3
+            state: 'on'
+          sequence:
+          - service: homeassistant.turn_on
+            entity_id: switch.tosr0x_3
+        default:
+        - service: homeassistant.turn_off
+          target:
+            entity_id: switch.tosr0x_3
+      - choose:
+        - conditions:
+          - condition: state
+            entity_id: group.tosr0x
+            state: 'off'
+          sequence:
+          - wait_for_trigger:
+            - platform: state
+              entity_id: group.tosr0x
+              to: 'on'
+            timeout: ''
+        default: []
+      - service: homeassistant.turn_on
+        entity_id: switch.humidifier_pump
+      - choose:
+        - conditions:
+          - condition: state
+            entity_id: switch.humidifier_pump
+            state: 'off'
+          sequence:
+          - wait_for_trigger:
+            - platform: state
+              entity_id: switch.humidifier_pump
+              to: 'on'
+        default: []
     default:
-    - condition: state
-      entity_id: group.humidifier_zones
-      state: 'on'
-    - condition: state
-      entity_id: humidifier.uvlazhnitel_v_gostinoi
-      state: 'on'
     - condition: template
       value_template: '{{ not (trigger is defined and trigger.platform == "state"
-        and trigger.to_state.domain == "humidifier" and trigger.to_state.state ==
-        "off") }}'
+        and trigger.to_state.domain in ("humidifier", "group") and trigger.to_state.state
+        == "on") }}'
     - service: homeassistant.turn_off
-      entity_id: switch.tosr0x_4
-    - choose:
-      - conditions:
-        - condition: state
-          entity_id: input_boolean.humidifier_zone_1
-          state: 'on'
-        sequence:
-        - service: homeassistant.turn_on
-          entity_id: switch.tosr0x_1
-      default: []
-    - choose:
-      - conditions:
-        - condition: state
-          entity_id: input_boolean.humidifier_zone_2
-          state: 'on'
-        sequence:
-        - service: homeassistant.turn_on
-          entity_id: switch.tosr0x_2
-      default: []
-    - choose:
-      - conditions:
-        - condition: state
-          entity_id: input_boolean.humidifier_zone_3
-          state: 'on'
-        sequence:
-        - service: homeassistant.turn_on
-          entity_id: switch.tosr0x_3
-      default:
-      - service: homeassistant.turn_on
-        target:
-          entity_id: switch.tosr0x_3
-    - choose:
-      - conditions:
-        - condition: state
-          entity_id: group.tosr0x
-          state: 'off'
-        sequence:
-        - wait_for_trigger:
-          - platform: state
-            entity_id: group.tosr0x
-            to: 'on'
-          timeout: ''
-      default: []
-    - service: homeassistant.turn_on
       entity_id: switch.humidifier_pump
-    - choose:
-      - conditions:
-        - condition: state
-          entity_id: switch.humidifier_pump
-          state: 'off'
-        sequence:
-        - wait_for_trigger:
-          - platform: state
-            entity_id: switch.humidifier_pump
-            to: 'on'
-      default: []
+    - delay:
+        hours: 0
+        minutes: 0
+        seconds: 3
+        milliseconds: 0
+    - service: homeassistant.turn_on
+      entity_id: switch.tosr0x_4
+    - delay:
+        hours: 0
+        minutes: 0
+        seconds: 7
+        milliseconds: 0
+    - service: homeassistant.turn_off
+      data: {}
+      target:
+        entity_id:
+        - switch.tosr0x_1
+        - switch.tosr0x_2
+        - switch.tosr0x_3
+        - switch.tosr0x_4
   mode: restart
   max: 10
 - id: '1574587123101'
