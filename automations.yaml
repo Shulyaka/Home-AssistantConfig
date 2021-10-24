@@ -226,42 +226,12 @@
           "off") }}'
       - service: homeassistant.turn_off
         entity_id: switch.tosr0x_4
-      - choose:
-        - conditions:
-          - condition: state
-            entity_id: input_boolean.humidifier_zone_1
-            state: 'on'
-          sequence:
-          - service: homeassistant.turn_on
-            entity_id: switch.tosr0x_1
-        default:
-        - service: homeassistant.turn_off
-          target:
-            entity_id: switch.tosr0x_1
-      - choose:
-        - conditions:
-          - condition: state
-            entity_id: input_boolean.humidifier_zone_2
-            state: 'on'
-          sequence:
-          - service: homeassistant.turn_on
-            entity_id: switch.tosr0x_2
-        default:
-        - service: homeassistant.turn_off
-          target:
-            entity_id: switch.tosr0x_2
-      - choose:
-        - conditions:
-          - condition: state
-            entity_id: input_boolean.humidifier_zone_3
-            state: 'on'
-          sequence:
-          - service: homeassistant.turn_on
-            entity_id: switch.tosr0x_3
-        default:
-        - service: homeassistant.turn_off
-          target:
-            entity_id: switch.tosr0x_3
+      - service: homeassistant.turn_{{ states('input_boolean.humidifier_zone_1') }}
+        entity_id: switch.tosr0x_1
+      - service: homeassistant.turn_{{ states('input_boolean.humidifier_zone_2') }}
+        entity_id: switch.tosr0x_2
+      - service: homeassistant.turn_{{ states('input_boolean.humidifier_zone_3') }}
+        entity_id: switch.tosr0x_3
       - choose:
         - conditions:
           - condition: state
