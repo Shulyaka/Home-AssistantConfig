@@ -129,11 +129,10 @@
       data:
         ieee: 00:13:a2:00:41:a0:7e:1a
         endpoint_id: 230
-        command: 0x43
+        command: 67
         command_type: server
         cluster_type: out
         cluster_id: 33
-
   mode: queued
   max: 10
 - id: '1573979827206'
@@ -229,7 +228,7 @@
       - delay:
           hours: 0
           minutes: 0
-          seconds: 5
+          seconds: 10
           milliseconds: 0
       - service: homeassistant.turn_off
         entity_id: switch.tosr0x_1,switch.tosr0x_2,switch.tosr0x_3,switch.tosr0x_4
@@ -1005,3 +1004,23 @@
       volume_level: 0.2
     entity_id: media_player.yandex_station_ff98f0293c2e0ee4e18dc30d
   mode: single
+- id: '1634945798081'
+  alias: Low battery level detection & notification for all battery sensors
+  description: ''
+  use_blueprint:
+    path: sbyx/low-battery-level-detection-notification-for-all-battery-sensors.yaml
+    input:
+      time: '20:00:00'
+      exclude:
+        entity_id: []
+        device_id:
+        - 484a3695699a615e8d4dba18da1ea929
+        - 2f911064d0864fa08cb643dff22bdc36
+        - b23f74e89f724c2cbcd0084e75c9fee6
+      actions:
+      - service: notify.mobile_app_sm_t725
+        data:
+          message: Low battery for {{sensors}}.
+      - service: notify.telegram_114122164
+        data:
+          message: Low battery for {{sensors}}.
