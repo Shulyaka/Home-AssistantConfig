@@ -354,6 +354,8 @@ telegram_bot:
       - 114122164
       - 1560910091
 
+telegram_bot_conversation:
+
 notify:
   - platform: html5
     name: html5
