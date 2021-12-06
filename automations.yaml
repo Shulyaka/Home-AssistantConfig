@@ -335,7 +335,7 @@
     - alias: Wait a little longer to ensure that no preassure left
       delay:
         hours: 0
-        minutes: 0
+        minutes: 1
         seconds: 7
         milliseconds: 0
     - alias: Close all valves
@@ -359,9 +359,9 @@
   - condition: state
     entity_id: group.all_people
     state: home
-  - condition: state
-    entity_id: binary_sensor.lumi_lumi_sensor_wleak_aq1_035acf68_1_1280
-    state: 'off'
+  - condition: template
+    value_template: '{{not is_state("binary_sensor.lumi_lumi_sensor_wleak_aq1_035acf68_1_1280",
+      "on")}}'
   action:
   - service: humidifier.turn_off
     data: {}
@@ -404,6 +404,11 @@
     entity_id: light.hue_color_lamp_2
     platform: device
     type: turned_on
+  - device_id: 32abff1439d940f9951e2427e0cdbeee
+    domain: light
+    entity_id: light.hue_color_lamp_5
+    platform: device
+    type: turned_on
   - device_id: d69bbd276fbb41be9d7072e227a348ab
     domain: light
     entity_id: light.lumi_lumi_relay_fan
@@ -412,9 +417,12 @@
   condition: []
   action:
   - service: light.turn_on
-    entity_id: light.hue_color_lamp_1,light.hue_color_lamp_2
     data:
       kelvin: 3500
+    target:
+      entity_id:
+      - light.bathroom_exhaust_lamp
+      - light.hue_color_lamp_2
   mode: single
 - id: '1601500873265'
   alias: Water leak detected
@@ -500,6 +508,10 @@
   - type: toggle
     device_id: 6f2b7025f9ff4822b12db8c779420f00
     entity_id: light.hue_color_lamp_2
+    domain: light
+  - type: toggle
+    device_id: 32abff1439d940f9951e2427e0cdbeee
+    entity_id: light.hue_color_lamp_5
     domain: light
   mode: single
 - id: '1610489963666'
@@ -672,7 +684,7 @@
     entity_id: media_player.philips_tv
     to: 'on'
   - platform: state
-    entity_id: light.hue_color_candle_1,light.hue_color_candle_5,light.hue_color_candle_10,light.hue_color_ceiling_1,light.hue_color_lamp_3
+    entity_id: light.hue_color_candle_1,light.hue_color_candle_5,light.hue_color_candle_10,light.hue_color_ceiling_1,light.hue_color_lamp_4
     to: 'on'
   condition:
   - condition: time
@@ -832,12 +844,16 @@
         data:
           transition: 0
           brightness_pct: 90
-        entity_id: light.hue_color_lamp_1
+        target:
+          entity_id:
+          - light.bathroom_exhaust_lamp
     default:
     - service: light.turn_off
       data:
         transition: 0
-      entity_id: light.hue_color_lamp_1
+      target:
+        entity_id:
+        - light.bathroom_exhaust_lamp
   mode: queued
   max: 10
 - id: '1612906551865'
@@ -940,11 +956,9 @@
   alias: Bathroom fan 2
   description: ''
   trigger:
-  - platform: device
-    type: turned_on
-    device_id: ec863b8c8c384379a8185a51b3a8080c
-    entity_id: light.hue_color_lamp_1
-    domain: light
+  - platform: state
+    entity_id: light.bathroom_exhaust_lamp
+    to: 'on'
   - platform: device
     type: turned_on
     device_id: 6f2b7025f9ff4822b12db8c779420f00
@@ -980,16 +994,16 @@
     - conditions:
       - condition: device
         type: is_on
-        device_id: 32abff1439d940f9951e2427e0cdbeee
-        entity_id: light.hue_color_lamp_3
+        device_id: 653a34008b1d51a37ddf8c29fa4fd896
+        entity_id: light.hue_color_lamp_4
         domain: light
       sequence:
       - service: light.turn_on
         data:
-          brightness_pct: 50
+          brightness_pct: 33
           transition: 60
         target:
-          entity_id: light.hue_color_lamp_3
+          device_id: 653a34008b1d51a37ddf8c29fa4fd896
     default: []
   mode: single
 - id: '1615134996785'

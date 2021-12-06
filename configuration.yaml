@@ -162,7 +162,9 @@ google_assistant:
       expose: false
     light.hue_color_lamp_2:
       expose: false
-    light.hue_color_lamp_3:
+    light.hue_color_lamp_5:
+      expose: false
+    light.hue_color_lamp_4:
       expose: false
     light.hue_color_spot_1:
       expose: false
@@ -290,6 +292,7 @@ yandex_smart_home:
     include_entities:
       - light.philips_lct003_a93fdc04_level_light_color_on_off
       - light.lumi_lumi_relay_fan
+      - light.bathroom_exhaust_lamp
   notifier:
     - oauth_token: !secret yandex_smart_home_oauth_token
       skill_id: !secret yandex_smart_home_skill_id
@@ -411,36 +414,36 @@ morph_numbers:
 
 template:
   - sensor:
-    - name: "{{state_attr('sensor.wcounter', 'counters')[0].name.capitalize()}} counter"
-      unique_id: watercounter_0
-      unit_of_measurement: 'm³'
-      icon: mdi:speedometer
-      state: "{{'%.3f'|format(state_attr('sensor.wcounter', 'counters')[0].value/1000)}}"
-      attributes:
-        serial: "{{state_attr('sensor.wcounter', 'counters')[0].serial}}"
-        state: "{{'%d%%'|format(state_attr('sensor.wcounter', 'counters')[0].state*100/15)}}"
-        lastaction: "{{state_attr('sensor.wcounter', 'counters')[0].lastaction}}"
-        name: "{{state_attr('sensor.wcounter', 'counters')[0].name}}"
-    - name: "{{state_attr('sensor.wcounter', 'counters')[1].name.capitalize()}} counter"
-      unique_id: watercounter_1
-      unit_of_measurement: 'm³'
-      icon: mdi:speedometer
-      state: "{{'%.3f'|format(state_attr('sensor.wcounter', 'counters')[1].value/1000)}}"
-      attributes:
-        serial: "{{state_attr('sensor.wcounter', 'counters')[1].serial}}"
-        state: "{{'%d%%'|format(state_attr('sensor.wcounter', 'counters')[1].state*100/15)}}"
-        lastaction: "{{state_attr('sensor.wcounter', 'counters')[1].lastaction}}"
-        name: "{{state_attr('sensor.wcounter', 'counters')[1].name}}"
-    - name: "{{state_attr('sensor.wcounter', 'counters')[2].name.capitalize()}} counter"
-      unique_id: watercounter_2
-      unit_of_measurement: 'm³'
-      icon: mdi:speedometer
-      state: "{{'%.3f'|format(state_attr('sensor.wcounter', 'counters')[2].value/1000)}}"
-      attributes:
-        serial: "{{state_attr('sensor.wcounter', 'counters')[2].serial}}"
-        state: "{{'%d%%'|format(state_attr('sensor.wcounter', 'counters')[2].state*100/15)}}"
-        lastaction: "{{state_attr('sensor.wcounter', 'counters')[2].lastaction}}"
-        name: "{{state_attr('sensor.wcounter', 'counters')[2].name}}"
+#    - name: "{{state_attr('sensor.wcounter', 'counters')[0].name.capitalize()}} counter"
+#      unique_id: watercounter_0
+#      unit_of_measurement: 'm³'
+#      icon: mdi:speedometer
+#      state: "{{'%.3f'|format(state_attr('sensor.wcounter', 'counters')[0].value/1000)}}"
+#      attributes:
+#        serial: "{{state_attr('sensor.wcounter', 'counters')[0].serial}}"
+#        state: "{{'%d%%'|format(state_attr('sensor.wcounter', 'counters')[0].state*100/15)}}"
+#        lastaction: "{{state_attr('sensor.wcounter', 'counters')[0].lastaction}}"
+#        name: "{{state_attr('sensor.wcounter', 'counters')[0].name}}"
+#    - name: "{{state_attr('sensor.wcounter', 'counters')[1].name.capitalize()}} counter"
+#      unique_id: watercounter_1
+#      unit_of_measurement: 'm³'
+#      icon: mdi:speedometer
+#      state: "{{'%.3f'|format(state_attr('sensor.wcounter', 'counters')[1].value/1000)}}"
+#      attributes:
+#        serial: "{{state_attr('sensor.wcounter', 'counters')[1].serial}}"
+#        state: "{{'%d%%'|format(state_attr('sensor.wcounter', 'counters')[1].state*100/15)}}"
+#        lastaction: "{{state_attr('sensor.wcounter', 'counters')[1].lastaction}}"
+#        name: "{{state_attr('sensor.wcounter', 'counters')[1].name}}"
+#    - name: "{{state_attr('sensor.wcounter', 'counters')[2].name.capitalize()}} counter"
+#      unique_id: watercounter_2
+#      unit_of_measurement: 'm³'
+#      icon: mdi:speedometer
+#      state: "{{'%.3f'|format(state_attr('sensor.wcounter', 'counters')[2].value/1000)}}"
+#      attributes:
+#        serial: "{{state_attr('sensor.wcounter', 'counters')[2].serial}}"
+#        state: "{{'%d%%'|format(state_attr('sensor.wcounter', 'counters')[2].state*100/15)}}"
+#        lastaction: "{{state_attr('sensor.wcounter', 'counters')[2].lastaction}}"
+#        name: "{{state_attr('sensor.wcounter', 'counters')[2].name}}"
     - name: TOSR0X-T Temperature
       unique_id: tosr0x_temperature0
       state: "{{ states('input_number.tosr0x_temp') }}"
@@ -680,18 +683,13 @@ hue:
     - host: 192.168.1.179
       allow_hue_groups: true
 
-#light:
-#  - platform: group
-#    name: Children Room
-#    entities:
-#      - light.hue_color_candle_1
-#      - light.hue_color_candle_2
-#      - light.hue_color_candle_3
-#      - light.hue_color_candle_4
-#      - light.hue_color_candle_5
-#      - light.hue_color_candle_6
-#      - light.hue_color_candle_7
-#      - light.hue_color_candle_8
+light:
+  - platform: group
+    name: Bathroom exhaust lamp
+    unique_id: bathroom_exhaust_lamp
+    entities:
+      - light.hue_color_lamp_1
+      - light.hue_color_lamp_5
 
 mosportal:
   username: !secret mosportal_login
