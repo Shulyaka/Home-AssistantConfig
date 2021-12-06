@@ -150,22 +150,6 @@
         ieee: 00:13:a2:00:41:a0:7e:1a
   mode: queued
   max: 10
-- id: '1573979827206'
-  alias: fan always on
-  description: ''
-  trigger:
-  - platform: state
-    entity_id: light.lumi_lumi_relay_fan
-    to: 'off'
-  - platform: homeassistant
-    event: start
-  condition: []
-  action:
-  - device_id: d69bbd276fbb41be9d7072e227a348ab
-    domain: light
-    entity_id: light.lumi_lumi_relay_fan
-    type: turn_on
-  mode: single
 - id: '1573980062944'
   alias: Humidifier fan on
   description: Turn on fan when pump is active
@@ -389,40 +373,6 @@
     entity_id: switch.tosr0x_1, switch.tosr0x_2, switch.tosr0x_3, switch.tosr0x_4,
       switch.humidifier_pump, switch.humidifier_fan
     data: {}
-  mode: single
-- id: '1594502365341'
-  alias: Ensure bathroom color temperature
-  description: ''
-  trigger:
-  - device_id: ec863b8c8c384379a8185a51b3a8080c
-    domain: light
-    entity_id: light.hue_color_lamp_1
-    platform: device
-    type: turned_on
-  - device_id: 6f2b7025f9ff4822b12db8c779420f00
-    domain: light
-    entity_id: light.hue_color_lamp_2
-    platform: device
-    type: turned_on
-  - device_id: 32abff1439d940f9951e2427e0cdbeee
-    domain: light
-    entity_id: light.hue_color_lamp_5
-    platform: device
-    type: turned_on
-  - device_id: d69bbd276fbb41be9d7072e227a348ab
-    domain: light
-    entity_id: light.lumi_lumi_relay_fan
-    platform: device
-    type: turned_on
-  condition: []
-  action:
-  - service: light.turn_on
-    data:
-      kelvin: 3500
-    target:
-      entity_id:
-      - light.bathroom_exhaust_lamp
-      - light.hue_color_lamp_2
   mode: single
 - id: '1601500873265'
   alias: Water leak detected
@@ -890,7 +840,7 @@
   mode: queued
   max: 10
 - id: '1612906999318'
-  alias: Bathroom fan
+  alias: Bathroom fan off
   description: ''
   trigger:
   - platform: homeassistant
@@ -953,7 +903,7 @@
   mode: queued
   max: 10
 - id: '1613344626221'
-  alias: Bathroom fan 2
+  alias: Bathroom fan on
   description: ''
   trigger:
   - platform: state
@@ -974,7 +924,10 @@
     device_id: 88cf7cb09ea74676a1afbca9c0bb8aa6
     entity_id: binary_sensor.lumi_lumi_sensor_magnet_aq2_033b73a9_1_6
     domain: binary_sensor
-  condition: []
+  condition:
+  - condition: time
+    after: '20:50:00'
+    before: '20:10:00'
   action:
   - type: turn_on
     device_id: 289346234dfe8f0cbce76be920f36854
