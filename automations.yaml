@@ -753,7 +753,7 @@
       location_name: '{{ trigger.to_state.state }}'
   mode: single
 - id: '1612638418194'
-  alias: Storeroom Light
+  alias: Bathroom fan toggle
   description: ''
   trigger:
   - device_id: d41addb2e3f4464f8c977131e84b0b4f
@@ -764,8 +764,8 @@
   condition: []
   action:
   - type: toggle
-    device_id: d69bbd276fbb41be9d7072e227a348ab
-    entity_id: light.lumi_lumi_relay_c2acn01_2321e803_2
+    device_id: 289346234dfe8f0cbce76be920f36854
+    entity_id: light.lumi_lumi_relay_fan
     domain: light
   mode: queued
   max: 10
