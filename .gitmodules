@@ -16,3 +16,6 @@
 [submodule ".submodules/ha_mosportal"]
 	path = .submodules/ha_mosportal
 	url = https://github.com/kkuryshev/ha_mosportal.git
+[submodule ".submodules/zha-network-card"]
+	path = .submodules/zha-network-card
+	url = https://github.com/dmulcahey/zha-network-card.git
