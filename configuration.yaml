@@ -271,6 +271,7 @@ yandex_smart_home:
       - automation
       - group
       - light
+      - scene
     exclude_entities:
       - sensor.tosr0x_temperature
       - switch.humidifier_aux_led
@@ -289,10 +290,36 @@ yandex_smart_home:
       - sensor.lumi_lumi_sens_02fbebbd_1_1029
       - sensor.humidifier_pressure_in
       - sensor.humidifier_pressure_in_pct
+      - sensor.humidifier_internal_temperature
+      - switch.adaptive_lighting_adapt_brightness_bathroom
+      - switch.adaptive_lighting_adapt_brightness_children_room
+      - switch.adaptive_lighting_adapt_brightness_living_room
+      - switch.adaptive_lighting_adapt_color_bathroom
+      - switch.adaptive_lighting_adapt_color_children_room
+      - switch.adaptive_lighting_adapt_color_living_room
+      - switch.adaptive_lighting_sleep_mode_bathroom
+      - switch.adaptive_lighting_sleep_mode_children_room
+      - switch.adaptive_lighting_sleep_mode_living_room
+      - switch.adaptive_lighting_bathroom
+      - switch.adaptive_lighting_children_room
+      - switch.adaptive_lighting_living_room
+      - sensor.sm_g970f_uroven_zariada_akkumuliatora
+      - sensor.sm_g970f_battery_temperature
+      - sensor.sm_g970f_atmosfernoe_davlenie
+      - sensor.sm_g970f_datchik_osveshchionnosti
+      - sensor.maxlumi2_battery_level_2
+      - sensor.maxlumi2_battery_temperature_2
+      - sensor.yota_battery_level
+      - sensor.yota_battery_temperature
+      - sensor.sm_t725_battery_level
+      - sensor.sm_t725_battery_temperature
+      - sensor.sm_t725_light_sensor
+      - sensor.robot_battery
     include_entities:
       - light.philips_lct003_a93fdc04_level_light_color_on_off
       - light.lumi_lumi_relay_fan
       - light.bathroom_exhaust_lamp
+      - light.lumi_lumi_relay_c2acn01_2321e803_2
   notifier:
     - oauth_token: !secret yandex_smart_home_oauth_token
       skill_id: !secret yandex_smart_home_skill_id
@@ -378,7 +405,7 @@ notify:
 
 shell_command:
   hassd_update: 'ssh shulyaka.org.ru /usr/lib/hassd/hassd_update.sh'
-  hass_upgrade: ash -c "nohup /srv/homeassistant/upgrade.sh restart 0<&- &>/tmp/upgrade.log &"
+  hass_upgrade: ash -c "nohup /srv/homeassistant/upgrade.sh restart 0<&- &>/srv/homeassistant/www/upgrade_log.txt &"
   youtube_dl: 'ssh ananas /usr/local/bin/youtube_dl.sh -d {{ callback }} {{ message }}'
 
 zha:
@@ -488,24 +515,24 @@ sensor:
       - denis@shulyaka.org.ru
 
 switch:
-  - platform: rest
-    resource: http://watercounter.atlantis/cgi-bin/wcontrol.sh?valve=hot
-    name: Hot water
-    body_on: '{"function": "open"}'
-    body_off: '{"function": "close"}'
-    is_on_template: '{{ value_json.lastaction == "open" }}'
-  - platform: rest
-    resource: http://watercounter.atlantis/cgi-bin/wcontrol.sh?valve=cold
-    name: Cold water
-    body_on: '{"function": "open"}'
-    body_off: '{"function": "close"}'
-    is_on_template: '{{ value_json.lastaction == "open" }}'
-  - platform: rest
-    resource: http://watercounter.atlantis/cgi-bin/wcontrol.sh?valve=toilet
-    name: Toilet water
-    body_on: '{"function": "open"}'
-    body_off: '{"function": "close"}'
-    is_on_template: '{{ value_json.lastaction == "open" }}'
+#  - platform: rest
+#    resource: http://watercounter.atlantis/cgi-bin/wcontrol.sh?valve=hot
+#    name: Hot water
+#    body_on: '{"function": "open"}'
+#    body_off: '{"function": "close"}'
+#    is_on_template: '{{ value_json.lastaction == "open" }}'
+#  - platform: rest
+#    resource: http://watercounter.atlantis/cgi-bin/wcontrol.sh?valve=cold
+#    name: Cold water
+#    body_on: '{"function": "open"}'
+#    body_off: '{"function": "close"}'
+#    is_on_template: '{{ value_json.lastaction == "open" }}'
+#  - platform: rest
+#    resource: http://watercounter.atlantis/cgi-bin/wcontrol.sh?valve=toilet
+#    name: Toilet water
+#    body_on: '{"function": "open"}'
+#    body_off: '{"function": "close"}'
+#    is_on_template: '{{ value_json.lastaction == "open" }}'
   - platform: template
     switches:
       tosr0x_1:
@@ -625,11 +652,11 @@ switch:
             data:
               entity_id: input_boolean.tosr0x_4_state
 
-rest_command:
-  set_counter:
-    url: "http://watercounter.atlantis/cgi-bin/wcontrol.sh?function=set&valve={{name}}&value={{'%d'|format(value|float*1000)}}"
-  mos_ru_update:
-    url: "http://watercounter.atlantis/cgi-bin/mos_ru_update.sh"
+#rest_command:
+#  set_counter:
+#    url: "http://watercounter.atlantis/cgi-bin/wcontrol.sh?function=set&valve={{name}}&value={{'%d'|format(value|float*1000)}}"
+#  mos_ru_update:
+#    url: "http://watercounter.atlantis/cgi-bin/mos_ru_update.sh"
 
 climate:
   - platform: generic_thermostat

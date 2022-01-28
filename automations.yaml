@@ -166,21 +166,6 @@
     data:
       entity_id: switch.humidifier_fan
   mode: single
-- id: '1573981070471'
-  alias: Humidifier toggle
-  description: Swich on and off on button press
-  trigger:
-  - platform: event
-    event_type: zha_event
-    event_data:
-      device_ieee: 00:15:8d:00:02:d4:40:bf
-      command: single
-  condition: []
-  action:
-  - service: humidifier.toggle
-    data: {}
-    entity_id: humidifier.uvlazhnitel_v_detskoi,humidifier.uvlazhnitel_v_gostinoi,humidifier.uvlazhnitel_v_spalne
-  mode: single
 - id: pump_duty_cycle
   alias: Humidifier Duty Cycle
   description: ''
@@ -301,9 +286,9 @@
     default:
     - alias: Do not switch off when a humidifier is being switched on
       condition: template
-      value_template: '{{ not (trigger is defined and trigger.platform == "state"
-        and trigger.to_state.domain in ("humidifier", "group") and trigger.to_state.state
-        == "on") }}'
+      value_template: '{{ not (is_state("switch.humidifier_pump", "on") and trigger
+        is defined and trigger.platform == "state" and trigger.to_state.domain in
+        ("humidifier", "group") and trigger.to_state.state == "on") }}'
     - alias: Turn off the pump
       service: homeassistant.turn_off
       entity_id: switch.humidifier_pump
@@ -311,7 +296,7 @@
       delay:
         hours: 0
         minutes: 0
-        seconds: 3
+        seconds: 4
         milliseconds: 0
     - alias: Drop the remaining preassure
       service: homeassistant.turn_on
@@ -319,8 +304,8 @@
     - alias: Wait a little longer to ensure that no preassure left
       delay:
         hours: 0
-        minutes: 1
-        seconds: 7
+        minutes: 0
+        seconds: 56
         milliseconds: 0
     - alias: Close all valves
       service: homeassistant.turn_off
@@ -792,8 +777,8 @@
       sequence:
       - service: light.turn_on
         data:
-          transition: 0
           brightness_pct: 90
+          transition: 0
         target:
           entity_id:
           - light.bathroom_exhaust_lamp
@@ -829,14 +814,16 @@
       sequence:
       - service: light.turn_on
         data:
-          transition: 0
           brightness_pct: 90
-        entity_id: light.hue_color_lamp_2
+          transition: 0
+        target:
+          entity_id: light.hue_color_lamp_2
     default:
     - service: light.turn_off
       data:
         transition: 0
-      entity_id: light.hue_color_lamp_2
+      target:
+        entity_id: light.hue_color_lamp_2
   mode: queued
   max: 10
 - id: '1612906999318'
@@ -846,7 +833,7 @@
   - platform: homeassistant
     event: start
   - platform: state
-    entity_id: sensor.lumi_lumi_sens_02029350_1_1026,sensor.lumi_lumi_sens_02029350_1_1029
+    entity_id: sensor.lumi_lumi_weather_95169d01_temperature,sensor.lumi_lumi_weather_95169d01_humidity
   - platform: device
     type: turned_on
     device_id: 289346234dfe8f0cbce76be920f36854
@@ -861,10 +848,13 @@
   - choose:
     - conditions:
       - condition: template
-        value_template: '{{ states("sensor.lumi_lumi_sens_02029350_1_1029")|float
-          - states("sensor.lumi_lumi_sens_02fbebbd_1_1029")|float > 2 or states("sensor.lumi_lumi_sens_02029350_1_1026")|float
+        value_template: '{{ states("sensor.lumi_lumi_weather_95169d01_humidity")|float
+          - states("sensor.lumi_lumi_sens_02fbebbd_1_1029")|float > 2 or states("sensor.lumi_lumi_weather_95169d01_temperature")|float
           - states("sensor.lumi_lumi_sens_02fbebbd_1_1026")|float > 2}}'
       sequence:
+      - condition: time
+        after: '20:50:00'
+        before: '20:10:00'
       - type: turn_on
         device_id: 289346234dfe8f0cbce76be920f36854
         entity_id: light.lumi_lumi_relay_fan
@@ -933,7 +923,7 @@
     device_id: 289346234dfe8f0cbce76be920f36854
     entity_id: light.lumi_lumi_relay_fan
     domain: light
-  mode: single
+  mode: restart
 - id: '1613604396234'
   alias: Ksusha bedtime routine
   description: ''
