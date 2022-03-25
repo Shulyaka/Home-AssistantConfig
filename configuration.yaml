@@ -323,7 +323,7 @@ yandex_smart_home:
   notifier:
     - oauth_token: !secret yandex_smart_home_oauth_token
       skill_id: !secret yandex_smart_home_skill_id
-      user_id: 2adbd618c4f44e28ae091db107c59870
+      user_id: 2ce615b61c8545e8aa0a45ea2236ed74
   entity_config:
     humidifier.uvlazhnitel_v_spalne:
       modes:
@@ -406,7 +406,7 @@ notify:
 shell_command:
   hassd_update: 'ssh shulyaka.org.ru /usr/lib/hassd/hassd_update.sh'
   hass_upgrade: ash -c "nohup /srv/homeassistant/upgrade.sh restart 0<&- &>/srv/homeassistant/www/upgrade_log.txt &"
-  youtube_dl: 'ssh ananas /usr/local/bin/youtube_dl.sh -d {{ callback }} {{ message }}'
+  youtube_dl: 'ssh ananas /usr/local/bin/youtube_dl.sh -d "{{ callback }}" "{{ message }}"'
 
 zha:
   database_path: /srv/homeassistant/zigbee.db

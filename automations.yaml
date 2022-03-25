@@ -173,12 +173,18 @@
   - id: pump_on_time_expired
     platform: state
     entity_id: switch.humidifier_pump
-    for: 0:03:00
+    for:
+      hours: 0
+      minutes: 5
+      seconds: 0
     to: 'on'
   - id: pump_off_time_expired
     platform: state
     entity_id: switch.humidifier_pump
-    for: 0:04:00
+    for:
+      hours: 0
+      minutes: 5
+      seconds: 0
     to: 'off'
   - id: humidifier_zones_changed
     platform: state
@@ -460,23 +466,22 @@
   condition:
   - condition: template
     value_template: '{{ trigger is defined and trigger.platform == "event" and ((trigger.event.event_type
-      == "telegram_text" and trigger.event.data.text | regex_search("https://youtu*"))
+      == "telegram_text" and trigger.event.data.text | regex_search("https://(www.|)youtu*"))
       or (trigger.event.event_type == "mobile_app.share" and trigger.event.data.url
-      | regex_search("^https://youtu*"))) }}'
+      | regex_search("^https://(www.|)youtu*"))) }}'
   action:
-  - service: notify.{{ callback }}
-    data:
-      message: Скачиваю...
   - service: shell_command.youtube_dl
     data:
-      callback: '{{ callback }}'
-      message: '{{ message }}'
+      callback: '{% if callback=="telegram_1560910091" -%}-s {% endif -%} {{ callback
+        }}'
+      message: '{{ message | regex_replace("^([^&]*).*", "\\1") }}'
   variables:
     callback: '{% if trigger.event.event_type == "telegram_text" %} telegram_{{ trigger.event.data.user_id
       }} {% else %} mobile_app_sm_t725 {% endif %}'
     message: '{% if trigger.event.event_type == "telegram_text" %} {{ trigger.event.data.text
       }} {% else %} {{ trigger.event.data.url }} {% endif %}'
-  mode: single
+  mode: parallel
+  max: 10
 - id: '1611260806043'
   alias: Humidifier sleep time
   description: ''
@@ -1046,3 +1051,19 @@
       cluster_type: out
       cluster_id: 33
   mode: single
+- id: '1644241274984'
+  alias: youtube_dl undo
+  description: ''
+  trigger:
+  - platform: event
+    event_type: telegram_callback
+    event_data:
+      command: /undo
+  condition: []
+  action:
+  - service: shell_command.youtube_dl
+    data:
+      callback: telegram_{{ trigger.event.data.user_id }}
+      message: -u {{ trigger.event.data.args[0] }} {{ trigger.event.data.id }}
+  mode: parallel
+  max: 10

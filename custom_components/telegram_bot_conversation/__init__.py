@@ -27,6 +27,7 @@ from homeassistant.components.telegram_bot import (
     SERVICE_SEND_MESSAGE,
 )
 from telegram.utils.helpers import escape_markdown
+import re
 
 DOMAIN = "telegram_bot_conversation"
 
@@ -35,6 +36,10 @@ async def async_setup(hass: HomeAssistant, config: dict) -> bool:
     async def text_events(event: Event):
         # Only deal with private chats.
         if event.data[ATTR_CHAT_ID] != event.data[ATTR_USER_ID]:
+            return
+
+        # Handled by a separate automation:
+        if re.search(r"https://(www.|)youtu*", event.data[ATTR_TEXT]):
             return
 
         response = await _async_converse(
