@@ -338,6 +338,10 @@
     value_template: '{{not is_state("binary_sensor.lumi_lumi_sensor_wleak_aq1_035acf68_1_1280",
       "on")}}'
   action:
+  - service: homeassistant.turn_on
+    data: {}
+    target:
+      entity_id: input_boolean.fan_suppress
   - service: humidifier.turn_off
     data: {}
     target:
@@ -751,12 +755,36 @@
     platform: device
     type: remote_button_short_press
     subtype: remote_button_short_press
+  - platform: state
+    entity_id: input_boolean.fan_suppress
+    to: 'on'
+    for:
+      hours: 0
+      minutes: 20
+      seconds: 0
   condition: []
   action:
-  - type: toggle
-    device_id: 289346234dfe8f0cbce76be920f36854
-    entity_id: light.lumi_lumi_relay_fan
-    domain: light
+  - choose:
+    - conditions:
+      - condition: device
+        type: is_on
+        device_id: 289346234dfe8f0cbce76be920f36854
+        entity_id: light.lumi_lumi_relay_fan
+        domain: light
+      sequence:
+      - service: homeassistant.turn_on
+        data: {}
+        target:
+          entity_id: input_boolean.fan_suppress
+    default:
+    - service: homeassistant.turn_off
+      data: {}
+      target:
+        entity_id: input_boolean.fan_suppress
+    - type: turn_on
+      device_id: 289346234dfe8f0cbce76be920f36854
+      entity_id: light.lumi_lumi_relay_fan
+      domain: light
   mode: queued
   max: 10
 - id: '1612906113281'
@@ -837,8 +865,6 @@
   trigger:
   - platform: homeassistant
     event: start
-  - platform: state
-    entity_id: sensor.lumi_lumi_weather_95169d01_temperature,sensor.lumi_lumi_weather_95169d01_humidity
   - platform: device
     type: turned_on
     device_id: 289346234dfe8f0cbce76be920f36854
@@ -848,23 +874,19 @@
       hours: 0
       minutes: 15
       seconds: 0
-  condition: []
-  action:
-  - choose:
-    - conditions:
-      - condition: template
-        value_template: '{{ states("sensor.lumi_lumi_weather_95169d01_humidity")|float
-          - states("sensor.lumi_lumi_sens_02fbebbd_1_1029")|float > 2 or states("sensor.lumi_lumi_weather_95169d01_temperature")|float
-          - states("sensor.lumi_lumi_sens_02fbebbd_1_1026")|float > 2}}'
-      sequence:
-      - condition: time
-        after: '20:50:00'
-        before: '20:10:00'
-      - type: turn_on
-        device_id: 289346234dfe8f0cbce76be920f36854
-        entity_id: light.lumi_lumi_relay_fan
-        domain: light
-    default:
+  - platform: state
+    entity_id: input_boolean.fan_suppress
+    to: 'on'
+  - platform: template
+    value_template: '{{ not (states("sensor.lumi_lumi_weather_95169d01_humidity")|float
+      - states("sensor.lumi_lumi_sens_02fbebbd_1_1029")|float > 2 or states("sensor.lumi_lumi_weather_95169d01_temperature")|float
+      - states("sensor.lumi_lumi_sens_02fbebbd_1_1026")|float > 2) }}'
+  condition:
+  - condition: or
+    conditions:
+    - condition: template
+      value_template: '{{ trigger is defined and trigger.platform == "state" and trigger.entity_id
+        == "input_boolean.fan_suppress" }}'
     - condition: device
       type: is_on
       device_id: 289346234dfe8f0cbce76be920f36854
@@ -874,10 +896,11 @@
         hours: 0
         minutes: 5
         seconds: 0
-    - type: turn_off
-      device_id: 289346234dfe8f0cbce76be920f36854
-      entity_id: light.lumi_lumi_relay_fan
-      domain: light
+  action:
+  - type: turn_off
+    device_id: 289346234dfe8f0cbce76be920f36854
+    entity_id: light.lumi_lumi_relay_fan
+    domain: light
   mode: single
 - id: '1613076660468'
   alias: Exhaust_light
@@ -919,10 +942,17 @@
     device_id: 88cf7cb09ea74676a1afbca9c0bb8aa6
     entity_id: binary_sensor.lumi_lumi_sensor_magnet_aq2_033b73a9_1_6
     domain: binary_sensor
+  - platform: state
+    entity_id: input_boolean.fan_suppress
+    to: 'off'
+  - platform: template
+    value_template: '{{ states("sensor.lumi_lumi_weather_95169d01_humidity")|float
+      - states("sensor.lumi_lumi_sens_02fbebbd_1_1029")|float > 2 or states("sensor.lumi_lumi_weather_95169d01_temperature")|float
+      - states("sensor.lumi_lumi_sens_02fbebbd_1_1026")|float > 2}}'
   condition:
-  - condition: time
-    after: '20:50:00'
-    before: '20:10:00'
+  - condition: state
+    entity_id: input_boolean.fan_suppress
+    state: 'off'
   action:
   - type: turn_on
     device_id: 289346234dfe8f0cbce76be920f36854

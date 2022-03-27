@@ -73,6 +73,10 @@ input_boolean:
   sleep_daria:
     name: Sleep state (Daria)
     icon: mdi:sleep
+  fan_suppress:
+    name: Fan Suppress
+    initial: false
+    icon: mdi:fan-off
 
 # Internal variable to hold TOSR0X-T temperature
 input_number:
