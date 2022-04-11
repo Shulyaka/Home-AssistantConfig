@@ -1106,11 +1106,6 @@
     device_id: 88cf7cb09ea74676a1afbca9c0bb8aa6
     entity_id: binary_sensor.lumi_lumi_sensor_magnet_aq2_033b73a9_1_6
     domain: binary_sensor
-  - type: not_opened
-    platform: device
-    device_id: 88cf7cb09ea74676a1afbca9c0bb8aa6
-    entity_id: binary_sensor.lumi_lumi_sensor_magnet_aq2_033b73a9_1_6
-    domain: binary_sensor
   condition:
   - type: is_open
     condition: device
@@ -1129,37 +1124,66 @@
       transition: 1
     target:
       entity_id:
-      - light.hue_color_lamp_1
+      - light.bathroom_exhaust_lamp
       - light.hue_color_lamp_2
-      - light.hue_color_lamp_5
   - wait_for_trigger:
     - type: opened
       platform: device
       device_id: 88cf7cb09ea74676a1afbca9c0bb8aa6
       entity_id: binary_sensor.lumi_lumi_sensor_magnet_aq2_033b73a9_1_6
       domain: binary_sensor
+      id: door_opened
+    - type: not_opened
+      platform: device
+      device_id: 0c0d522ab2f3a087faa4e9b6acc1a9a5
+      entity_id: binary_sensor.lumi_lumi_sensor_magnet_aq2_6b2b4205_on_off
+      domain: binary_sensor
+      id: left_switch
+    - type: not_opened
+      platform: device
+      device_id: 4396709177f65d8d9a7c951b2ff22555
+      entity_id: binary_sensor.lumi_lumi_sensor_magnet_aq2_c4702205_on_off
+      domain: binary_sensor
+      id: right_switch
     timeout: 00:30:00
-  - type: is_open
-    condition: device
-    device_id: 0c0d522ab2f3a087faa4e9b6acc1a9a5
-    entity_id: binary_sensor.lumi_lumi_sensor_magnet_aq2_6b2b4205_on_off
-    domain: binary_sensor
-  - type: is_open
-    condition: device
-    device_id: 4396709177f65d8d9a7c951b2ff22555
-    entity_id: binary_sensor.lumi_lumi_sensor_magnet_aq2_c4702205_on_off
-    domain: binary_sensor
-  - service: light.turn_off
-    data:
-      transition: 10
-    target:
-      entity_id:
-      - light.hue_color_lamp_1
-      - light.hue_color_lamp_2
-      - light.hue_color_lamp_5
-  - delay:
-      hours: 0
-      minutes: 0
-      seconds: 10
-      milliseconds: 0
+  - choose:
+    - conditions:
+      - condition: template
+        value_template: '{{ wait.trigger.id == "left_switch" }}'
+      sequence:
+      - type: is_open
+        condition: device
+        device_id: 4396709177f65d8d9a7c951b2ff22555
+        entity_id: binary_sensor.lumi_lumi_sensor_magnet_aq2_c4702205_on_off
+        domain: binary_sensor
+      - service: light.turn_off
+        data: {}
+        target:
+          entity_id: light.hue_color_lamp_2
+    - conditions:
+      - condition: template
+        value_template: '{{ wait.trigger.id == "right_switch" }}'
+      sequence:
+      - type: is_open
+        condition: device
+        device_id: 0c0d522ab2f3a087faa4e9b6acc1a9a5
+        entity_id: binary_sensor.lumi_lumi_sensor_magnet_aq2_6b2b4205_on_off
+        domain: binary_sensor
+      - service: light.turn_off
+        data: {}
+        target:
+          entity_id: light.bathroom_exhaust_lamp
+    default:
+    - service: light.turn_off
+      data:
+        transition: 10
+      target:
+        entity_id:
+        - light.bathroom_exhaust_lamp
+        - light.hue_color_lamp_2
+    - delay:
+        hours: 0
+        minutes: 0
+        seconds: 10
+        milliseconds: 0
   mode: single
