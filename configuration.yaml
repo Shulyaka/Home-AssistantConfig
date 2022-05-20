@@ -270,7 +270,6 @@ alexa:
         - light.razvlecheniia_1
         - light.lumi_lumi_relay_c2acn01_2321e803_2
         - sensor.tosr0x_temperature
-        - binary_sensor.updater
     entity_config:
       light.lumi_lumi_relay_fan:
         display_categories: FAN
@@ -525,6 +524,13 @@ sensor:
       - moskvenok@mos.ru
       - shulyaka@gmail.com
       - denis@shulyaka.org.ru
+
+binary_sensor:
+  - platform: command_line
+    command: 'git status|grep -q "nothing to commit, working tree clean" && echo "OFF" || echo "ON"'
+    name: Uncommitted changes
+    device_class: problem
+    unique_id: configuration_git_uncommitted_changes
 
 switch:
 #  - platform: rest
