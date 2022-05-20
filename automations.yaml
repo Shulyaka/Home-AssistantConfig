@@ -356,6 +356,7 @@
       entity_id:
       - humidifier.uvlazhnitel_v_gostinoi
       - humidifier.uvlazhnitel_v_spalne
+      - humidifier.uvlazhnitel_v_detskoi
   mode: single
 - id: close_on_shutdown
   alias: Close on shutdown
@@ -762,28 +763,58 @@
       hours: 0
       minutes: 20
       seconds: 0
+  - device_id: d41addb2e3f4464f8c977131e84b0b4f
+    domain: zha
+    platform: device
+    type: remote_button_double_press
+    subtype: remote_button_double_press
+  - platform: state
+    entity_id: input_boolean.fan_suppress_long
+    to: 'on'
+    for:
+      hours: 0
+      minutes: 40
+      seconds: 0
   condition: []
   action:
   - choose:
     - conditions:
       - condition: device
         type: is_on
-        device_id: 289346234dfe8f0cbce76be920f36854
-        entity_id: light.lumi_lumi_relay_fan
+        device_id: ab2c80d349cdb62921d0c3dda2da25d6
+        entity_id: light.bathroom_exhaust_fan
         domain: light
       sequence:
-      - service: homeassistant.turn_on
+      - service: homeassistant.turn_off
         data: {}
         target:
-          entity_id: input_boolean.fan_suppress
+          entity_id: input_boolean.fan_force_on
+      - choose:
+        - conditions:
+          - condition: template
+            value_template: '{{trigger is defined and trigger.platform == "device"
+              and trigger.event.event_type == "zha_event" and trigger.event.data.command
+              == "double"}}'
+          sequence:
+          - service: homeassistant.turn_on
+            data: {}
+            target:
+              entity_id: input_boolean.fan_suppress_long
+        default:
+        - service: homeassistant.turn_on
+          data: {}
+          target:
+            entity_id: input_boolean.fan_suppress
     default:
     - service: homeassistant.turn_off
       data: {}
       target:
-        entity_id: input_boolean.fan_suppress
+        entity_id:
+        - input_boolean.fan_suppress
+        - input_boolean.fan_suppress_long
     - type: turn_on
-      device_id: 289346234dfe8f0cbce76be920f36854
-      entity_id: light.lumi_lumi_relay_fan
+      device_id: ab2c80d349cdb62921d0c3dda2da25d6
+      entity_id: light.bathroom_exhaust_fan
       domain: light
   mode: queued
   max: 10
@@ -867,8 +898,8 @@
     event: start
   - platform: device
     type: turned_on
-    device_id: 289346234dfe8f0cbce76be920f36854
-    entity_id: light.lumi_lumi_relay_fan
+    device_id: ab2c80d349cdb62921d0c3dda2da25d6
+    entity_id: light.bathroom_exhaust_fan
     domain: light
     for:
       hours: 0
@@ -881,25 +912,34 @@
     value_template: '{{ not (states("sensor.lumi_lumi_weather_95169d01_humidity")|float
       - states("sensor.lumi_lumi_sens_02fbebbd_1_1029")|float > 2 or states("sensor.lumi_lumi_weather_95169d01_temperature")|float
       - states("sensor.lumi_lumi_sens_02fbebbd_1_1026")|float > 2) }}'
+  - platform: state
+    entity_id: input_boolean.fan_suppress_long
+    to: 'on'
+  - platform: state
+    entity_id: input_boolean.fan_force_on
+    to: 'off'
   condition:
   - condition: or
     conditions:
     - condition: template
       value_template: '{{ trigger is defined and trigger.platform == "state" and trigger.entity_id
-        == "input_boolean.fan_suppress" }}'
+        in ("input_boolean.fan_suppress", "input_boolean.fan_suppress_long") }}'
     - condition: device
       type: is_on
-      device_id: 289346234dfe8f0cbce76be920f36854
-      entity_id: light.lumi_lumi_relay_fan
+      device_id: ab2c80d349cdb62921d0c3dda2da25d6
+      entity_id: light.bathroom_exhaust_fan
       domain: light
       for:
         hours: 0
         minutes: 5
         seconds: 0
+  - condition: state
+    entity_id: input_boolean.fan_force_on
+    state: 'off'
   action:
   - type: turn_off
-    device_id: 289346234dfe8f0cbce76be920f36854
-    entity_id: light.lumi_lumi_relay_fan
+    device_id: ab2c80d349cdb62921d0c3dda2da25d6
+    entity_id: light.bathroom_exhaust_fan
     domain: light
   mode: single
 - id: '1613076660468'
@@ -949,14 +989,23 @@
     value_template: '{{ states("sensor.lumi_lumi_weather_95169d01_humidity")|float
       - states("sensor.lumi_lumi_sens_02fbebbd_1_1029")|float > 2 or states("sensor.lumi_lumi_weather_95169d01_temperature")|float
       - states("sensor.lumi_lumi_sens_02fbebbd_1_1026")|float > 2}}'
+  - platform: state
+    entity_id: input_boolean.fan_suppress_long
+    to: 'off'
+  - platform: state
+    entity_id: input_boolean.fan_force_on
+    to: 'on'
   condition:
   - condition: state
     entity_id: input_boolean.fan_suppress
     state: 'off'
+  - condition: state
+    entity_id: input_boolean.fan_suppress_long
+    state: 'off'
   action:
   - type: turn_on
-    device_id: 289346234dfe8f0cbce76be920f36854
-    entity_id: light.lumi_lumi_relay_fan
+    device_id: ab2c80d349cdb62921d0c3dda2da25d6
+    entity_id: light.bathroom_exhaust_fan
     domain: light
   mode: restart
 - id: '1613604396234'
@@ -1187,3 +1236,45 @@
         seconds: 10
         milliseconds: 0
   mode: single
+- id: '1650751372250'
+  alias: Bathroom fan force on
+  description: ''
+  trigger:
+  - device_id: d41addb2e3f4464f8c977131e84b0b4f
+    domain: zha
+    platform: device
+    type: remote_button_long_press
+    subtype: remote_button_long_press
+  - platform: state
+    entity_id: input_boolean.fan_force_on
+    to: 'on'
+    for:
+      hours: 1
+      minutes: 0
+      seconds: 0
+  condition: []
+  action:
+  - choose:
+    - conditions:
+      - condition: template
+        value_template: '{{trigger is defined and trigger.platform == "device" and
+          trigger.event.event_type == "zha_event" and trigger.event.data.command ==
+          "hold"}}'
+      sequence:
+      - service: homeassistant.turn_off
+        data: {}
+        target:
+          entity_id:
+          - input_boolean.fan_suppress
+          - input_boolean.fan_suppress_long
+      - service: homeassistant.turn_on
+        data: {}
+        target:
+          entity_id: input_boolean.fan_force_on
+    default:
+    - service: homeassistant.turn_off
+      data: {}
+      target:
+        entity_id: input_boolean.fan_force_on
+  mode: queued
+  max: 10

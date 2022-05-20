@@ -77,6 +77,14 @@ input_boolean:
     name: Fan Suppress
     initial: false
     icon: mdi:fan-off
+  fan_suppress_long:
+    name: Fan Suppress Long
+    initial: false
+    icon: mdi:fan-remove
+  fan_force_on:
+    name: Fan Force On
+    initial: false
+    icon: mdi:fan-plus
 
 # Internal variable to hold TOSR0X-T temperature
 input_number:
