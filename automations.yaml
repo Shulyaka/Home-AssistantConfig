@@ -202,6 +202,39 @@
     event_type: automation_reloaded
   condition: []
   action:
+  - alias: Check if switching off while the pressure drop stage is still active, to
+      cancel it
+    choose:
+    - alias: Pressure drop stage is active
+      conditions:
+      - alias: Check if the pressure drop valves are open
+        condition: state
+        entity_id: group.tosr0x
+        state: 'on'
+      - alias: Check if being switched on
+        condition: template
+        value_template: '{{ trigger is not defined or (trigger.platform == "state"
+          and trigger.to_state.domain in ("humidifier", "group") and trigger.to_state.state
+          == "on") }}'
+      sequence:
+      - alias: Close the pressure drop valves
+        service: homeassistant.turn_off
+        entity_id: group.tosr0x
+      - alias: Check if valve changes applied
+        choose:
+        - alias: Wait till valve changes applied
+          conditions:
+          - alias: group.tosr0x state is on
+            condition: state
+            entity_id: group.tosr0x
+            state: 'on'
+          sequence:
+          - alias: Wait for valve states to be off
+            wait_for_trigger:
+            - platform: state
+              entity_id: group.tosr0x
+              to: 'off'
+            timeout: ''
   - alias: Check if the current phase is on or off and switch the phase if needed
     choose:
     - alias: Pump and all valves are off, consider the 'off' phase of the duty cycle
