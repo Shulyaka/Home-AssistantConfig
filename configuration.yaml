@@ -128,11 +128,6 @@ logger:
     homeassistant.components.websocket_api: info
     homeassistant.components.webhook: info
     homeassistant.components.mobile_app.webhook: info
-    homeassistant.components.neato: info
-    homeassistant.components.neato.camera: info
-    homeassistant.components.neato.switch: info
-    homeassistant.components.neato.vacuum: info
-    homeassistant.components.neato.sensor: info
     homeassistant.components.http.auth: info
     homeassistant.components.http.view: info
     homeassistant.components.rest.sensor: info
@@ -436,10 +431,6 @@ media_player:
       - media_player.philips_tv_2
   - platform: mpd
     host: speaker
-
-neato:
-  client_id: 57ba62bc35dc4cbfe936e6bcb87822d3b4213d95ddcf6b33b74daaba9c04ae57
-  client_secret: !secret neato_app
 
 media_extractor:
 
