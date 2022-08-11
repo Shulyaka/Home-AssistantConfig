@@ -40,11 +40,6 @@ mqtt:
   certificate: /home/homeassistant/homeassistant/ca.crt
   client_key: /home/homeassistant/homeassistant/token.key
   client_cert: /home/homeassistant/homeassistant/token.crt
-  broker: turris
-  port: 11884
-  username: local
-  password: !secret mqtt_password
-  discovery: true
 
 input_boolean:
   tosr0x_1_state:
