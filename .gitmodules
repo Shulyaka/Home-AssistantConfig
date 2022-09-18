@@ -22,3 +22,6 @@
 [submodule ".submodules/hass-music-assistant"]
 	path = .submodules/hass-music-assistant
 	url = https://github.com/music-assistant/hass-music-assistant.git
+[submodule ".submodules/SonoffLAN"]
+	path = .submodules/SonoffLAN
+	url = https://github.com/AlexxIT/SonoffLAN.git
