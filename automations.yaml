@@ -178,6 +178,7 @@
       minutes: 5
       seconds: 0
     to: 'on'
+    alias: When Humidifier Pump stays on for too long
   - id: pump_off_time_expired
     platform: state
     entity_id: switch.humidifier_pump
@@ -186,17 +187,26 @@
       minutes: 5
       seconds: 0
     to: 'off'
+    alias: When Humidifier Pump stays off for too long
   - id: humidifier_zones_changed
     platform: state
     entity_id: group.humidifier_zones
   - id: humidifier_turned_off
     platform: state
-    entity_id: humidifier.uvlazhnitel_v_spalne,humidifier.uvlazhnitel_v_gostinoi,humidifier.uvlazhnitel_v_detskoi
+    entity_id:
+    - humidifier.uvlazhnitel_v_spalne
+    - humidifier.uvlazhnitel_v_gostinoi
+    - humidifier.uvlazhnitel_v_detskoi
     to: 'off'
+    alias: When any of the humidifiers turns off
   - id: humidifier_turned_on
     platform: state
-    entity_id: humidifier.uvlazhnitel_v_spalne,humidifier.uvlazhnitel_v_gostinoi,humidifier.uvlazhnitel_v_detskoi
+    entity_id:
+    - humidifier.uvlazhnitel_v_spalne
+    - humidifier.uvlazhnitel_v_gostinoi
+    - humidifier.uvlazhnitel_v_detskoi
     to: 'on'
+    alias: When any of the humidifiers turns on
   - id: automation_reloaded
     platform: event
     event_type: automation_reloaded
@@ -232,7 +242,8 @@
           - alias: Wait for valve states to be off
             wait_for_trigger:
             - platform: state
-              entity_id: group.tosr0x
+              entity_id:
+              - group.tosr0x
               to: 'off'
             timeout: ''
   - alias: Check if the current phase is on or off and switch the phase if needed
@@ -275,7 +286,8 @@
           - alias: Wait for valve 4 state to be off
             wait_for_trigger:
             - platform: state
-              entity_id: switch.tosr0x_4
+              entity_id:
+              - switch.tosr0x_4
               to: 'off'
             timeout: ''
         default: []
@@ -300,7 +312,8 @@
           - alias: Wait for at least one valve to switch on
             wait_for_trigger:
             - platform: state
-              entity_id: group.tosr0x
+              entity_id:
+              - group.tosr0x
               to: 'on'
             timeout: ''
         default: []
@@ -319,7 +332,8 @@
           - alias: Wait for the pump state
             wait_for_trigger:
             - platform: state
-              entity_id: switch.humidifier_pump
+              entity_id:
+              - switch.humidifier_pump
               to: 'on'
         default: []
     default:
