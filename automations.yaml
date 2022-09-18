@@ -827,10 +827,10 @@
   - choose:
     - conditions:
       - condition: device
+        device_id: 14c5be6c720fb48ea6daf7d4dfa7dcfc
+        domain: fan
+        entity_id: fan.bathroom_exhaust_fan
         type: is_on
-        device_id: ab2c80d349cdb62921d0c3dda2da25d6
-        entity_id: light.bathroom_exhaust_fan
-        domain: light
       sequence:
       - service: homeassistant.turn_off
         data: {}
@@ -860,9 +860,9 @@
         - input_boolean.fan_suppress
         - input_boolean.fan_suppress_long
     - type: turn_on
-      device_id: ab2c80d349cdb62921d0c3dda2da25d6
-      entity_id: light.bathroom_exhaust_fan
-      domain: light
+      device_id: 14c5be6c720fb48ea6daf7d4dfa7dcfc
+      entity_id: fan.bathroom_exhaust_fan
+      domain: fan
   mode: queued
   max: 10
 - id: '1612906113281'
@@ -945,9 +945,9 @@
     event: start
   - platform: device
     type: turned_on
-    device_id: ab2c80d349cdb62921d0c3dda2da25d6
-    entity_id: light.bathroom_exhaust_fan
-    domain: light
+    device_id: 14c5be6c720fb48ea6daf7d4dfa7dcfc
+    entity_id: fan.bathroom_exhaust_fan
+    domain: fan
     for:
       hours: 0
       minutes: 15
@@ -971,11 +971,9 @@
     - condition: template
       value_template: '{{ trigger is defined and trigger.platform == "state" and trigger.entity_id
         in ("input_boolean.fan_suppress", "input_boolean.fan_suppress_long") }}'
-    - condition: device
-      type: is_on
-      device_id: ab2c80d349cdb62921d0c3dda2da25d6
-      entity_id: light.bathroom_exhaust_fan
-      domain: light
+    - condition: state
+      entity_id: fan.bathroom_exhaust_fan
+      state: 'on'
       for:
         hours: 0
         minutes: 5
@@ -985,9 +983,9 @@
     state: 'off'
   action:
   - type: turn_off
-    device_id: ab2c80d349cdb62921d0c3dda2da25d6
-    entity_id: light.bathroom_exhaust_fan
-    domain: light
+    device_id: 14c5be6c720fb48ea6daf7d4dfa7dcfc
+    entity_id: fan.bathroom_exhaust_fan
+    domain: fan
   mode: single
 - id: '1613076660468'
   alias: Exhaust_light
@@ -1051,9 +1049,9 @@
     state: 'off'
   action:
   - type: turn_on
-    device_id: ab2c80d349cdb62921d0c3dda2da25d6
-    entity_id: light.bathroom_exhaust_fan
-    domain: light
+    device_id: 14c5be6c720fb48ea6daf7d4dfa7dcfc
+    entity_id: fan.bathroom_exhaust_fan
+    domain: fan
   mode: restart
 - id: '1613604396234'
   alias: Ksusha bedtime routine
