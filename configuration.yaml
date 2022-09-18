@@ -513,7 +513,7 @@ sensor:
 
 binary_sensor:
   - platform: command_line
-    command: 'git status|grep -q "nothing to commit, working tree clean" && echo "OFF" || echo "ON"'
+    command: 'git -C /srv/homeassistant/ status | grep -q "nothing to commit, working tree clean" && echo "OFF" || echo "ON"'
     name: Uncommitted changes
     device_class: problem
     unique_id: configuration_git_uncommitted_changes
