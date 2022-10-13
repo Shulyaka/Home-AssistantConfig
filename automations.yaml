@@ -266,6 +266,11 @@
         condition: state
         entity_id: humidifier.uvlazhnitel_v_gostinoi
         state: 'on'
+      - alias: Check if not overhumidified
+        condition: numeric_state
+        entity_id: sensor.lumi_lumi_weather_3bfcf003_humidity, sensor.lumi_lumi_sens_48945e02_humidity,
+          sensor.lumi_lumi_sens_02fbebbd_1_1029
+        below: 65
       - alias: Do not switch on when a humidifier is being switched off
         condition: template
         value_template: '{{ not (trigger is defined and trigger.platform == "state"
