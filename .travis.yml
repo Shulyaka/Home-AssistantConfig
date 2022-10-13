@@ -1,7 +1,7 @@
 language: python
 cache: pip
 python:
-  - "3.8"
+  - "3.10"
 install:
   - pip3 install homeassistant
 before_script:
