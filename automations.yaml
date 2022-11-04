@@ -41,17 +41,17 @@
       device_ieee: 00:13:a2:00:41:a0:7e:1a
   variables:
     switches: '{% if trigger is defined and trigger.platform == "event" and trigger.event.event_type
-      == "zha_event" and trigger.event.data.args | length == 1 -%} {{ trigger.event.data.args.encode(''latin1'').hex()
+      == "zha_event" and trigger.event.data.args.data | length == 1 -%} {{ trigger.event.data.args.data.encode(''latin1'').hex()
       | int(base=16) }} {%- elif trigger is defined and trigger.platform == "event"
-      and trigger.event.event_type == "zha_event" and trigger.event.data.args | length
-      == 3 -%} {{ trigger.event.data.args.encode(''latin1'').hex()[4:] | int(base=16)
-      }} {%- endif %}'
+      and trigger.event.event_type == "zha_event" and trigger.event.data.args.data
+      | length == 3 -%} {{ trigger.event.data.args.data.encode(''latin1'').hex()[4:]
+      | int(base=16) }} {%- endif %}'
     temp: '{% if trigger is defined and trigger.platform == "event" and trigger.event.event_type
-      == "zha_event" and trigger.event.data.args | length == 2 -%} {{ trigger.event.data.args.encode(''latin1'').hex()
+      == "zha_event" and trigger.event.data.args.data | length == 2 -%} {{ trigger.event.data.args.data.encode(''latin1'').hex()
       | int(base=16) }} {%- elif trigger is defined and trigger.platform == "event"
-      and trigger.event.event_type == "zha_event" and trigger.event.data.args | length
-      == 3 -%} {{ trigger.event.data.args.encode(''latin1'').hex()[:4] | int(base=16)
-      }} {%- endif %}'
+      and trigger.event.event_type == "zha_event" and trigger.event.data.args.data
+      | length == 3 -%} {{ trigger.event.data.args.data.encode(''latin1'').hex()[:4]
+      | int(base=16) }} {%- endif %}'
   action:
   - alias: 'Check run option: request or response'
     choose:
@@ -68,34 +68,34 @@
           conditions:
           - alias: arg length is 1
             condition: template
-            value_template: '{{ trigger.event.data.args | length == 1 }}'
+            value_template: '{{ trigger.event.data.args.data | length == 1 }}'
           sequence:
           - alias: Read switch states
             variables:
-              switches: '{{ trigger.event.data.args.encode(''latin1'').hex() | int(base=16)
-                }}'
+              switches: '{{ trigger.event.data.args.data.encode(''latin1'').hex()
+                | int(base=16) }}'
         - alias: 2 bytes (temperature) received
           conditions:
           - alias: arg length is 2
             condition: template
-            value_template: '{{ trigger.event.data.args | length == 2 }}'
+            value_template: '{{ trigger.event.data.args.data | length == 2 }}'
           sequence:
           - alias: Read temperature
             variables:
-              temp: '{{ trigger.event.data.args.encode(''latin1'').hex() | int(base=16)
+              temp: '{{ trigger.event.data.args.data.encode(''latin1'').hex() | int(base=16)
                 }}'
         - alias: 3 bytes (temperature + switches status) received
           conditions:
           - alias: arg length is 3
             condition: template
-            value_template: '{{ trigger.event.data.args | length == 3 }}'
+            value_template: '{{ trigger.event.data.args.data | length == 3 }}'
           sequence:
           - alias: Read temperature and switch states
             variables:
-              temp: '{{ trigger.event.data.args.encode(''latin1'').hex()[:4] | int(base=16)
-                }}'
-              switches: '{{ trigger.event.data.args.encode(''latin1'').hex()[4:] |
-                int(base=16) }}'
+              temp: '{{ trigger.event.data.args.data.encode(''latin1'').hex()[:4]
+                | int(base=16) }}'
+              switches: '{{ trigger.event.data.args.data.encode(''latin1'').hex()[4:]
+                | int(base=16) }}'
       - choose:
         - alias: New switch states available
           conditions:
@@ -246,6 +246,7 @@
               - group.tosr0x
               to: 'off'
             timeout: ''
+        enabled: false
   - alias: Check if the current phase is on or off and switch the phase if needed
     choose:
     - alias: Pump and all valves are off, consider the 'off' phase of the duty cycle
@@ -296,6 +297,7 @@
               to: 'off'
             timeout: ''
         default: []
+        enabled: false
       - alias: Set correct state for valve 1
         service: homeassistant.turn_{{ states('input_boolean.humidifier_zone_1') }}
         entity_id: switch.tosr0x_1
@@ -322,6 +324,7 @@
               to: 'on'
             timeout: ''
         default: []
+        enabled: false
       - alias: Turn on the pump
         service: homeassistant.turn_on
         entity_id: switch.humidifier_pump
@@ -341,6 +344,7 @@
               - switch.humidifier_pump
               to: 'on'
         default: []
+        enabled: false
     default:
     - alias: Do not switch off when a humidifier is being switched on
       condition: template

@@ -30,3 +30,74 @@ turn_off_tv:
       entity_id: automation.humidifier_duty_cycle_2
   mode: restart
   icon: mdi:restart
+tosr0x_switch:
+  alias: TOSR0X_switch
+  variables:
+    repeat_count: 10
+    actions:
+      turn_on: efghijkl
+      turn_off: opqrstuv
+    code: '{{actions[action][switch_number-1:switch_number]}}'
+  fields:
+    switch_number:
+      name: Switch number
+      description: The number of the swich to operate
+      required: true
+      example: 1
+      selector:
+        number:
+          min: 1
+          max: 4
+          mode: box
+    action:
+      name: Action
+      description: Turn on or off
+      required: true
+      example: turn_on
+      selector:
+        select:
+          options:
+          - label: Turn on
+            value: turn_on
+          - label: Turn off
+            value: turn_off
+  sequence:
+  - service: notify.persistent_notification
+    enabled: false
+    data:
+      title: TOSR0X Debug
+      message: 'switch_number: {{switch_number}}, action: {{action}}, code: {{code}}'
+  - condition: '{{ 1 <= switch_number <= 4 and action in (''turn_on'', ''turn_off'')
+      }}'
+  - repeat:
+      sequence:
+      - if:
+        - '{{not repeat.first}}'
+        then:
+        - service: notify.persistent_notification
+          data:
+            title: TOSR0X
+            message: 'Value not updated! switch_number: {{switch_number}}, action:
+              {{action}}'
+      - continue_on_error: true
+        service: zha.issue_zigbee_cluster_command
+        data:
+          ieee: 00:13:a2:00:41:a0:7e:1a
+          endpoint_id: 232
+          cluster_id: 17
+          cluster_type: in
+          command: 0
+          command_type: server
+          args: '{{code}}['
+      - wait_template: '{{is_state(''input_boolean.tosr0x_'' + switch_number|string
+          + ''_state'', action[5:])}}'
+        timeout: 00:00:01
+      until:
+      - '{{wait.completed or repeat.index >= repeat_count}}'
+  - service: input_boolean.{{action}}
+    enabled: false
+    data:
+      entity_id: '{{''input_boolean.tosr0x_'' + switch_number|string + ''_state''}}'
+  mode: queued
+  icon: mdi:dip-switch
+  max: 40
