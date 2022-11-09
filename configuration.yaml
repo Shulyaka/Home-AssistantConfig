@@ -658,9 +658,6 @@ light:
       - light.hue_color_lamp_1
       - light.hue_color_lamp_5
 
-mosportal:
-  username: !secret mosportal_login
-  password: !secret mosportal_passwd
-  flats:
-    - flat: !secret mosportal_flat
-      paycode: !secret mosportal_paycode
+moscow_pgu:
+  username: !secret moscow_pgu_username
+  password: !secret moscow_pgu_password
