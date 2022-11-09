@@ -11,4 +11,5 @@ export PYTHONUSERBASE PATH
 COMMAND=$1
 shift
 
-exec pip3 $COMMAND --user --no-cache-dir --log /tmp/pip-log-${USER}.txt $@
+echo PYTHONUSERBASE=$PYTHONUSERBASE PATH=$PATH $(which pip3) $COMMAND $(test "$COMMAND" != "uninstall" && echo "--user") --no-cache-dir --log /tmp/pip-log-${USER}.txt $@
+exec pip3 $COMMAND $(test "$COMMAND" != "uninstall" && echo "--user") --no-cache-dir --log /tmp/pip-log-${USER}.txt $@
