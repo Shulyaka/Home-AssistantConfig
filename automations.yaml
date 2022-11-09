@@ -141,7 +141,8 @@
     - alias: Request TOSR0X update
       service: zha.issue_zigbee_cluster_command
       data:
-        args: a[
+        params:
+          data: a[
         cluster_id: 17
         cluster_type: in
         command: 0
@@ -227,26 +228,26 @@
           and trigger.to_state.domain in ("humidifier", "group") and trigger.to_state.state
           == "on") }}'
       sequence:
-      - alias: Close the pressure drop valves
-        service: homeassistant.turn_off
-        entity_id: group.tosr0x
-      - alias: Check if valve changes applied
-        choose:
-        - alias: Wait till valve changes applied
-          conditions:
-          - alias: group.tosr0x state is on
-            condition: state
-            entity_id: group.tosr0x
-            state: 'on'
-          sequence:
-          - alias: Wait for valve states to be off
-            wait_for_trigger:
-            - platform: state
-              entity_id:
-              - group.tosr0x
-              to: 'off'
-            timeout: ''
-        enabled: false
+      - alias: Close valve 1
+        service: script.tosr0x_switch
+        data:
+          switch_number: 1
+          action: turn_off
+      - alias: Close valve 2
+        service: script.tosr0x_switch
+        data:
+          switch_number: 2
+          action: turn_off
+      - alias: Close valve 3
+        service: script.tosr0x_switch
+        data:
+          switch_number: 3
+          action: turn_off
+      - alias: Close valve 4
+        service: script.tosr0x_switch
+        data:
+          switch_number: 4
+          action: turn_off
   - alias: Check if the current phase is on or off and switch the phase if needed
     choose:
     - alias: Pump and all valves are off, consider the 'off' phase of the duty cycle
@@ -268,6 +269,7 @@
         entity_id: humidifier.uvlazhnitel_v_gostinoi
         state: 'on'
       - alias: Check if not overhumidified
+        enabled: false
         condition: numeric_state
         entity_id: sensor.lumi_lumi_weather_3bfcf003_humidity, sensor.lumi_lumi_sens_48945e02_humidity,
           sensor.lumi_lumi_sens_02fbebbd_1_1029
@@ -278,72 +280,30 @@
           and trigger.to_state.domain == "humidifier" and trigger.to_state.state ==
           "off") }}'
       - alias: Ensure that preassure dropping valve is off
-        service: homeassistant.turn_off
-        entity_id: switch.tosr0x_4
-      - alias: Check if valve changes applied
-        choose:
-        - alias: Wait till valve changes applied
-          conditions:
-          - alias: switch.tosr0x_4 state is on
-            condition: state
-            entity_id: switch.tosr0x_4
-            state: 'on'
-          sequence:
-          - alias: Wait for valve 4 state to be off
-            wait_for_trigger:
-            - platform: state
-              entity_id:
-              - switch.tosr0x_4
-              to: 'off'
-            timeout: ''
-        default: []
-        enabled: false
+        service: script.tosr0x_switch
+        data:
+          switch_number: 4
+          action: turn_off
       - alias: Set correct state for valve 1
-        service: homeassistant.turn_{{ states('input_boolean.humidifier_zone_1') }}
-        entity_id: switch.tosr0x_1
+        service: script.tosr0x_switch
+        data:
+          switch_number: 1
+          action: turn_{{ states('input_boolean.humidifier_zone_1') }}
       - alias: Set correct state for valve 2
-        service: homeassistant.turn_{{ states('input_boolean.humidifier_zone_2') }}
-        entity_id: switch.tosr0x_2
+        service: script.tosr0x_switch
+        data:
+          switch_number: 2
+          action: turn_{{ states('input_boolean.humidifier_zone_2') }}
       - alias: Set correct state for valve 3
-        service: homeassistant.turn_{{ states('input_boolean.humidifier_zone_3') }}
-        entity_id: switch.tosr0x_3
-      - alias: Check if valve changes applied
-        choose:
-        - alias: Wait till valve changes applied
-          conditions:
-          - alias: group.tosr0x state is off
-            condition: state
-            entity_id: group.tosr0x
-            state: 'off'
-          sequence:
-          - alias: Wait for at least one valve to switch on
-            wait_for_trigger:
-            - platform: state
-              entity_id:
-              - group.tosr0x
-              to: 'on'
-            timeout: ''
-        default: []
-        enabled: false
+        service: script.tosr0x_switch
+        data:
+          switch_number: 3
+          action: turn_{{ states('input_boolean.humidifier_zone_3') }}
       - alias: Turn on the pump
-        service: homeassistant.turn_on
+        service: switch.turn_on
         entity_id: switch.humidifier_pump
       - alias: Check if pump turned on
-        choose:
-        - alias: Wait till the pump switch changes applied
-          conditions:
-          - alias: switch.humidifier_pump is off
-            condition: state
-            entity_id: switch.humidifier_pump
-            state: 'off'
-          sequence:
-          - alias: Wait for the pump state
-            wait_for_trigger:
-            - platform: state
-              entity_id:
-              - switch.humidifier_pump
-              to: 'on'
-        default: []
+        wait_template: '{{ is_state("switch.humidifier_pump", "on") }}'
         enabled: false
     default:
     - alias: Do not switch off when a humidifier is being switched on
@@ -352,7 +312,7 @@
         is defined and trigger.platform == "state" and trigger.to_state.domain in
         ("humidifier", "group") and trigger.to_state.state == "on") }}'
     - alias: Turn off the pump
-      service: homeassistant.turn_off
+      service: switch.turn_off
       entity_id: switch.humidifier_pump
     - alias: Wait till preassure drops a bit
       delay:
@@ -361,13 +321,15 @@
         seconds: 4
         milliseconds: 0
     - alias: Drop the remaining preassure
-      service: homeassistant.turn_on
-      entity_id: switch.tosr0x_4
+      service: script.tosr0x_switch
+      data:
+        switch_number: 4
+        action: turn_on
     - alias: Wait a little longer to ensure that no preassure left
       delay:
         hours: 0
         minutes: 0
-        seconds: 56
+        seconds: 26
         milliseconds: 0
     - alias: Close all valves
       service: homeassistant.turn_off
@@ -1177,6 +1139,7 @@
   - alias: Request XBee temperature update
     service: zha.issue_zigbee_cluster_command
     data:
+      params: {}
       ieee: 00:13:a2:00:41:a0:7e:1a
       endpoint_id: 230
       command: 67

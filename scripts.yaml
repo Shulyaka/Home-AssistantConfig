@@ -78,7 +78,7 @@ tosr0x_switch:
           data:
             title: TOSR0X
             message: 'Value not updated! switch_number: {{switch_number}}, action:
-              {{action}}'
+              {{action}}, delay: {{repeat.index - 1}} seconds'
       - continue_on_error: true
         service: zha.issue_zigbee_cluster_command
         data:
@@ -88,7 +88,8 @@ tosr0x_switch:
           cluster_type: in
           command: 0
           command_type: server
-          args: '{{code}}['
+          params:
+            data: '{{code}}['
       - wait_template: '{{is_state(''input_boolean.tosr0x_'' + switch_number|string
           + ''_state'', action[5:])}}'
         timeout: 00:00:01
