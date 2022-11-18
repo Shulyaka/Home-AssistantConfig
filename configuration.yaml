@@ -669,5 +669,5 @@ light:
       - light.hue_color_lamp_5
 
 moscow_pgu:
-  - username: !secret moscow_pgu_username
-    password: !secret moscow_pgu_password
+  username: !secret moscow_pgu_username
+  password: !secret moscow_pgu_password
