@@ -3,7 +3,7 @@
 default_config:
 
 frontend:
-  development_repo: /usr/share/nas/other/home-assistant-polymer
+#  development_repo: /usr/share/nas/other/home-assistant-polymer
 
 conversation:
 
