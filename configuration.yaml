@@ -3,7 +3,7 @@
 default_config:
 
 frontend:
-#  development_repo: /usr/share/nas/other/home-assistant-polymer
+  development_repo: /usr/share/nas/other/home-assistant-polymer
 
 conversation:
 
@@ -480,6 +480,16 @@ template:
 #      state: "{{ ((float(states('sensor.humidifier_pressure_in_pct')) * 3.3 * 8 - 400) / 300) | round(2)}}"
       device_class: pressure
       unit_of_measurement: 'bar'
+    - name: Backup watchdog
+      unique_id: backup_watchdog_timer
+      availability: "{{ is_state('light.sonoff_10013f38ac_1', 'on') }}"
+      state: "{{ state_attr('automation.backup_watchdog', 'last_triggered') + timedelta(minutes=31) }}"
+      device_class: timestamp
+    - name: Backup1 watchdog
+      unique_id: backup1_watchdog_timer
+      availability: "{{ is_state('switch.tz3000_cjrngdr3_ts011f_switch', 'on') }}"
+      state: "{{ state_attr('automation.backup1_watchdog', 'last_triggered') + timedelta(minutes=31) }}"
+      device_class: timestamp
   - trigger:
     - platform: event
       event_type: zha_event
@@ -659,5 +669,5 @@ light:
       - light.hue_color_lamp_5
 
 moscow_pgu:
-  username: !secret moscow_pgu_username
-  password: !secret moscow_pgu_password
+  - username: !secret moscow_pgu_username
+    password: !secret moscow_pgu_password

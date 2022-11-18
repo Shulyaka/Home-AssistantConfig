@@ -329,7 +329,7 @@
       delay:
         hours: 0
         minutes: 0
-        seconds: 26
+        seconds: 56
         milliseconds: 0
     - alias: Close all valves
       service: homeassistant.turn_off
@@ -715,27 +715,29 @@
     sleep_duration_minutes: '{{(sleep_duration/60-sleep_duration_hours*60)|round}}'
   mode: single
 - id: '1612218193244'
-  alias: Moskvenok_scan
+  alias: School_pass_scan
   description: ''
   trigger:
   - platform: state
-    entity_id: sensor.email
-    to: Вход в детский сад
+    entity_id:
+    - sensor.email
+    to: Вход в школу
   - platform: state
-    entity_id: sensor.email
-    to: Выход из детского сада
+    entity_id:
+    - sensor.email
+    to: Выход из школы
   condition: []
   action:
   - choose:
     - conditions:
       - condition: state
         entity_id: sensor.email
-        state: Вход в детский сад
+        state: Вход в школу
       sequence:
       - service: device_tracker.see
         data:
           dev_id: moskvenok
-          location_name: Сад
+          location_name: Школа
           source_type: bluetooth_le
     default:
     - service: device_tracker.see
@@ -744,7 +746,7 @@
         location_name: '{{ states("person.ksusha") }}'
     - service: device_tracker.see
       data:
-        dev_id: moskvenok
+        dev_id: school_pass
         location_name: not_home
         source_type: bluetooth_le
   mode: queued
@@ -1295,3 +1297,129 @@
         entity_id: input_boolean.fan_force_on
   mode: queued
   max: 10
+- id: '1668363102805'
+  alias: Backup watchdog
+  description: Backup watchdog
+  trigger:
+  - platform: device
+    type: changed_states
+    device_id: 14c5be6c720fb48ea6daf7d4dfa7dcfc
+    entity_id: light.sonoff_10013f38ac_1
+    domain: light
+  - platform: homeassistant
+    event: start
+  - platform: event
+    event_type: automation_reloaded
+    enabled: true
+  condition:
+  - condition: template
+    value_template: '{{trigger is not defined or trigger.platform != "event" or trigger.event.event_type
+      != "automation_reloaded" or this.attributes.current == 0}}'
+    alias: Only trigger if this automation has been reloaded
+  action:
+  - condition: device
+    type: is_on
+    device_id: 14c5be6c720fb48ea6daf7d4dfa7dcfc
+    entity_id: light.sonoff_10013f38ac_1
+    domain: light
+    alias: Cancel watchdog timer if backup is off
+  - service: notify.persistent_notification
+    data:
+      message: Watchdog refreshed
+      title: Test
+    enabled: false
+  - delay:
+      hours: 0
+      minutes: 31
+      seconds: 0
+      milliseconds: 0
+  - type: turn_off
+    device_id: 14c5be6c720fb48ea6daf7d4dfa7dcfc
+    entity_id: light.sonoff_10013f38ac_1
+    domain: light
+    enabled: true
+  - service: notify.persistent_notification
+    data:
+      message: Turning off backup
+      title: Test
+    enabled: false
+  mode: restart
+- id: '1668374631193'
+  alias: Backup1 watchdog
+  description: Backup watchdog
+  trigger:
+  - platform: device
+    type: changed_states
+    device_id: 93d6fe03827abcc7ba77d3dbc9f6fbde
+    entity_id: switch.tz3000_cjrngdr3_ts011f_switch
+    domain: switch
+  - platform: homeassistant
+    event: start
+  - platform: event
+    event_type: automation_reloaded
+    enabled: true
+  condition:
+  - condition: template
+    value_template: '{{trigger is not defined or trigger.platform != "event" or trigger.event.event_type
+      != "automation_reloaded" or this.attributes.current == 0}}'
+    alias: Only trigger if this automation has been reloaded
+  action:
+  - condition: device
+    type: is_on
+    device_id: 93d6fe03827abcc7ba77d3dbc9f6fbde
+    entity_id: switch.tz3000_cjrngdr3_ts011f_switch
+    domain: switch
+    alias: Cancel watchdog timer if backup1 is off
+  - service: notify.persistent_notification
+    data:
+      message: Watchdog refreshed
+      title: Test
+    enabled: false
+  - delay:
+      hours: 0
+      minutes: 31
+      seconds: 0
+      milliseconds: 0
+    enabled: false
+  - wait_for_trigger:
+    - type: power
+      platform: device
+      device_id: 93d6fe03827abcc7ba77d3dbc9f6fbde
+      entity_id: sensor.tz3000_cjrngdr3_ts011f_active_power
+      domain: sensor
+      below: 0.1
+      for:
+        hours: 0
+        minutes: 6
+        seconds: 0
+    timeout:
+      hours: 0
+      minutes: 31
+      seconds: 0
+      milliseconds: 0
+  - type: turn_off
+    device_id: 93d6fe03827abcc7ba77d3dbc9f6fbde
+    entity_id: switch.tz3000_cjrngdr3_ts011f_switch
+    domain: switch
+    enabled: true
+  - service: notify.persistent_notification
+    data:
+      message: Turning off backup1
+      title: Test
+    enabled: false
+  mode: restart
+- id: '1668471627579'
+  alias: Start backup
+  description: ''
+  trigger:
+  - platform: time
+    at: 04:45:00
+  condition: []
+  action:
+  - service: homeassistant.turn_on
+    data: {}
+    target:
+      entity_id:
+      - light.sonoff_10013f38ac_1
+      - switch.tz3000_cjrngdr3_ts011f_switch
+  mode: single
