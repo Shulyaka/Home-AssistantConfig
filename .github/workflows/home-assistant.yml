@@ -18,7 +18,7 @@ jobs:
         with:
           submodules: recursive
       - run: |
-          ln -s travis_service_account.json service_account.json
+          ln -s ci_service_account.json service_account.json
           mkdir ./video ./photo ./music
           touch /tmp/dummy.crt
           sed -e 's%/usr/share/nas%.%g' -i configuration.yaml
@@ -27,5 +27,5 @@ jobs:
         uses: frenck/action-home-assistant@v1
         with:
           path: "."
-          secrets: travis_secrets.yaml
+          secrets: ci_secrets.yaml
           version: "${{ matrix.version }}"
