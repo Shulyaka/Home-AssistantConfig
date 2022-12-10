@@ -35,18 +35,19 @@ tosr0x_switch:
   variables:
     repeat_count: 10
     actions:
-      turn_on: efghijkl
-      turn_off: opqrstuv
-    code: '{{actions[action][switch_number-1:switch_number]}}'
+      turn_on: defghijkl
+      turn_off: nopqrstuv
+    code: '{{actions[action][switch_number:switch_number+1]}}'
+    ieee: 00:13:a2:00:41:a0:7e:1a
   fields:
     switch_number:
       name: Switch number
-      description: The number of the swich to operate
+      description: The number of the swich to operate, 0 for all switches
       required: true
       example: 1
       selector:
         number:
-          min: 1
+          min: 0
           max: 4
           mode: box
     action:
@@ -67,12 +68,12 @@ tosr0x_switch:
     data:
       title: TOSR0X Debug
       message: 'switch_number: {{switch_number}}, action: {{action}}, code: {{code}}'
-  - condition: '{{ 1 <= switch_number <= 4 and action in (''turn_on'', ''turn_off'')
+  - condition: '{{ 0 <= switch_number <= 4 and action in (''turn_on'', ''turn_off'')
       }}'
   - repeat:
       sequence:
       - if:
-        - '{{not repeat.first}}'
+        - '{{repeat.index > 3}}'
         then:
         - service: notify.persistent_notification
           data:
@@ -82,7 +83,7 @@ tosr0x_switch:
       - continue_on_error: true
         service: zha.issue_zigbee_cluster_command
         data:
-          ieee: 00:13:a2:00:41:a0:7e:1a
+          ieee: '{{ieee}}'
           endpoint_id: 232
           cluster_id: 17
           cluster_type: in
@@ -90,15 +91,14 @@ tosr0x_switch:
           command_type: server
           params:
             data: '{{code}}['
-      - wait_template: '{{is_state(''input_boolean.tosr0x_'' + switch_number|string
-          + ''_state'', action[5:])}}'
+      - wait_template: "{% if switch_number > 0 -%}\n  {{is_state('input_boolean.tosr0x_'\
+          \ + switch_number|string + '_state', action[5:])}}\n{%- else -%}\n  {{is_state('input_boolean.tosr0x_1_state',\
+          \ action[5:]) and\n    is_state('input_boolean.tosr0x_2_state', action[5:])\
+          \ and\n    is_state('input_boolean.tosr0x_3_state', action[5:]) and\n  \
+          \  is_state('input_boolean.tosr0x_4_state', action[5:])}}\n{%- endif %}"
         timeout: 00:00:01
       until:
       - '{{wait.completed or repeat.index >= repeat_count}}'
-  - service: input_boolean.{{action}}
-    enabled: false
-    data:
-      entity_id: '{{''input_boolean.tosr0x_'' + switch_number|string + ''_state''}}'
   mode: queued
   icon: mdi:dip-switch
   max: 40

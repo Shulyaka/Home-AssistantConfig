@@ -173,19 +173,21 @@
   trigger:
   - id: pump_on_time_expired
     platform: state
-    entity_id: switch.humidifier_pump
+    entity_id:
+    - switch.humidifier_pump
     for:
       hours: 0
-      minutes: 5
+      minutes: 6
       seconds: 0
     to: 'on'
     alias: When Humidifier Pump stays on for too long
   - id: pump_off_time_expired
     platform: state
-    entity_id: switch.humidifier_pump
+    entity_id:
+    - switch.humidifier_pump
     for:
       hours: 0
-      minutes: 5
+      minutes: 3
       seconds: 0
     to: 'off'
     alias: When Humidifier Pump stays off for too long
@@ -211,6 +213,9 @@
   - id: automation_reloaded
     platform: event
     event_type: automation_reloaded
+  - platform: homeassistant
+    event: start
+    enabled: true
   condition: []
   action:
   - alias: Check if switching off while the pressure drop stage is still active, to
@@ -227,26 +232,16 @@
         value_template: '{{ trigger is not defined or (trigger.platform == "state"
           and trigger.to_state.domain in ("humidifier", "group") and trigger.to_state.state
           == "on") }}'
+      - condition: device
+        type: is_off
+        device_id: d62ae9c5579f4bd682a506f6a7e00c2a
+        entity_id: switch.humidifier_pump
+        domain: switch
       sequence:
-      - alias: Close valve 1
+      - alias: Close all valves
         service: script.tosr0x_switch
         data:
-          switch_number: 1
-          action: turn_off
-      - alias: Close valve 2
-        service: script.tosr0x_switch
-        data:
-          switch_number: 2
-          action: turn_off
-      - alias: Close valve 3
-        service: script.tosr0x_switch
-        data:
-          switch_number: 3
-          action: turn_off
-      - alias: Close valve 4
-        service: script.tosr0x_switch
-        data:
-          switch_number: 4
+          switch_number: 0
           action: turn_off
   - alias: Check if the current phase is on or off and switch the phase if needed
     choose:
@@ -265,6 +260,7 @@
         state: 'on'
       - alias: Only continue if the living room humidifier is on. This is a temporary
           workaround
+        enabled: false
         condition: state
         entity_id: humidifier.uvlazhnitel_v_gostinoi
         state: 'on'
@@ -318,7 +314,7 @@
       delay:
         hours: 0
         minutes: 0
-        seconds: 4
+        seconds: 5
         milliseconds: 0
     - alias: Drop the remaining preassure
       service: script.tosr0x_switch
@@ -332,14 +328,10 @@
         seconds: 56
         milliseconds: 0
     - alias: Close all valves
-      service: homeassistant.turn_off
-      data: {}
-      target:
-        entity_id:
-        - switch.tosr0x_1
-        - switch.tosr0x_2
-        - switch.tosr0x_3
-        - switch.tosr0x_4
+      service: script.tosr0x_switch
+      data:
+        switch_number: 0
+        action: turn_off
   mode: restart
   max: 10
 - id: '1574587123101'
@@ -701,10 +693,6 @@
     to: 'off'
   condition: []
   action:
-  - service: media_player.volume_set
-    data:
-      volume_level: 0.5
-    entity_id: media_player.yandex_station_ff98f0293c2e0ee4e18dc30d
   - service: notify.telegram_114122164
     data:
       message: Доброе утро! Вы спали {{sleep_duration_hours|format(morph='час', as_text=false)}}
@@ -1096,20 +1084,6 @@
     data:
       message: Влажность в детской понизилась
   mode: single
-- id: '1620894491966'
-  alias: Dasha bedtime routine
-  description: ''
-  trigger:
-  - platform: state
-    entity_id: input_boolean.sleep_daria
-    to: 'on'
-  condition: []
-  action:
-  - service: media_player.volume_set
-    data:
-      volume_level: 0.2
-    entity_id: media_player.yandex_station_ff98f0293c2e0ee4e18dc30d
-  mode: single
 - id: '1634945798081'
   alias: Low battery level detection & notification for all battery sensors
   description: ''
@@ -1414,12 +1388,80 @@
   trigger:
   - platform: time
     at: 04:45:00
-  condition: []
+  condition:
+  - condition: state
+    entity_id: light.sonoff_10013f38ac_1
+    state: 'off'
+    for:
+      hours: 4
+      minutes: 45
+      seconds: 0
   action:
   - service: homeassistant.turn_on
     data: {}
     target:
       entity_id:
       - light.sonoff_10013f38ac_1
-      - switch.tz3000_cjrngdr3_ts011f_switch
   mode: single
+- id: '1669802109660'
+  alias: Start backup1
+  description: ''
+  trigger:
+  - platform: time
+    at: 04:45:00
+  condition:
+  - condition: device
+    type: is_off
+    device_id: 93d6fe03827abcc7ba77d3dbc9f6fbde
+    entity_id: switch.tz3000_cjrngdr3_ts011f_switch
+    domain: switch
+    for:
+      hours: 4
+      minutes: 45
+      seconds: 0
+  action:
+  - type: turn_on
+    device_id: 93d6fe03827abcc7ba77d3dbc9f6fbde
+    entity_id: switch.tz3000_cjrngdr3_ts011f_switch
+    domain: switch
+  mode: single
+- id: '1669998044531'
+  alias: Set Alice volume based on ambient lights
+  description: ''
+  trigger:
+  - type: illuminance
+    platform: device
+    device_id: 842825ede1595f96155899bb71339bda
+    entity_id: sensor.lumi_lumi_sen_ill_mgl01_e924773c_illuminance
+    domain: sensor
+    below: 5
+  - type: illuminance
+    platform: device
+    device_id: 842825ede1595f96155899bb71339bda
+    entity_id: sensor.lumi_lumi_sen_ill_mgl01_e924773c_illuminance
+    domain: sensor
+    above: 5
+  condition: []
+  action:
+  - choose:
+    - conditions:
+      - type: is_illuminance
+        condition: device
+        device_id: 842825ede1595f96155899bb71339bda
+        entity_id: sensor.lumi_lumi_sen_ill_mgl01_e924773c_illuminance
+        domain: sensor
+        above: 5
+      sequence:
+      - service: media_player.volume_set
+        data:
+          volume_level: 0.5
+        target:
+          entity_id: media_player.yandex_station_ff98f0293c2e0ee4e18dc30d
+    - conditions: []
+      sequence:
+      - service: media_player.volume_set
+        data:
+          volume_level: 0.2
+        target:
+          entity_id: media_player.yandex_station_ff98f0293c2e0ee4e18dc30d
+  mode: restart
