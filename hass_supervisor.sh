@@ -7,13 +7,13 @@ trap 'kill -INT "$CPID"' INT
 
 RET=100
 while [ $RET == 100 ]; do
-  echo Running "$PROG"
+  RET=137
 
+  echo Running "$PROG"
   $PROG &
   CPID=$!
 
-  RET=129
-  while [ $RET -gt 128 ]; do
+  while [ -n "$(ps | awk '{print $1; }' | grep $CPID)" ]; do
     wait $CPID
     RET=$?
   done
