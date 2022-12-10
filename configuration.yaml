@@ -503,6 +503,29 @@ template:
         unit_of_measurement: "°C"
         device_class: temperature
         state_class: measurement
+  - trigger:
+      - platform: time
+        at: "7:00:00"
+      - platform: time
+        at: "10:00:00"
+      - platform: time
+        at: "17:00:00"
+      - platform: time
+        at: "21:00:00"
+      - platform: time
+        at: "23:00:00"
+      - platform: homeassistant
+        event: start
+    sensor:
+      - name: "Energy Tariff Zone"
+        unique_id: mosenergosbyt_energy_tariff
+        state: "{% if 7 <= now().hour < 10 or 17 <= now().hour < 21 -%}T1{%- elif 23 <= now().hour or now().hour < 7 -%}T2{%- else -%}T3{%- endif %}"
+        attributes:
+          description: "{% if 7 <= now().hour < 10 or 17 <= now().hour < 21 -%}Peak zone{%- elif 23 <= now().hour or now().hour < 7 -%}Night zone{%- else -%}Half-peak zone{%- endif %}"
+      - name: "Energy Cost"
+        unique_id: mosenergosbyt_energy_cost
+        state: "{% if states('sensor.energy_tariff')=='T1' -%}9.35{%- elif states('sensor.energy_tariff')=='T2' -%}2.98{%- elif states('sensor.energy_tariff')=='T3' -%}6.43{%- endif %}"
+        unit_of_measurement: "₽/kWh"
 
 sensor:
   - platform: rest
