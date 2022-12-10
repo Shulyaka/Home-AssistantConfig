@@ -1,0 +1,29 @@
+name: Home Assistant CI
+on:
+  push:
+  pull_request:
+  schedule:
+    - cron: 0 12 * * *
+
+jobs:
+  home-assistant:
+    name: "Home Assistant Core ${{ matrix.version }} Configuration Check"
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        version: ["stable", "beta", "dev"]
+    steps:
+      - name: ⤵️ Check out configuration from GitHub
+        uses: actions/checkout@v3
+      - run: |
+          ln -s travis_service_account.json service_account.json
+          mkdir -p /tmp/video /tmp/photo /tmp/music
+          touch /tmp/dummy.crt
+          sed -e 's%usr/share/nas%tmp%g' -i configuration.yaml
+          sed -e 's%/home/homeassistant/homeassistant/.*%/tmp/dummy.crt%g' -i configuration.yaml
+      - name: 🚀 Run Home Assistant Configuration Check
+        uses: frenck/action-home-assistant@v1
+        with:
+	  path: "."
+          secrets: travis_secrets.yaml
+          version: "${{ matrix.version }}"
