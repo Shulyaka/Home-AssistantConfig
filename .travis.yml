@@ -5,7 +5,7 @@ cache: pip
 python:
   - "3.10"
 install:
-  - pip3 install homeassistant
+  - pip3 install homeassistant dbus_fast
 before_script:
   - ln -s travis_secrets.yaml secrets.yaml
   - ln -s travis_service_account.json service_account.json
