@@ -19,7 +19,7 @@ jobs:
           submodules: recursive
       - run: |
           ln -s ci_service_account.json service_account.json
-          mkdir ./video ./photo ./music
+          mkdir -p ./video ./photo ./music ./other/home-assistant-polymer-prod
           touch /tmp/dummy.crt
           sed -e 's%/usr/share/nas%.%g' -i configuration.yaml
           sed -e 's%/home/homeassistant/homeassistant/.*%/tmp/dummy.crt%g' -i configuration.yaml
