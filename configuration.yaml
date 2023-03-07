@@ -3,7 +3,7 @@
 default_config:
 
 frontend:
-#  development_repo: /usr/share/nas/other/home-assistant-polymer
+  development_repo: /usr/share/nas/other/home-assistant-polymer-prod
 
 conversation:
 
@@ -80,8 +80,8 @@ input_boolean:
     initial: false
     icon: mdi:fan-plus
 
-# Internal variable to hold TOSR0X-T temperature
 input_number:
+  # Internal variable to hold TOSR0X-T temperature
   tosr0x_temp:
     name: TOSR0X-T Temperature State
     min: -55
@@ -90,6 +90,38 @@ input_number:
     mode: box
     unit_of_measurement: '°C'
     icon: mdi:temperature-celsius
+  energy_saved:
+    name: Energy Saved Value
+    min: 0
+    max: 999999
+    step: 0.01
+    mode: box
+    unit_of_measurement: 'kWh'
+    icon: mdi:lightning-bolt-outline
+  energy_t1:
+    name: Energy Saved Value T1
+    min: 0
+    max: 999999
+    step: 0.01
+    mode: box
+    unit_of_measurement: 'kWh'
+    icon: mdi:lightning-bolt-circle
+  energy_t2:
+    name: Energy Saved Value T2
+    min: 0
+    max: 999999
+    step: 0.01
+    mode: box
+    unit_of_measurement: 'kWh'
+    icon: mdi:lightning-bolt-circle
+  energy_t3:
+    name: Energy Saved Value T3
+    min: 0
+    max: 999999
+    step: 0.01
+    mode: box
+    unit_of_measurement: 'kWh'
+    icon: mdi:lightning-bolt-circle
 
 http:
   use_x_forwarded_for: true
@@ -373,10 +405,6 @@ yandex_smart_home:
 
 mycroft:
   host: speaker
-
-almond:
-  type: local
-  host: http://speaker:3000
 
 telegram_bot:
   - platform: webhooks

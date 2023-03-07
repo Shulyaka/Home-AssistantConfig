@@ -1148,6 +1148,11 @@
     device_id: 88cf7cb09ea74676a1afbca9c0bb8aa6
     entity_id: binary_sensor.lumi_lumi_sensor_magnet_aq2_033b73a9_1_6
     domain: binary_sensor
+  - device_id: 46aae9d75760c0ed3d7a5041b541e15b
+    domain: zha
+    platform: device
+    type: Enter
+    subtype: sensor
   condition:
   - type: is_open
     condition: device
@@ -1159,6 +1164,21 @@
     device_id: 4396709177f65d8d9a7c951b2ff22555
     entity_id: binary_sensor.lumi_lumi_sensor_magnet_aq2_c4702205_on_off
     domain: binary_sensor
+  - condition: device
+    type: is_off
+    device_id: ec863b8c8c384379a8185a51b3a8080c
+    entity_id: light.hue_color_lamp_1
+    domain: light
+  - condition: device
+    type: is_off
+    device_id: 6f2b7025f9ff4822b12db8c779420f00
+    entity_id: light.hue_color_lamp_2
+    domain: light
+  - condition: device
+    type: is_off
+    device_id: 32abff1439d940f9951e2427e0cdbeee
+    entity_id: light.hue_color_lamp_5
+    domain: light
   action:
   - service: light.turn_on
     data:
@@ -1169,12 +1189,12 @@
       - light.bathroom_exhaust_lamp
       - light.hue_color_lamp_2
   - wait_for_trigger:
-    - type: opened
+    - device_id: 46aae9d75760c0ed3d7a5041b541e15b
+      domain: zha
       platform: device
-      device_id: 88cf7cb09ea74676a1afbca9c0bb8aa6
-      entity_id: binary_sensor.lumi_lumi_sensor_magnet_aq2_033b73a9_1_6
-      domain: binary_sensor
-      id: door_opened
+      type: Leave
+      subtype: sensor
+      id: leave
     - type: not_opened
       platform: device
       device_id: 0c0d522ab2f3a087faa4e9b6acc1a9a5
@@ -1228,6 +1248,7 @@
         minutes: 0
         seconds: 10
         milliseconds: 0
+      enabled: false
   mode: single
 - id: '1650751372250'
   alias: Bathroom fan force on
@@ -1465,3 +1486,42 @@
         target:
           entity_id: media_player.yandex_station_ff98f0293c2e0ee4e18dc30d
   mode: restart
+- id: '1671469333453'
+  alias: Multizone energy meter
+  description: ''
+  trigger:
+  - platform: state
+    entity_id:
+    - sensor.tze200_hkdl5fmv_ts0601_summation_delivered
+  condition: []
+  action:
+  - service: input_number.set_value
+    target:
+      entity_id: '{{ ''input_number.energy_'' + states(''sensor.energy_tariff'')|lower
+        }}'
+    data:
+      value: '{{ (states(''input_number.energy_'' + states(''sensor.energy_tariff'')|lower)|float
+        + states(''sensor.tze200_hkdl5fmv_ts0601_summation_delivered'')|float - states(''input_number.energy_saved'')|float)|round(2)
+        }}'
+  - service: input_number.set_value
+    data:
+      value: '{{ states(''sensor.tze200_hkdl5fmv_ts0601_summation_delivered'') }}'
+    target:
+      entity_id: input_number.energy_saved
+  mode: single
+- id: '1671469339690'
+  alias: Multizone energy meter
+  description: ''
+  trigger:
+  - platform: state
+    entity_id:
+    - sensor.tze200_hkdl5fmv_ts0601_summation_delivered
+  condition: []
+  action:
+  - service: input_number.set_value
+    data:
+      value:
+        '[object Object]':
+    target:
+      entity_id: input_number.energy_saved
+  mode: single
