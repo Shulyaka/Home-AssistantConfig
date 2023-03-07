@@ -15,7 +15,7 @@
 # Requires telegram_bot to be set up.
 #
 from homeassistant.core import Context, Event, HomeAssistant
-from homeassistant.components.conversation import _async_converse
+from homeassistant.components.conversation import async_converse
 from homeassistant.components.telegram_bot import (
     ATTR_CHAT_ID,
     ATTR_MESSAGE,
@@ -31,7 +31,6 @@ import re
 
 DOMAIN = "telegram_bot_conversation"
 
-
 async def async_setup(hass: HomeAssistant, config: dict) -> bool:
     async def text_events(event: Event):
         # Only deal with private chats.
@@ -42,7 +41,7 @@ async def async_setup(hass: HomeAssistant, config: dict) -> bool:
         if re.search(r"https://(www.|)youtu*", event.data[ATTR_TEXT]):
             return
 
-        response = await _async_converse(
+        conversation_result = await async_converse(
             hass,
             event.data[ATTR_TEXT],
             DOMAIN,
@@ -53,7 +52,7 @@ async def async_setup(hass: HomeAssistant, config: dict) -> bool:
             TELEGRAM_DOMAIN,
             SERVICE_SEND_MESSAGE,
             {
-                ATTR_MESSAGE: escape_markdown(response.speech["plain"]["speech"]),
+                ATTR_MESSAGE: escape_markdown(conversation_result.response.speech["plain"]["speech"]),
                 ATTR_TARGET: event.data[ATTR_USER_ID],
             },
         )
