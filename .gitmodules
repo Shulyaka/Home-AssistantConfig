@@ -25,3 +25,6 @@
 [submodule ".submodules/SonoffLAN"]
 	path = .submodules/SonoffLAN
 	url = https://github.com/AlexxIT/SonoffLAN.git
+[submodule ".submodules/xbee_humidifier"]
+	path = .submodules/xbee_humidifier
+	url = git@github.com:Shulyaka/xbee_humidifier.git
