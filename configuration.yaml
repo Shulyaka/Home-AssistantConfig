@@ -552,15 +552,6 @@ sensor:
     value_template: 'Available'
     device_class: signal_strength
     json_attributes: counters
-  - platform: imap_email_content
-    name: Email
-    server: shulyaka.org.ru
-    username: homeassistant
-    password: !secret email_password
-    senders:
-      - moskvenok@mos.ru
-      - shulyaka@gmail.com
-      - denis@shulyaka.org.ru
 
 command_line:
   - binary_sensor:

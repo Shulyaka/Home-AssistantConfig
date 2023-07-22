@@ -706,37 +706,36 @@
   alias: School_pass_scan
   description: ''
   trigger:
-  - platform: state
-    entity_id:
-    - sensor.email
-    to: Вход в школу
-  - platform: state
-    entity_id:
-    - sensor.email
-    to: Выход из школы
+  - platform: event
+    event_type: imap_content
+    event_data:
+      sender: moskvenok@mos.ru
   condition: []
   action:
   - choose:
     - conditions:
-      - condition: state
-        entity_id: sensor.email
-        state: Вход в школу
+      - condition: template
+        value_template: '{{trigger.event.data["subject"] == "Вход в школу"}}'
       sequence:
       - service: device_tracker.see
         data:
           dev_id: moskvenok
           location_name: Школа
           source_type: bluetooth_le
-    default:
-    - service: device_tracker.see
-      data:
-        dev_id: parents
-        location_name: '{{ states("person.ksusha") }}'
-    - service: device_tracker.see
-      data:
-        dev_id: school_pass
-        location_name: not_home
-        source_type: bluetooth_le
+    - conditions:
+      - condition: template
+        value_template: '{{trigger.event.data["subject"] == "Выход из школы"}}'
+      sequence:
+      - service: device_tracker.see
+        data:
+          dev_id: parents
+          location_name: '{{ states("person.ksusha") }}'
+      - service: device_tracker.see
+        data:
+          dev_id: school_pass
+          location_name: not_home
+          source_type: bluetooth_le
+    default: []
   mode: queued
   max: 10
 - id: '1612291379009'
