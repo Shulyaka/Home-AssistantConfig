@@ -2,8 +2,8 @@
 # Configure a default setup of Home Assistant (frontend, api, etc)
 default_config:
 
-frontend:
-  development_repo: /usr/share/nas/other/home-assistant-polymer-prod
+#frontend:
+#  development_repo: /usr/share/nas/other/home-assistant-polymer-prod
 
 conversation:
 
@@ -12,11 +12,6 @@ discovery:
     - dlna_dmr
 
 bluetooth:
-
-# Text to speech
-tts:
-  - platform: google_translate
-    base_url: https://shulyaka.org.ru
 
 group: !include groups.yaml
 automation: !include automations.yaml
@@ -403,8 +398,8 @@ yandex_smart_home:
     light.lumi_lumi_relay_fan:
       type: devices.types.purifier
 
-mycroft:
-  host: speaker
+#mycroft:
+#  host: speaker
 
 telegram_bot:
   - platform: webhooks
@@ -423,8 +418,8 @@ notify:
     vapid_email: Shulyaka@gmail.com
   - platform: syslog
     name: syslog
-  - platform: mycroft
-    name: mycroft
+#  - platform: mycroft
+#    name: mycroft
   - platform: telegram
     name: telegram_114122164
     chat_id: 114122164
@@ -441,17 +436,11 @@ zha:
   database_path: /srv/homeassistant/zigbee.db
 
 media_player:
-  - platform: philips_js
-    host: 192.168.1.103
-    name: Philips TV JS
-  - platform: dlna_dmr
-    url: http://192.168.1.103:49153/nmrDescription.xml
-    name: Philips TV DLNA
   - platform: universal
     name: Philips TV
     children:
-      - media_player.philips_tv_js
       - media_player.philips_tv_2
+      - media_player.philips_tv_3
   - platform: mpd
     host: speaker
 
@@ -515,7 +504,7 @@ template:
       device_class: timestamp
     - name: Backup1 watchdog
       unique_id: backup1_watchdog_timer
-      availability: "{{ is_state('switch.tz3000_cjrngdr3_ts011f_switch', 'on') }}"
+      availability: "{{ is_state('light.lumi_lumi_relay_c2acn01_light_2', 'on') }}"
       state: "{{ state_attr('automation.backup1_watchdog', 'last_triggered') + timedelta(minutes=31) }}"
       device_class: timestamp
   - trigger:
@@ -533,23 +522,24 @@ template:
         state_class: measurement
   - trigger:
       - platform: time
-        at: "7:00:00"
+        at: "6:00:00"
       - platform: time
-        at: "10:00:00"
+        at: "9:00:00"
       - platform: time
-        at: "17:00:00"
+        at: "16:00:00"
       - platform: time
-        at: "21:00:00"
+        at: "20:00:00"
       - platform: time
-        at: "23:00:00"
+        at: "22:00:00"
       - platform: homeassistant
         event: start
     sensor:
       - name: "Energy Tariff Zone"
         unique_id: mosenergosbyt_energy_tariff
-        state: "{% if 7 <= now().hour < 10 or 17 <= now().hour < 21 -%}T1{%- elif 23 <= now().hour or now().hour < 7 -%}T2{%- else -%}T3{%- endif %}"
+        state: "{% if 6 <= now().hour < 9 or 16 <= now().hour < 20 -%}T1{%- elif 22 <= now().hour or now().hour < 6 -%}T2{%- else -%}T3{%- endif %}"
         attributes:
-          description: "{% if 7 <= now().hour < 10 or 17 <= now().hour < 21 -%}Peak zone{%- elif 23 <= now().hour or now().hour < 7 -%}Night zone{%- else -%}Half-peak zone{%- endif %}"
+          description: "{% if 6 <= now().hour < 9 or 16 <= now().hour < 20 -%}Peak zone{%- elif 22 <= now().hour or now().hour < 6 -%}Night zone{%- else -%}Half-peak zone{%- endif %}"
+          timespan: "{% if 6 <= now().hour < 9 or 16 <= now().hour < 20 -%}07:00 - 10:00, 17:00 - 21:00{%- elif 22 <= now().hour or now().hour < 6 -%}23:00 - 07:00{%- else -%}10:00 - 17:00, 21:00 - 23:00{%- endif %}"
       - name: "Energy Cost"
         unique_id: mosenergosbyt_energy_cost
         state: "{% if states('sensor.energy_tariff')=='T1' -%}9.35{%- elif states('sensor.energy_tariff')=='T2' -%}2.98{%- elif states('sensor.energy_tariff')=='T3' -%}6.43{%- endif %}"
@@ -572,12 +562,12 @@ sensor:
       - shulyaka@gmail.com
       - denis@shulyaka.org.ru
 
-binary_sensor:
-  - platform: command_line
-    command: 'git -C /srv/homeassistant/ status | grep -q "nothing to commit, working tree clean" && echo "OFF" || echo "ON"'
-    name: Uncommitted changes
-    device_class: problem
-    unique_id: configuration_git_uncommitted_changes
+command_line:
+  - binary_sensor:
+      command: 'git -C /srv/homeassistant/ status | grep -q "nothing to commit, working tree clean" && echo "OFF" || echo "ON"'
+      name: Uncommitted changes
+      device_class: problem
+      unique_id: configuration_git_uncommitted_changes
 
 switch:
 #  - platform: rest
@@ -705,11 +695,6 @@ generic_hygrostat:
       minutes: 1
     initial_state: false
     away_humidity: 35
-
-hue:
-  bridges:
-    - host: 192.168.1.179
-      allow_hue_groups: true
 
 light:
   - platform: group

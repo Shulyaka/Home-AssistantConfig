@@ -1159,11 +1159,13 @@
     device_id: 0c0d522ab2f3a087faa4e9b6acc1a9a5
     entity_id: binary_sensor.lumi_lumi_sensor_magnet_aq2_6b2b4205_on_off
     domain: binary_sensor
+    enabled: false
   - type: is_open
     condition: device
     device_id: 4396709177f65d8d9a7c951b2ff22555
     entity_id: binary_sensor.lumi_lumi_sensor_magnet_aq2_c4702205_on_off
     domain: binary_sensor
+    enabled: false
   - condition: device
     type: is_off
     device_id: ec863b8c8c384379a8185a51b3a8080c
@@ -1345,9 +1347,9 @@
   trigger:
   - platform: device
     type: changed_states
-    device_id: 93d6fe03827abcc7ba77d3dbc9f6fbde
-    entity_id: switch.tz3000_cjrngdr3_ts011f_switch
-    domain: switch
+    device_id: e4265e8e759f4af274814a76ae664d1b
+    entity_id: light.lumi_lumi_relay_c2acn01_light_2
+    domain: light
   - platform: homeassistant
     event: start
   - platform: event
@@ -1361,9 +1363,9 @@
   action:
   - condition: device
     type: is_on
-    device_id: 93d6fe03827abcc7ba77d3dbc9f6fbde
-    entity_id: switch.tz3000_cjrngdr3_ts011f_switch
-    domain: switch
+    device_id: e4265e8e759f4af274814a76ae664d1b
+    entity_id: light.lumi_lumi_relay_c2acn01_light_2
+    domain: light
     alias: Cancel watchdog timer if backup1 is off
   - service: notify.persistent_notification
     data:
@@ -1379,24 +1381,24 @@
   - wait_for_trigger:
     - type: power
       platform: device
-      device_id: 93d6fe03827abcc7ba77d3dbc9f6fbde
-      entity_id: sensor.tz3000_cjrngdr3_ts011f_active_power
+      device_id: e4265e8e759f4af274814a76ae664d1b
+      entity_id: sensor.lumi_lumi_relay_c2acn01_active_power
       domain: sensor
       below: 0.1
       for:
         hours: 0
         minutes: 6
         seconds: 0
+      alias: Backup1 active power changes
     timeout:
       hours: 0
       minutes: 31
       seconds: 0
       milliseconds: 0
   - type: turn_off
-    device_id: 93d6fe03827abcc7ba77d3dbc9f6fbde
-    entity_id: switch.tz3000_cjrngdr3_ts011f_switch
-    domain: switch
-    enabled: true
+    device_id: e4265e8e759f4af274814a76ae664d1b
+    entity_id: light.lumi_lumi_relay_c2acn01_light_2
+    domain: light
   - service: notify.persistent_notification
     data:
       message: Turning off backup1
@@ -1433,18 +1435,18 @@
   condition:
   - condition: device
     type: is_off
-    device_id: 93d6fe03827abcc7ba77d3dbc9f6fbde
-    entity_id: switch.tz3000_cjrngdr3_ts011f_switch
-    domain: switch
+    device_id: e4265e8e759f4af274814a76ae664d1b
+    entity_id: light.lumi_lumi_relay_c2acn01_light_2
+    domain: light
     for:
       hours: 4
       minutes: 45
       seconds: 0
   action:
   - type: turn_on
-    device_id: 93d6fe03827abcc7ba77d3dbc9f6fbde
-    entity_id: switch.tz3000_cjrngdr3_ts011f_switch
-    domain: switch
+    device_id: e4265e8e759f4af274814a76ae664d1b
+    entity_id: light.lumi_lumi_relay_c2acn01_light_2
+    domain: light
   mode: single
 - id: '1669998044531'
   alias: Set Alice volume based on ambient lights
@@ -1509,19 +1511,19 @@
     target:
       entity_id: input_number.energy_saved
   mode: single
-- id: '1671469339690'
-  alias: Multizone energy meter
+- id: '1678374049453'
+  alias: Vacuum Send Map
   description: ''
   trigger:
   - platform: state
     entity_id:
-    - sensor.tze200_hkdl5fmv_ts0601_summation_delivered
+    - camera.robot_cleaning_map
+    attribute: generated_at
   condition: []
   action:
-  - service: input_number.set_value
+  - service: telegram_bot.send_photo
     data:
-      value:
-        '[object Object]':
-    target:
-      entity_id: input_number.energy_saved
+      url: '{{ ''https://shulyaka.org.ru'' + state_attr(''camera.robot_cleaning_map'',
+        ''entity_picture'') }}'
+      target: 114122164
   mode: single
