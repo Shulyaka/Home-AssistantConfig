@@ -44,15 +44,6 @@ input_boolean:
     name: TOSR0X Relay 3 State
   tosr0x_4_state:
     name: TOSR0X Relay 4 State
-  humidifier_zone_1:
-    name: Humidifier Zone 1
-    initial: false
-  humidifier_zone_2:
-    name: Humidifier Zone 2
-    initial: false
-  humidifier_zone_3:
-    name: Humidifier Zone 3
-    initial: false
   sleep_denis:
     name: Sleep state (Denis)
     icon: mdi:sleep
@@ -229,12 +220,6 @@ google_assistant:
       expose: false
     sensor.tosr0x_temperature:
       expose: false
-    input_boolean.humidifier_zone_1:
-      expose: false
-    input_boolean.humidifier_zone_2:
-      expose: false
-    input_boolean.humidifier_zone_3:
-      expose: false
     input_boolean.tosr0x_1_state:
       expose: false
     input_boolean.tosr0x_2_state:
@@ -316,7 +301,6 @@ yandex_smart_home:
       - sensor.lumi_lumi_sens_48945e02_humidity
       - sensor.lumi_lumi_sens_02fbebbd_1_1026
       - sensor.lumi_lumi_sens_02fbebbd_1_1029
-      - sensor.humidifier_pressure_in
       - sensor.humidifier_pressure_in_pct
       - sensor.humidifier_internal_temperature
       - switch.adaptive_lighting_adapt_brightness_bathroom
@@ -353,7 +337,7 @@ yandex_smart_home:
       skill_id: !secret yandex_smart_home_skill_id
       user_id: 2ce615b61c8545e8aa0a45ea2236ed74
   entity_config:
-    humidifier.uvlazhnitel_v_spalne:
+    humidifier.bedroom:
       modes:
         program:
           normal:
@@ -363,11 +347,9 @@ yandex_smart_home:
       properties:
         - type: temperature
           entity: sensor.lumi_lumi_weather_3bfcf003_temperature
-        - type: humidity
-          entity: sensor.lumi_lumi_weather_3bfcf003_humidity
         - type: water_level
           entity: sensor.humidifier_pressure_in_pct
-    humidifier.uvlazhnitel_v_detskoi:
+    humidifier.childrens_room:
       modes:
         program:
           normal:
@@ -377,11 +359,9 @@ yandex_smart_home:
       properties:
         - type: temperature
           entity: sensor.lumi_lumi_sens_48945e02_temperature
-        - type: humidity
-          entity: sensor.lumi_lumi_sens_48945e02_humidity
         - type: water_level
           entity: sensor.humidifier_pressure_in_pct
-    humidifier.uvlazhnitel_v_gostinoi:
+    humidifier.living_room:
       modes:
         program:
           normal:
@@ -391,8 +371,6 @@ yandex_smart_home:
       properties:
         - type: temperature
           entity: sensor.lumi_lumi_sens_02fbebbd_1_1026
-        - type: humidity
-          entity: sensor.lumi_lumi_sens_02fbebbd_1_1029
         - type: water_level
           entity: sensor.humidifier_pressure_in_pct
     light.lumi_lumi_relay_fan:
@@ -490,13 +468,6 @@ template:
       state: "{{ states('input_number.tosr0x_temp') }}"
       device_class: temperature
       unit_of_measurement: '°C'
-    - name: Humidifier Pressure In
-      unique_id: humidifier_pressure_in_bar
-      availability: "{{ not is_state('sensor.humidifier_pressure_in_pct', 'unavailable') }}"
-      state: "{{ ((float(states('sensor.humidifier_pressure_in_pct')) * float(states('sensor.input_voltage')) * 8 - 400) / 300) | round(2)}}"
-#      state: "{{ ((float(states('sensor.humidifier_pressure_in_pct')) * 3.3 * 8 - 400) / 300) | round(2)}}"
-      device_class: pressure
-      unit_of_measurement: 'bar'
     - name: Backup watchdog
       unique_id: backup_watchdog_timer
       availability: "{{ is_state('light.sonoff_10013f38ac_1', 'on') }}"
@@ -643,49 +614,11 @@ switch:
 climate:
   - platform: generic_thermostat
     name: Humidifier fan
-    target_sensor: sensor.tosr0x_temperature
-    heater: switch.humidifier_fan
+    target_sensor: sensor.xbee_humidifier_main_unit_pump_temperature
+    heater: switch.xbee_humidifier_main_unit_fan
     min_temp: 20
     max_temp: 40
     ac_mode: true
-
-generic_hygrostat:
-  - name: Увлажнитель в спальне
-    humidifier: input_boolean.humidifier_zone_1
-    target_sensor: sensor.lumi_lumi_weather_3bfcf003_humidity
-    min_humidity: 15
-    max_humidity: 100
-    target_humidity: 50
-    dry_tolerance: 3
-    wet_tolerance: 0
-    min_cycle_duration:
-      minutes: 1
-    initial_state: false
-    away_humidity: 35
-  - name: Увлажнитель в детской
-    humidifier: input_boolean.humidifier_zone_2
-    target_sensor: sensor.lumi_lumi_sens_48945e02_humidity
-    min_humidity: 15
-    max_humidity: 100
-    target_humidity: 50
-    dry_tolerance: 3
-    wet_tolerance: 0
-    min_cycle_duration:
-      minutes: 1
-    initial_state: false
-    away_humidity: 35
-  - name: Увлажнитель в гостиной
-    humidifier: input_boolean.humidifier_zone_3
-    target_sensor: sensor.lumi_lumi_sens_02fbebbd_1_1029
-    min_humidity: 15
-    max_humidity: 100
-    target_humidity: 50
-    dry_tolerance: 3
-    wet_tolerance: 0
-    min_cycle_duration:
-      minutes: 1
-    initial_state: false
-    away_humidity: 35
 
 light:
   - platform: group

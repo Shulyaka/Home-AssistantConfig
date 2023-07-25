@@ -167,173 +167,6 @@
     data:
       entity_id: switch.humidifier_fan
   mode: single
-- id: pump_duty_cycle
-  alias: Humidifier Duty Cycle
-  description: ''
-  trigger:
-  - id: pump_on_time_expired
-    platform: state
-    entity_id:
-    - switch.humidifier_pump
-    for:
-      hours: 0
-      minutes: 6
-      seconds: 0
-    to: 'on'
-    alias: When Humidifier Pump stays on for too long
-  - id: pump_off_time_expired
-    platform: state
-    entity_id:
-    - switch.humidifier_pump
-    for:
-      hours: 0
-      minutes: 3
-      seconds: 0
-    to: 'off'
-    alias: When Humidifier Pump stays off for too long
-  - id: humidifier_zones_changed
-    platform: state
-    entity_id: group.humidifier_zones
-  - id: humidifier_turned_off
-    platform: state
-    entity_id:
-    - humidifier.uvlazhnitel_v_spalne
-    - humidifier.uvlazhnitel_v_gostinoi
-    - humidifier.uvlazhnitel_v_detskoi
-    to: 'off'
-    alias: When any of the humidifiers turns off
-  - id: humidifier_turned_on
-    platform: state
-    entity_id:
-    - humidifier.uvlazhnitel_v_spalne
-    - humidifier.uvlazhnitel_v_gostinoi
-    - humidifier.uvlazhnitel_v_detskoi
-    to: 'on'
-    alias: When any of the humidifiers turns on
-  - id: automation_reloaded
-    platform: event
-    event_type: automation_reloaded
-  - platform: homeassistant
-    event: start
-    enabled: true
-  condition: []
-  action:
-  - alias: Check if switching off while the pressure drop stage is still active, to
-      cancel it
-    choose:
-    - alias: Pressure drop stage is active
-      conditions:
-      - alias: Check if the pressure drop valves are open
-        condition: state
-        entity_id: group.tosr0x
-        state: 'on'
-      - alias: Check if being switched on
-        condition: template
-        value_template: '{{ trigger is not defined or (trigger.platform == "state"
-          and trigger.to_state.domain in ("humidifier", "group") and trigger.to_state.state
-          == "on") }}'
-      - condition: device
-        type: is_off
-        device_id: d62ae9c5579f4bd682a506f6a7e00c2a
-        entity_id: switch.humidifier_pump
-        domain: switch
-      sequence:
-      - alias: Close all valves
-        service: script.tosr0x_switch
-        data:
-          switch_number: 0
-          action: turn_off
-  - alias: Check if the current phase is on or off and switch the phase if needed
-    choose:
-    - alias: Pump and all valves are off, consider the 'off' phase of the duty cycle
-      conditions:
-      - alias: switch.humidifier_pump and group.tosr0x state is off
-        condition: state
-        entity_id:
-        - switch.humidifier_pump
-        - group.tosr0x
-        state: 'off'
-      sequence:
-      - alias: Check if more humidity is needed
-        condition: state
-        entity_id: group.humidifier_zones
-        state: 'on'
-      - alias: Only continue if the living room humidifier is on. This is a temporary
-          workaround
-        enabled: false
-        condition: state
-        entity_id: humidifier.uvlazhnitel_v_gostinoi
-        state: 'on'
-      - alias: Check if not overhumidified
-        enabled: false
-        condition: numeric_state
-        entity_id: sensor.lumi_lumi_weather_3bfcf003_humidity, sensor.lumi_lumi_sens_48945e02_humidity,
-          sensor.lumi_lumi_sens_02fbebbd_1_1029
-        below: 65
-      - alias: Do not switch on when a humidifier is being switched off
-        condition: template
-        value_template: '{{ not (trigger is defined and trigger.platform == "state"
-          and trigger.to_state.domain == "humidifier" and trigger.to_state.state ==
-          "off") }}'
-      - alias: Ensure that preassure dropping valve is off
-        service: script.tosr0x_switch
-        data:
-          switch_number: 4
-          action: turn_off
-      - alias: Set correct state for valve 1
-        service: script.tosr0x_switch
-        data:
-          switch_number: 1
-          action: turn_{{ states('input_boolean.humidifier_zone_1') }}
-      - alias: Set correct state for valve 2
-        service: script.tosr0x_switch
-        data:
-          switch_number: 2
-          action: turn_{{ states('input_boolean.humidifier_zone_2') }}
-      - alias: Set correct state for valve 3
-        service: script.tosr0x_switch
-        data:
-          switch_number: 3
-          action: turn_{{ states('input_boolean.humidifier_zone_3') }}
-      - alias: Turn on the pump
-        service: switch.turn_on
-        entity_id: switch.humidifier_pump
-      - alias: Check if pump turned on
-        wait_template: '{{ is_state("switch.humidifier_pump", "on") }}'
-        enabled: false
-    default:
-    - alias: Do not switch off when a humidifier is being switched on
-      condition: template
-      value_template: '{{ not (is_state("switch.humidifier_pump", "on") and trigger
-        is defined and trigger.platform == "state" and trigger.to_state.domain in
-        ("humidifier", "group") and trigger.to_state.state == "on") }}'
-    - alias: Turn off the pump
-      service: switch.turn_off
-      entity_id: switch.humidifier_pump
-    - alias: Wait till preassure drops a bit
-      delay:
-        hours: 0
-        minutes: 0
-        seconds: 5
-        milliseconds: 0
-    - alias: Drop the remaining preassure
-      service: script.tosr0x_switch
-      data:
-        switch_number: 4
-        action: turn_on
-    - alias: Wait a little longer to ensure that no preassure left
-      delay:
-        hours: 0
-        minutes: 0
-        seconds: 56
-        milliseconds: 0
-    - alias: Close all valves
-      service: script.tosr0x_switch
-      data:
-        switch_number: 0
-        action: turn_off
-  mode: restart
-  max: 10
 - id: '1574587123101'
   alias: Dasha pre-sleep routine
   description: ''
@@ -356,29 +189,17 @@
     data: {}
     target:
       entity_id:
-      - humidifier.uvlazhnitel_v_detskoi
-      - humidifier.uvlazhnitel_v_gostinoi
-      - humidifier.uvlazhnitel_v_spalne
+      - humidifier.bedroom
+      - humidifier.childrens_room
+      - humidifier.living_room
   - delay: 0:45:00
   - service: humidifier.turn_on
     data: {}
     target:
       entity_id:
-      - humidifier.uvlazhnitel_v_gostinoi
-      - humidifier.uvlazhnitel_v_spalne
-      - humidifier.uvlazhnitel_v_detskoi
-  mode: single
-- id: close_on_shutdown
-  alias: Close on shutdown
-  description: turn off everything when HA stops
-  trigger:
-  - platform: homeassistant
-    event: shutdown
-  action:
-  - service: homeassistant.turn_off
-    entity_id: switch.tosr0x_1, switch.tosr0x_2, switch.tosr0x_3, switch.tosr0x_4,
-      switch.humidifier_pump, switch.humidifier_fan
-    data: {}
+      - humidifier.bedroom
+      - humidifier.childrens_room
+      - humidifier.living_room
   mode: single
 - id: '1601500873265'
   alias: Water leak detected
@@ -395,10 +216,15 @@
     data: {}
     target:
       entity_id:
-      - humidifier.uvlazhnitel_v_detskoi
-      - humidifier.uvlazhnitel_v_gostinoi
-      - humidifier.uvlazhnitel_v_spalne
-  - service: notify.mobile_app_sm_t725
+      - humidifier.bedroom
+      - humidifier.childrens_room
+      - humidifier.living_room
+  - service: homeassistant.turn_on
+    data: {}
+    target:
+      entity_id:
+      - switch.humidifier_pump_block
+  - service: notify.mobile_app_s23
     data:
       message: Water leak detected!
   - service: notify.telegram_114122164
@@ -418,15 +244,15 @@
       - condition: or
         conditions:
         - condition: state
-          entity_id: humidifier.uvlazhnitel_v_gostinoi
+          entity_id: humidifier.living_room
           state: 'on'
         - condition: state
-          entity_id: humidifier.uvlazhnitel_v_spalne
+          entity_id: humidifier.bedroom
           state: 'on'
       sequence:
       - service: humidifier.turn_on
         data: {}
-        entity_id: humidifier.uvlazhnitel_v_detskoi
+        entity_id: humidifier.childrens_room
     default: []
   mode: single
 - id: '1604671440067'
@@ -434,11 +260,11 @@
   description: ''
   trigger:
   - platform: state
-    entity_id: humidifier.uvlazhnitel_v_spalne,humidifier.uvlazhnitel_v_detskoi,humidifier.uvlazhnitel_v_gostinoi
+    entity_id: humidifier.bedroom,humidifier.childrens_room,humidifier.living_room
     to: 'off'
   condition:
   - condition: state
-    entity_id: humidifier.uvlazhnitel_v_spalne,humidifier.uvlazhnitel_v_detskoi,humidifier.uvlazhnitel_v_gostinoi
+    entity_id: humidifier.bedroom,humidifier.childrens_room,humidifier.living_room
     state: 'off'
   action:
   - service: climate.turn_off
@@ -512,7 +338,7 @@
   - service: humidifier.set_mode
     data:
       mode: away
-    entity_id: humidifier.uvlazhnitel_v_gostinoi,humidifier.uvlazhnitel_v_spalne,humidifier.uvlazhnitel_v_detskoi
+    entity_id: humidifier.bedroom,humidifier.childrens_room,humidifier.living_room
   mode: single
 - id: '1611261033754'
   alias: Humidifier wake time
@@ -525,7 +351,7 @@
   - service: humidifier.set_mode
     data:
       mode: normal
-    entity_id: humidifier.uvlazhnitel_v_gostinoi,humidifier.uvlazhnitel_v_spalne,humidifier.uvlazhnitel_v_detskoi
+    entity_id: humidifier.bedroom,humidifier.childrens_room,humidifier.living_room
   - service: number.set_value
     data:
       value: 320
@@ -1051,12 +877,12 @@
     data:
       scene_id: humidifier_everyone_out
       snapshot_entities:
-      - humidifier.uvlazhnitel_v_spalne
-      - humidifier.uvlazhnitel_v_gostinoi
-      - humidifier.uvlazhnitel_v_detskoi
+      - humidifier.bedroom
+      - humidifier.childrens_room
+      - humidifier.living_room
   - service: homeassistant.turn_off
     data: {}
-    entity_id: humidifier.uvlazhnitel_v_spalne,humidifier.uvlazhnitel_v_gostinoi,humidifier.uvlazhnitel_v_detskoi
+    entity_id: humidifier.bedroom,humidifier.childrens_room,humidifier.living_room
   mode: single
 - id: '1615135156848'
   alias: Humidifier back on when someone home
