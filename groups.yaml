@@ -1,25 +1,3 @@
-tosr0x:
-  name: TOSR0X
-  entities:
-    - sensor.tosr0x_temperature
-    - switch.tosr0x_1
-    - switch.tosr0x_2
-    - switch.tosr0x_3
-    - switch.tosr0x_4
-humidifier_zones:
-  name: Humidifier Zones
-  entities:
-    - input_boolean.humidifier_zone_1
-    - input_boolean.humidifier_zone_2
-    - input_boolean.humidifier_zone_3
-#tosr0x_states_cache:
-#  name: TOSR0X state cache
-#  entities:
-#    - input_number.tosr0x_temp
-#    - input_boolean.tosr0x_1_state
-#    - input_boolean.tosr0x_2_state
-#    - input_boolean.tosr0x_3_state
-#    - input_boolean.tosr0x_4_state
 sleep_tracking:
   name: Sleep tracking
   entities:

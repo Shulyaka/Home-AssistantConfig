@@ -23,27 +23,9 @@ homeassistant:
     photo: /usr/share/nas/photo
     music: /usr/share/nas/music
 
-logbook:
-  exclude:
-    entities:
-      - automation.update_tosr0x
-      - input_boolean.tosr0x_1_state
-      - input_boolean.tosr0x_2_state
-      - input_boolean.tosr0x_3_state
-      - input_boolean.tosr0x_4_state
-      - input_number.tosr0x_temp
-
 mqtt:
 
 input_boolean:
-  tosr0x_1_state:
-    name: TOSR0X Relay 1 State
-  tosr0x_2_state:
-    name: TOSR0X Relay 2 State
-  tosr0x_3_state:
-    name: TOSR0X Relay 3 State
-  tosr0x_4_state:
-    name: TOSR0X Relay 4 State
   sleep_denis:
     name: Sleep state (Denis)
     icon: mdi:sleep
@@ -67,15 +49,6 @@ input_boolean:
     icon: mdi:fan-plus
 
 input_number:
-  # Internal variable to hold TOSR0X-T temperature
-  tosr0x_temp:
-    name: TOSR0X-T Temperature State
-    min: -55
-    max: 125
-    step: 0.125
-    mode: box
-    unit_of_measurement: '°C'
-    icon: mdi:temperature-celsius
   energy_saved:
     name: Energy Saved Value
     min: 0
@@ -116,9 +89,6 @@ http:
 
 recorder:
   db_url: mysql+pymysql://@/hass_db?unix_socket=/opt/mysql/mysql.sock&charset=utf8
-  exclude:
-    entities:
-      - automation.update_tosr0x
 
 logger:
   default: debug
@@ -218,26 +188,6 @@ google_assistant:
       expose: false
     light.sleeping_room:
       expose: false
-    sensor.tosr0x_temperature:
-      expose: false
-    input_boolean.tosr0x_1_state:
-      expose: false
-    input_boolean.tosr0x_2_state:
-      expose: false
-    input_boolean.tosr0x_3_state:
-      expose: false
-    input_boolean.tosr0x_4_state:
-      expose: false
-    switch.tosr0x_1:
-      expose: false
-    switch.tosr0x_2:
-      expose: false
-    switch.tosr0x_3:
-      expose: false
-    switch.tosr0x_4:
-      expose: false
-    group.tosr0x:
-      expose: false
     switch.humidifier_pump:
       expose: false
     switch.humidifier_aux_led:
@@ -261,7 +211,6 @@ alexa:
       exclude_entity_globs:
         - light.hue_*
         - light.custom_group_for_room*
-        - switch.tosr0x_*
         - switch.humidifier_*
       exclude_entities:
         - light.bathroom
@@ -271,7 +220,6 @@ alexa:
         - light.sleeping_room
         - light.razvlecheniia_1
         - light.lumi_lumi_relay_c2acn01_2321e803_2
-        - sensor.tosr0x_temperature
     entity_config:
       light.lumi_lumi_relay_fan:
         display_categories: FAN
@@ -286,14 +234,9 @@ yandex_smart_home:
       - light
       - scene
     exclude_entities:
-      - sensor.tosr0x_temperature
       - switch.humidifier_aux_led
       - switch.humidifier_fan
       - switch.humidifier_pump
-      - switch.tosr0x_1
-      - switch.tosr0x_2
-      - switch.tosr0x_3
-      - switch.tosr0x_4
       - climate.humidifier_fan
       - sensor.lumi_lumi_weather_3bfcf003_temperature
       - sensor.lumi_lumi_weather_3bfcf003_humidity
@@ -463,11 +406,6 @@ template:
 #        state: "{{'%d%%'|format(state_attr('sensor.wcounter', 'counters')[2].state*100/15)}}"
 #        lastaction: "{{state_attr('sensor.wcounter', 'counters')[2].lastaction}}"
 #        name: "{{state_attr('sensor.wcounter', 'counters')[2].name}}"
-    - name: TOSR0X-T Temperature
-      unique_id: tosr0x_temperature0
-      state: "{{ states('input_number.tosr0x_temp') }}"
-      device_class: temperature
-      unit_of_measurement: '°C'
     - name: Backup watchdog
       unique_id: backup_watchdog_timer
       availability: "{{ is_state('light.sonoff_10013f38ac_1', 'on') }}"
@@ -531,7 +469,7 @@ command_line:
       device_class: problem
       unique_id: configuration_git_uncommitted_changes
 
-switch:
+#switch:
 #  - platform: rest
 #    resource: http://watercounter.atlantis/cgi-bin/wcontrol.sh?valve=hot
 #    name: Hot water
@@ -550,60 +488,6 @@ switch:
 #    body_on: '{"function": "open"}'
 #    body_off: '{"function": "close"}'
 #    is_on_template: '{{ value_json.lastaction == "open" }}'
-  - platform: template
-    switches:
-      tosr0x_1:
-        friendly_name: TOSR0X Relay 1
-        value_template: "{{ is_state('input_boolean.tosr0x_1_state', 'on') }}"
-        turn_on:
-          - service: script.tosr0x_switch
-            data:
-              switch_number: 1
-              action: turn_on
-        turn_off:
-          - service: script.tosr0x_switch
-            data:
-              switch_number: 1
-              action: turn_off
-      tosr0x_2:
-        friendly_name: TOSR0X Relay 2
-        value_template: "{{ is_state('input_boolean.tosr0x_2_state', 'on') }}"
-        turn_on:
-          - service: script.tosr0x_switch
-            data:
-              switch_number: 2
-              action: turn_on
-        turn_off:
-          - service: script.tosr0x_switch
-            data:
-              switch_number: 2
-              action: turn_off
-      tosr0x_3:
-        friendly_name: TOSR0X Relay 3
-        value_template: "{{ is_state('input_boolean.tosr0x_3_state', 'on') }}"
-        turn_on:
-          - service: script.tosr0x_switch
-            data:
-              switch_number: 3
-              action: turn_on
-        turn_off:
-          - service: script.tosr0x_switch
-            data:
-              switch_number: 3
-              action: turn_off
-      tosr0x_4:
-        friendly_name: TOSR0X Relay 4
-        value_template: "{{ is_state('input_boolean.tosr0x_4_state', 'on') }}"
-        turn_on:
-          - service: script.tosr0x_switch
-            data:
-              switch_number: 4
-              action: turn_on
-        turn_off:
-          - service: script.tosr0x_switch
-            data:
-              switch_number: 4
-              action: turn_off
 
 #rest_command:
 #  set_counter:
