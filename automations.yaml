@@ -475,8 +475,8 @@
   - device_id: d41addb2e3f4464f8c977131e84b0b4f
     domain: zha
     platform: device
-    type: remote_button_double_press
-    subtype: remote_button_double_press
+    type: remote_button_long_press
+    subtype: remote_button_long_press
   - platform: state
     entity_id: input_boolean.fan_suppress_long
     to: 'on'
@@ -503,7 +503,7 @@
           - condition: template
             value_template: '{{trigger is defined and trigger.platform == "device"
               and trigger.event.event_type == "zha_event" and trigger.event.data.command
-              == "double"}}'
+              == "hold"}}'
           sequence:
           - service: homeassistant.turn_on
             data: {}
@@ -960,8 +960,8 @@
   - device_id: d41addb2e3f4464f8c977131e84b0b4f
     domain: zha
     platform: device
-    type: remote_button_long_press
-    subtype: remote_button_long_press
+    type: remote_button_double_press
+    subtype: remote_button_double_press
   - platform: state
     entity_id: input_boolean.fan_force_on
     to: 'on'
@@ -976,7 +976,7 @@
       - condition: template
         value_template: '{{trigger is defined and trigger.platform == "device" and
           trigger.event.event_type == "zha_event" and trigger.event.data.command ==
-          "hold"}}'
+          "double"}}'
       sequence:
       - service: homeassistant.turn_off
         data: {}
