@@ -233,7 +233,15 @@ yandex_smart_home:
       - group
       - light
       - scene
+      - button
     exclude_entities:
+      - switch.humidifier_xbee_aux_led
+      - switch.humidifier_xbee_fan
+      - switch.humidifier_xbee_pump
+      - switch.humidifier_pressure_drop_valve
+      - switch.bedroom_humidifier_valve
+      - switch.childrens_room_humidifier_valve
+      - switch.living_room_humidifier_valve
       - switch.humidifier_aux_led
       - switch.humidifier_fan
       - switch.humidifier_pump
@@ -241,11 +249,13 @@ yandex_smart_home:
       - sensor.lumi_lumi_weather_3bfcf003_temperature
       - sensor.lumi_lumi_weather_3bfcf003_humidity
       - sensor.lumi_lumi_sens_48945e02_temperature
-      - sensor.lumi_lumi_sens_48945e02_humidity
+      - sensor.lumi_lumi_sens_48945e02_power
       - sensor.lumi_lumi_sens_02fbebbd_1_1026
       - sensor.lumi_lumi_sens_02fbebbd_1_1029
-      - sensor.humidifier_pressure_in_pct
+      - sensor.humidifier_xbee_pressure_in_pct
       - sensor.humidifier_internal_temperature
+      - sensor.humidifier_pump_temperature
+      - sensor.humidifier_pressure_in
       - switch.adaptive_lighting_adapt_brightness_bathroom
       - switch.adaptive_lighting_adapt_brightness_children_room
       - switch.adaptive_lighting_adapt_brightness_living_room
@@ -270,11 +280,92 @@ yandex_smart_home:
       - sensor.sm_t725_battery_temperature
       - sensor.sm_t725_light_sensor
       - sensor.robot_battery
+      - switch.digi_xbee3_b384d141_on_off
+      - switch.digi_xbee3_b384d141_on_off_2
+      - switch.digi_xbee3_b384d141_on_off_3
+      - switch.digi_xbee3_b384d141_on_off_4
+      - switch.digi_xbee3_b384d141_on_off_5
+      - switch.digi_xbee3_b384d141_on_off_6
+      - switch.digi_xbee3_b384d141_on_off_7
+      - switch.digi_xbee3_b384d141_on_off_8
+      - switch.digi_xbee3_b384d141_on_off_9
+      - switch.digi_xbee3_b384d141_on_off_10
+      - switch.digi_xbee3_b384d141_on_off_11
+      - switch.digi_xbee3_b384d141_on_off_12
+      - switch.digi_xbee3_b384d141_on_off_13
+      - switch.digi_xbee3_b384d141_on_off_14
+      - switch.digi_xbee3_b384d141_on_off_15
+      - sensor.airthings_wave_082639_humidity
+      - sensor.airthings_wave_082639_illuminance
+      - sensor.airthings_wave_082639_pressure
+      - sensor.airthings_wave_082639_temperature
+      - sensor.airthings_wave_082639_voc
+      - sensor.airthings_wave_082639_battery
+      - sensor.lumi_lumi_sen_ill_mgl01_e924773c_power
+      - sensor.lumi_lumi_weather_3bfcf003_temperature
+      - sensor.lumi_lumi_weather_3bfcf003_pressure
+      - sensor.lumi_lumi_weather_3bfcf003_power
+      - sensor.lumi_lumi_sensor_ht_agl02_humidity_2
+      - sensor.lumi_lumi_sensor_ht_agl02_pressure_2
+      - sensor.lumi_lumi_sensor_ht_agl02_temperature_2
+      - sensor.lumi_lumi_sensor_ht_agl02_battery_2
+      - sensor.lumi_lumi_sensor_ht_agl02_humidity_3
+      - sensor.lumi_lumi_sensor_ht_agl02_pressure_3
+      - sensor.lumi_lumi_sensor_ht_agl02_temperature_3
+      - sensor.lumi_lumi_sensor_ht_agl02_battery_3
+      - sensor.bedroom_humidity
+      - sensor.lumi_lumi_sensor_magnet_aq2_a9733b03_device_temperature
+      - sensor.lumi_lumi_sensor_magnet_aq2_033b73a9_1_1
+      - sensor.lumi_lumi_weather_95169d01_temperature
+      - sensor.lumi_lumi_weather_95169d01_pressure
+      - sensor.lumi_lumi_weather_95169d01_power
+      - sensor.aqara_lumi_motion_ac01_devicetemperature
+      - sensor.lumi_lumi_sensor_wleak_aq1_035acf68_1_1
+      - sensor.lumi_lumi_sensor_wleak_aq1_68cf5a03_device_temperature
+      - sensor.lumi_lumi_sensor_wleak_aq1_power
+      - sensor.lumi_lumi_sensor_wleak_aq1_058c7905_device_temperature
+      - sensor.lumi_lumi_sensor_magnet_aq2_6b2b4205_power
+      - sensor.lumi_lumi_sensor_magnet_aq2_6b2b4205_device_temperature
+      - sensor.lumi_lumi_sensor_magnet_aq2_c4702205_power
+      - sensor.lumi_lumi_sensor_magnet_aq2_c4702205_device_temperature
+      - sensor.lumi_lumi_sensor_wleak_aq1_03580198_1_1
+      - sensor.lumi_lumi_sensor_wleak_aq1_98015803_device_temperature
+      - sensor.lumi_lumi_sensor_wleak_aq1_cbcc5703_power
+      - sensor.lumi_lumi_sensor_wleak_aq1_cbcc5703_device_temperature
+      - sensor.lumi_lumi_sen_ill_mgl01_3325773c_power
+      - sensor.lumi_lumi_plug_maeu01_electrical_measurement
+      - sensor.iolka_rms_voltage
+      - sensor.lumi_lumi_plug_maeu01_fec8793c_device_temperature
+      - sensor.lumi_lumi_relay_c2acn01_active_power
+      - sensor.lumi_lumi_relay_c2acn01_rms_voltage
+      - sensor.lumi_lumi_relay_c2acn01_device_temperature
+      - sensor.lumi_lumi_sen_ill_mgl01_d952773c_power
+      - sensor.lumi_lumi_sens_02fbebbd_1_1026
+      - sensor.lumi_lumi_sens_02fbebbd_1_1
+      - sensor.tze200_hkdl5fmv_ts0601_active_power
+      - sensor.tze200_hkdl5fmv_ts0601_rms_voltage
+      - sensor.tze200_hkdl5fmv_ts0601_rms_current
+      - sensor.tze200_hkdl5fmv_ts0601_device_temperature
+      - sensor.lumi_lumi_sensor_ht_agl02_humidity
+      - sensor.lumi_lumi_sensor_ht_agl02_pressure
+      - sensor.lumi_lumi_sensor_ht_agl02_battery
+      - sensor.lumi_lumi_relay_c2acn01_2321e803_1_2820
+      - sensor.lumi_lumi_relay_c2acn01_2321e803_device_temperature
+      - sensor.air1_ultra_battery_level
+      - sensor.maxlumi2_battery_power
+      - sensor.lumi_lumi_sensor_wleak_aq1_0357ccbf_1_1
+      - sensor.lumi_lumi_sensor_wleak_aq1_bfcc5703_device_temperature
+      - sensor.sm_t725_battery_power
+      - sensor.s23_battery_level
+      - sensor.sm_g970f_battery_power
+      - sensor.lumi_lumi_sensor_swit_bf40d402_1_1
+      - sensor.lumi_lumi_sensor_switch_aq3_bf40d402_device_temperature
     include_entities:
       - light.philips_lct003_a93fdc04_level_light_color_on_off
       - light.lumi_lumi_relay_fan
       - light.bathroom_exhaust_lamp
       - light.lumi_lumi_relay_c2acn01_2321e803_2
+      - light.lumi_lumi_relay_c2acn01_light
   notifier:
     - oauth_token: !secret yandex_smart_home_oauth_token
       skill_id: !secret yandex_smart_home_skill_id
@@ -291,7 +382,16 @@ yandex_smart_home:
         - type: temperature
           entity: sensor.lumi_lumi_weather_3bfcf003_temperature
         - type: water_level
-          entity: sensor.humidifier_pressure_in_pct
+          entity: sensor.humidifier_xbee_pressure_in_pct
+      custom_toggles:
+        controls_locked:
+          state_entity_id: switch.humidifier_pump_block
+          turn_on:
+            service: homeassistant.turn_on
+            entity_id: switch.humidifier_pump_block
+          turn_off:
+            service: homeassistant.turn_off
+            entity_id: switch.humidifier_pump_block
     humidifier.childrens_room:
       modes:
         program:
@@ -303,7 +403,7 @@ yandex_smart_home:
         - type: temperature
           entity: sensor.lumi_lumi_sens_48945e02_temperature
         - type: water_level
-          entity: sensor.humidifier_pressure_in_pct
+          entity: sensor.humidifier_xbee_pressure_in_pct
     humidifier.living_room:
       modes:
         program:
@@ -315,9 +415,159 @@ yandex_smart_home:
         - type: temperature
           entity: sensor.lumi_lumi_sens_02fbebbd_1_1026
         - type: water_level
-          entity: sensor.humidifier_pressure_in_pct
-    light.lumi_lumi_relay_fan:
-      type: devices.types.purifier
+          entity: sensor.humidifier_xbee_pressure_in_pct
+    sensor.airthings_wave_082639_co2:
+      properties:
+        - type: co2_level
+          entity: sensor.airthings_wave_082639_co2
+        - type: humidity
+          entity: sensor.airthings_wave_082639_humidity
+        - type: illumination
+          entity: sensor.airthings_wave_082639_illuminance
+        - type: pressure
+          entity: sensor.airthings_wave_082639_pressure
+        - type: temperature
+          entity: sensor.airthings_wave_082639_temperature
+        - type: tvoc
+          entity: sensor.airthings_wave_082639_voc
+        - type: battery_level
+          entity: sensor.airthings_wave_082639_battery
+    sensor.lumi_lumi_sen_ill_mgl01_e924773c_illuminance:
+      properties:
+        - type: illumination
+          entity: sensor.lumi_lumi_sen_ill_mgl01_e924773c_illuminance
+        - type: battery_level
+          entity: sensor.lumi_lumi_sen_ill_mgl01_e924773c_power
+    sensor.lumi_lumi_weather_3bfcf003_humidity:
+      properties:
+        - type: humidity
+          entity: sensor.lumi_lumi_weather_3bfcf003_humidity
+        - type: temperature
+          entity: sensor.lumi_lumi_weather_3bfcf003_temperature
+        - type: pressure
+          entity: sensor.lumi_lumi_weather_3bfcf003_pressure
+        - type: battery_level
+          entity: sensor.lumi_lumi_weather_3bfcf003_power
+    binary_sensor.lumi_lumi_sensor_magnet_aq2_033b73a9_1_6:
+      properties:
+        - type: open
+          entity: binary_sensor.lumi_lumi_sensor_magnet_aq2_033b73a9_1_6
+        - type: battery_level
+          entity: sensor.lumi_lumi_sensor_magnet_aq2_033b73a9_1_1
+    sensor.lumi_lumi_weather_95169d01_humidity:
+      properties:
+        - type: humidity
+          entity: sensor.lumi_lumi_weather_95169d01_humidity
+        - type: temperature
+          entity: sensor.lumi_lumi_weather_95169d01_temperature
+        - type: pressure
+          entity: sensor.lumi_lumi_weather_95169d01_pressure
+        - type: battery_level
+          entity: sensor.lumi_lumi_weather_95169d01_power
+    binary_sensor.lumi_lumi_sensor_wleak_aq1_035acf68_1_1280:
+      properties:
+        - type: water_leak
+          entity: binary_sensor.lumi_lumi_sensor_wleak_aq1_035acf68_1_1280
+        - type: battery_level
+          entity: sensor.lumi_lumi_sensor_wleak_aq1_035acf68_1_1
+    binary_sensor.lumi_lumi_sensor_wleak_aq1_058c7905_ias_zone:
+      properties:
+        - type: water_leak
+          entity: binary_sensor.lumi_lumi_sensor_wleak_aq1_058c7905_ias_zone 
+        - type: battery_level
+          entity: sensor.lumi_lumi_sensor_wleak_aq1_power
+    binary_sensor.lumi_lumi_sensor_magnet_aq2_6b2b4205_on_off:
+      properties:
+        - type: open
+          entity: binary_sensor.lumi_lumi_sensor_magnet_aq2_6b2b4205_on_off
+        - type: battery_level
+          entity: sensor.lumi_lumi_sensor_magnet_aq2_6b2b4205_power
+    binary_sensor.lumi_lumi_sensor_magnet_aq2_c4702205_on_off:
+      properties:
+        - type: open
+          entity: binary_sensor.lumi_lumi_sensor_magnet_aq2_c4702205_on_off
+        - type: battery_level
+          entity: sensor.lumi_lumi_sensor_magnet_aq2_c4702205_power
+    binary_sensor.lumi_lumi_sensor_wleak_aq1_03580198_1_1280:
+      properties:
+        - type: water_leak
+          entity: binary_sensor.lumi_lumi_sensor_wleak_aq1_03580198_1_1280
+        - type: battery_level
+          entity: sensor.lumi_lumi_sensor_wleak_aq1_03580198_1_1
+    binary_sensor.lumi_lumi_sensor_wleak_aq1_cbcc5703_ias_zone:
+      properties:
+        - type: water_leak
+          entity: binary_sensor.lumi_lumi_sensor_wleak_aq1_cbcc5703_ias_zone
+        - type: battery_level
+          entity: sensor.lumi_lumi_sensor_wleak_aq1_cbcc5703_power
+    sensor.lumi_lumi_sen_ill_mgl01_3325773c_illuminance:
+      properties:
+        - type: illumination
+          entity: sensor.lumi_lumi_sen_ill_mgl01_3325773c_illuminance
+        - type: battery_level
+          entity: sensor.lumi_lumi_sen_ill_mgl01_3325773c_power
+    sensor.lumi_lumi_sens_48945e02_humidity:
+      properties:
+        - type: humidity
+          entity: sensor.lumi_lumi_sens_48945e02_humidity
+        - type: temperature
+          entity: sensor.lumi_lumi_sens_48945e02_temperature
+        - type: battery_level
+          entity: sensor.lumi_lumi_sens_48945e02_power
+    switch.lumi_lumi_plug_maeu01_fec8793c_on_off:
+      properties:
+        - type: power
+          entity: sensor.lumi_lumi_plug_maeu01_electrical_measurement
+        - type: voltage
+          entity: sensor.iolka_rms_voltage
+    light.lumi_lumi_relay_c2acn01_light:
+      type: devices.types.switch
+      properties:
+        - type: power
+          entity: sensor.lumi_lumi_relay_c2acn01_active_power
+        - type: voltage
+          entity: sensor.lumi_lumi_relay_c2acn01_rms_voltage
+    sensor.lumi_lumi_sen_ill_mgl01_d952773c_illuminance:
+      properties:
+        - type: illumination
+          entity: sensor.lumi_lumi_sen_ill_mgl01_d952773c_illuminance
+        - type: battery_level
+          entity: sensor.lumi_lumi_sen_ill_mgl01_d952773c_power
+    sensor.lumi_lumi_sens_02fbebbd_1_1029:
+      properties:
+        - type: humidity
+          entity: sensor.lumi_lumi_sens_02fbebbd_1_1029
+        - type: temperature
+          entity: sensor.lumi_lumi_sens_02fbebbd_1_1026
+        - type: battery_level
+          entity: sensor.lumi_lumi_sens_02fbebbd_1_1
+    switch.tze200_hkdl5fmv_ts0601_switch:
+      properties:
+        - type: power
+          entity: sensor.tze200_hkdl5fmv_ts0601_active_power
+        - type: voltage
+          entity: sensor.tze200_hkdl5fmv_ts0601_rms_voltage
+        - type: amperage
+          entity: sensor.tze200_hkdl5fmv_ts0601_rms_current
+    sensor.lumi_lumi_sensor_ht_agl02_temperature:
+      properties:
+        - type: temperature
+          entity: sensor.lumi_lumi_sensor_ht_agl02_temperature
+        - type: humidity
+          entity: sensor.lumi_lumi_sensor_ht_agl02_humidity
+        - type: pressure
+          entity: sensor.lumi_lumi_sensor_ht_agl02_pressure
+    light.lumi_lumi_relay_c2acn01_2321e803_2:
+      properties:
+        - type: power
+          entity: sensor.lumi_lumi_relay_c2acn01_2321e803_1_2820
+    binary_sensor.lumi_lumi_sensor_wleak_aq1_0357ccbf_1_1280:
+      type: devices.types.sensor.water_leak
+      properties:
+        - type: water_leak
+          entity: sensor.lumi_lumi_relay_c2acn01_2321e803_1_2820
+        - type: battery_level
+          entity: sensor.lumi_lumi_sensor_wleak_aq1_0357ccbf_1_1
 
 #mycroft:
 #  host: speaker
