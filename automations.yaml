@@ -81,10 +81,10 @@
   alias: Water leak detected
   description: ''
   trigger:
-  - type: turned_on
+  - type: moist
     platform: device
-    device_id: 88c31869e37d42ef900a7d94964cd1eb
-    entity_id: binary_sensor.lumi_lumi_sensor_wleak_aq1_035acf68_1_1280
+    device_id: 25d05aba08ea11ebbc50397f01577bde
+    entity_id: 4b1d717904cdd96799387d4b6bcd733b
     domain: binary_sensor
   condition: []
   action:

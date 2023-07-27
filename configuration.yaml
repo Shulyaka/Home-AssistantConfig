@@ -360,6 +360,7 @@ yandex_smart_home:
       - sensor.sm_g970f_battery_power
       - sensor.lumi_lumi_sensor_swit_bf40d402_1_1
       - sensor.lumi_lumi_sensor_switch_aq3_bf40d402_device_temperature
+      - sensor.lumi_lumi_sen_ill_mgl01_7625773c_power
     include_entities:
       - light.philips_lct003_a93fdc04_level_light_color_on_off
       - light.lumi_lumi_relay_fan
@@ -494,10 +495,10 @@ yandex_smart_home:
           entity: binary_sensor.lumi_lumi_sensor_wleak_aq1_03580198_1_1280
         - type: battery_level
           entity: sensor.lumi_lumi_sensor_wleak_aq1_03580198_1_1
-    binary_sensor.lumi_lumi_sensor_wleak_aq1_cbcc5703_ias_zone:
+    binary_sensor.humidifier_leak:
       properties:
         - type: water_leak
-          entity: binary_sensor.lumi_lumi_sensor_wleak_aq1_cbcc5703_ias_zone
+          entity: binary_sensor.humidifier_leak
         - type: battery_level
           entity: sensor.lumi_lumi_sensor_wleak_aq1_cbcc5703_power
     sensor.lumi_lumi_sen_ill_mgl01_3325773c_illuminance:
@@ -568,6 +569,12 @@ yandex_smart_home:
           entity: sensor.lumi_lumi_relay_c2acn01_2321e803_1_2820
         - type: battery_level
           entity: sensor.lumi_lumi_sensor_wleak_aq1_0357ccbf_1_1
+    sensor.lumi_lumi_sen_ill_mgl01_7625773c_illuminance:
+      properties:
+        - type: illumination
+          entity: sensor.lumi_lumi_sen_ill_mgl01_7625773c_illuminance
+        - type: battery_level
+          entity: sensor.lumi_lumi_sen_ill_mgl01_7625773c_power
 
 #mycroft:
 #  host: speaker
