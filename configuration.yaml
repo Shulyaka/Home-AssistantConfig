@@ -575,6 +575,9 @@ yandex_smart_home:
           entity: sensor.lumi_lumi_sen_ill_mgl01_7625773c_illuminance
         - type: battery_level
           entity: sensor.lumi_lumi_sen_ill_mgl01_7625773c_power
+    water_heater.rmc_m800s_cooker:
+      type: devices.types.cooking.multicooker
+
 
 #mycroft:
 #  host: speaker
