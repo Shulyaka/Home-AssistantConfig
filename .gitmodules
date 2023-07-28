@@ -31,3 +31,6 @@
 [submodule ".submodules/hassio-r4s"]
 	path = .submodules/hassio-r4s
 	url = https://github.com/XNicON/hassio-r4s.git
+[submodule ".submodules/HA-YandexWeather"]
+	path = .submodules/HA-YandexWeather
+	url = https://github.com/IATkachenko/HA-YandexWeather.git
