@@ -7,10 +7,6 @@ default_config:
 
 conversation:
 
-discovery:
-  enable:
-    - dlna_dmr
-
 bluetooth:
 
 group: !include groups.yaml
@@ -235,6 +231,7 @@ yandex_smart_home:
       - scene
       - button
     exclude_entities:
+      - sensor.yandex_weather_feels_like_temperature
       - switch.humidifier_xbee_aux_led
       - switch.humidifier_xbee_fan
       - switch.humidifier_xbee_pump
@@ -384,6 +381,8 @@ yandex_smart_home:
           entity: sensor.lumi_lumi_weather_3bfcf003_temperature
         - type: water_level
           entity: sensor.humidifier_xbee_pressure_in_pct
+        - type: water_leak
+          entity: binary_sensor.humidifier_leak
       custom_toggles:
         controls_locked:
           state_entity_id: switch.humidifier_pump_block
@@ -405,6 +404,8 @@ yandex_smart_home:
           entity: sensor.lumi_lumi_sens_48945e02_temperature
         - type: water_level
           entity: sensor.humidifier_xbee_pressure_in_pct
+        - type: water_leak
+          entity: binary_sensor.humidifier_leak
     humidifier.living_room:
       modes:
         program:
@@ -417,6 +418,8 @@ yandex_smart_home:
           entity: sensor.lumi_lumi_sens_02fbebbd_1_1026
         - type: water_level
           entity: sensor.humidifier_xbee_pressure_in_pct
+        - type: water_leak
+          entity: binary_sensor.humidifier_leak
     sensor.airthings_wave_082639_co2:
       properties:
         - type: co2_level
@@ -495,10 +498,10 @@ yandex_smart_home:
           entity: binary_sensor.lumi_lumi_sensor_wleak_aq1_03580198_1_1280
         - type: battery_level
           entity: sensor.lumi_lumi_sensor_wleak_aq1_03580198_1_1
-    binary_sensor.humidifier_leak:
+    binary_sensor.lumi_lumi_sensor_wleak_aq1_cbcc5703_moisture:
       properties:
         - type: water_leak
-          entity: binary_sensor.humidifier_leak
+          entity: binary_sensor.lumi_lumi_sensor_wleak_aq1_cbcc5703_moisture
         - type: battery_level
           entity: sensor.lumi_lumi_sensor_wleak_aq1_cbcc5703_power
     sensor.lumi_lumi_sen_ill_mgl01_3325773c_illuminance:
@@ -691,24 +694,24 @@ template:
         state_class: measurement
   - trigger:
       - platform: time
-        at: "6:00:00"
+        at: "5:49:10"
       - platform: time
-        at: "9:00:00"
+        at: "8:49:10"
       - platform: time
-        at: "16:00:00"
+        at: "15:49:10"
       - platform: time
-        at: "20:00:00"
+        at: "19:49:10"
       - platform: time
-        at: "22:00:00"
+        at: "21:49:10"
       - platform: homeassistant
         event: start
     sensor:
       - name: "Energy Tariff Zone"
         unique_id: mosenergosbyt_energy_tariff
-        state: "{% if 6 <= now().hour < 9 or 16 <= now().hour < 20 -%}T1{%- elif 22 <= now().hour or now().hour < 6 -%}T2{%- else -%}T3{%- endif %}"
+        state: '{% if today_at("5:49:10") <= now() < today_at("8:49:10") or today_at("15:49:10") <= now() < today_at("19:49:10") -%}T1{%- elif today_at("21:49:10") <= now() or now() < today_at("5:49:10") -%}T2{%- else -%}T3{%- endif %}'
         attributes:
-          description: "{% if 6 <= now().hour < 9 or 16 <= now().hour < 20 -%}Peak zone{%- elif 22 <= now().hour or now().hour < 6 -%}Night zone{%- else -%}Half-peak zone{%- endif %}"
-          timespan: "{% if 6 <= now().hour < 9 or 16 <= now().hour < 20 -%}07:00 - 10:00, 17:00 - 21:00{%- elif 22 <= now().hour or now().hour < 6 -%}23:00 - 07:00{%- else -%}10:00 - 17:00, 21:00 - 23:00{%- endif %}"
+          description: '{% if today_at("5:49:10") <= now() < today_at("8:49:10") or today_at("15:49:10") <= now() < today_at("19:49:10") -%}Peak zone{%- elif today_at("21:49:10") <= now() or now() < today_at("5:49:10") -%}Night zone{%- else -%}Half-peak zone{%- endif %}'
+          timespan: '{% if today_at("5:49:10") <= now() < today_at("8:49:10") or today_at("15:49:10") <= now() < today_at("19:49:10") -%}T107:00 - 10:00, 17:00 - 21:00{%- elif today_at("21:49:10") <= now() or now() < today_at("5:49:10") -%}23:00 - 07:00{%- else -%}10:00 - 17:00, 21:00 - 23:00{%- endif %}'
       - name: "Energy Cost"
         unique_id: mosenergosbyt_energy_cost
         state: "{% if states('sensor.energy_tariff')=='T1' -%}9.35{%- elif states('sensor.energy_tariff')=='T2' -%}2.98{%- elif states('sensor.energy_tariff')=='T3' -%}6.43{%- endif %}"
