@@ -83,8 +83,8 @@
   trigger:
   - type: moist
     platform: device
-    device_id: 25d05aba08ea11ebbc50397f01577bde
-    entity_id: 4b1d717904cdd96799387d4b6bcd733b
+    device_id: d6f7ed6d23799ca1de86b17c50ebac4f
+    entity_id: facc8f4eb3efdf6215a9e05335a0ede5
     domain: binary_sensor
   condition: []
   action:
@@ -1228,3 +1228,47 @@
         ''entity_picture'') }}'
       target: 114122164
   mode: single
+- id: '1690983128317'
+  alias: Bathroom fan user toggle
+  description: ''
+  trigger:
+  - platform: device
+    type: changed_states
+    device_id: 14c5be6c720fb48ea6daf7d4dfa7dcfc
+    entity_id: 5b9b284bc6d3fd957025c85da7d942a9
+    domain: fan
+  condition:
+  - condition: template
+    value_template: '{{ trigger is defined and trigger.to_state is defined and trigger.to_state.context
+      is defined and trigger.to_state.context.user_id != none }}'
+    enabled: true
+  action:
+  - choose:
+    - conditions:
+      - condition: template
+        value_template: '{{trigger is defined and trigger.platform == "device" and
+          trigger.to_state.state == "off"}}'
+        alias: Switching off
+      sequence:
+      - service: homeassistant.turn_off
+        data: {}
+        target:
+          entity_id: input_boolean.fan_force_on
+      - service: homeassistant.turn_on
+        data: {}
+        target:
+          entity_id:
+          - input_boolean.fan_suppress
+    default:
+    - service: homeassistant.turn_off
+      data: {}
+      target:
+        entity_id:
+        - input_boolean.fan_suppress
+        - input_boolean.fan_suppress_long
+    - service: homeassistant.turn_on
+      data: {}
+      target:
+        entity_id: input_boolean.fan_force_on
+  mode: queued
+  max: 10
