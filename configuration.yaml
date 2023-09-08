@@ -761,8 +761,8 @@ command_line:
 climate:
   - platform: generic_thermostat
     name: Humidifier fan
-    target_sensor: sensor.xbee_humidifier_main_unit_pump_temperature
-    heater: switch.xbee_humidifier_main_unit_fan
+    target_sensor: sensor.humidifier_pump_temperature
+    heater: switch.humidifier_fan
     min_temp: 20
     max_temp: 40
     ac_mode: true
