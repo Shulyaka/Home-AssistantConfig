@@ -296,7 +296,7 @@ yandex_smart_home:
       - sensor.airthings_wave_082639_illuminance
       - sensor.airthings_wave_082639_pressure
       - sensor.airthings_wave_082639_temperature
-      - sensor.airthings_wave_082639_voc
+      - sensor.airthings_wave_082639_vocs
       - sensor.airthings_wave_082639_battery
       - sensor.lumi_lumi_sen_ill_mgl01_e924773c_power
       - sensor.lumi_lumi_weather_3bfcf003_temperature
@@ -420,10 +420,10 @@ yandex_smart_home:
           entity: sensor.humidifier_xbee_pressure_in_pct
         - type: water_leak
           entity: binary_sensor.humidifier_leak
-    sensor.airthings_wave_082639_co2:
+    sensor.airthings_wave_082639_carbon_dioxide:
       properties:
         - type: co2_level
-          entity: sensor.airthings_wave_082639_co2
+          entity: sensor.airthings_wave_082639_carbon_dioxide
         - type: humidity
           entity: sensor.airthings_wave_082639_humidity
         - type: illumination
@@ -433,7 +433,7 @@ yandex_smart_home:
         - type: temperature
           entity: sensor.airthings_wave_082639_temperature
         - type: tvoc
-          entity: sensor.airthings_wave_082639_voc
+          entity: sensor.airthings_wave_082639_vocs
         - type: battery_level
           entity: sensor.airthings_wave_082639_battery
     sensor.lumi_lumi_sen_ill_mgl01_e924773c_illuminance:
