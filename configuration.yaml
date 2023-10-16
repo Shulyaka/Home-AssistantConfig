@@ -618,6 +618,9 @@ shell_command:
 
 zha:
   database_path: /srv/homeassistant/zigbee.db
+  zigpy_config:
+    topology_scan_period: 20
+    topology_scan_skip_coordinator: 1
 
 media_player:
   - platform: universal
