@@ -847,3 +847,10 @@ light:
 moscow_pgu:
   username: !secret moscow_pgu_username
   password: !secret moscow_pgu_password
+
+var:
+  image_prompt:
+    friendly_name: 'Image Prompt'
+    unique_id: image_prompt
+    force_update: false
+    icon: mdi:image-edit

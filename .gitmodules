@@ -37,3 +37,6 @@
 [submodule ".submodules/HA-YandexWeather"]
 	path = .submodules/HA-YandexWeather
 	url = https://github.com/IATkachenko/HA-YandexWeather.git
+[submodule ".submodules/home-assistant-variables"]
+	path = .submodules/home-assistant-variables
+	url = https://github.com/snarky-snark/home-assistant-variables.git
