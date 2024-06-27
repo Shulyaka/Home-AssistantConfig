@@ -26,10 +26,15 @@ from homeassistant.components.telegram_bot import (
     EVENT_TELEGRAM_TEXT,
     SERVICE_SEND_MESSAGE,
 )
-from telegram.utils.helpers import escape_markdown
+from telegram.helpers import escape_markdown
 import re
+import logging
 
 DOMAIN = "telegram_bot_conversation"
+
+_LOGGER = logging.getLogger(__name__)
+
+conversation_id_map = {}
 
 async def async_setup(hass: HomeAssistant, config: dict) -> bool:
     async def text_events(event: Event):
@@ -41,19 +46,29 @@ async def async_setup(hass: HomeAssistant, config: dict) -> bool:
         if re.search(r"https://(www.|)youtu*", event.data[ATTR_TEXT]):
             return
 
+        if event.data[ATTR_CHAT_ID] in conversation_id_map:
+            conversation_id = conversation_id_map[event.data[ATTR_CHAT_ID]]
+        else:
+            conversation_id = None
+
         conversation_result = await async_converse(
             hass,
-            event.data[ATTR_TEXT],
-            DOMAIN,
-            Context()
+            text=event.data[ATTR_TEXT],
+            conversation_id=conversation_id,
+            context=event.context,
+            agent_id='2ff759d8c03b62d828dacfc7f46edef9',
         )
+
+        conversation_id_map[event.data[ATTR_CHAT_ID]] = conversation_result.conversation_id
 
         await hass.services.async_call(
             TELEGRAM_DOMAIN,
             SERVICE_SEND_MESSAGE,
             {
-                ATTR_MESSAGE: escape_markdown(conversation_result.response.speech["plain"]["speech"]),
+                #ATTR_MESSAGE: escape_markdown(conversation_result.response.speech["plain"]["speech"]),
+                ATTR_MESSAGE: conversation_result.response.speech["plain"]["speech"],
                 ATTR_TARGET: event.data[ATTR_USER_ID],
+                #"parse_mode": "markdownv2",
             },
         )
 
