@@ -717,7 +717,7 @@
       - service: light.turn_on
         data:
           brightness_pct: 33
-          transition: 60
+          transition: 300
         target:
           device_id: 653a34008b1d51a37ddf8c29fa4fd896
     default: []
@@ -1254,3 +1254,30 @@
         entity_id: input_boolean.fan_force_on
   mode: queued
   max: 10
+- id: '1701346103474'
+  alias: Make corridor light
+  description: Сделать свет в коридоре для школы
+  trigger:
+  - platform: state
+    entity_id:
+    - light.hue_color_ceiling_3
+    from: unavailable
+    to: 'on'
+  condition:
+  - condition: time
+    after: '22:00:00'
+    before: 06:00:00
+    weekday:
+    - sun
+    - mon
+    - tue
+    - wed
+    - thu
+    - fri
+    enabled: true
+  action:
+  - type: turn_off
+    device_id: 13491bf0e80f2373f98cea9955640b20
+    entity_id: 5de67c21ec51ad9cf53458444e31e7a8
+    domain: light
+  mode: single
