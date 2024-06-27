@@ -227,7 +227,6 @@ yandex_smart_home:
       - input_boolean
       - automation
       - group
-      - light
       - scene
       - button
     exclude_entities:
@@ -358,16 +357,13 @@ yandex_smart_home:
       - sensor.lumi_lumi_sensor_swit_bf40d402_1_1
       - sensor.lumi_lumi_sensor_switch_aq3_bf40d402_device_temperature
       - sensor.lumi_lumi_sen_ill_mgl01_7625773c_power
+      - sensor.humidifier_leak_battery
     include_entities:
-      - light.philips_lct003_a93fdc04_level_light_color_on_off
+      - light.lumi_lumi_light_aqcn02_fc363005_level_light_color_on_off
       - light.lumi_lumi_relay_fan
       - light.bathroom_exhaust_lamp
       - light.lumi_lumi_relay_c2acn01_2321e803_2
       - light.lumi_lumi_relay_c2acn01_light
-  notifier:
-    - oauth_token: !secret yandex_smart_home_oauth_token
-      skill_id: !secret yandex_smart_home_skill_id
-      user_id: 2ce615b61c8545e8aa0a45ea2236ed74
   entity_config:
     humidifier.bedroom:
       modes:
@@ -468,6 +464,12 @@ yandex_smart_home:
           entity: sensor.lumi_lumi_weather_95169d01_pressure
         - type: battery_level
           entity: sensor.lumi_lumi_weather_95169d01_power
+    binary_sensor.humidifier_leak:
+      properties:
+        - type: water_leak
+          entity: binary_sensor.humidifier_leak
+        - type: battery_level
+          entity: sensor.humidifier_leak_battery
     binary_sensor.lumi_lumi_sensor_wleak_aq1_035acf68_1_1280:
       properties:
         - type: water_leak
@@ -591,6 +593,13 @@ telegram_bot:
     allowed_chat_ids:
       - 114122164
       - 1560910091
+      - 5891746911
+#      - chat_id: 114122164
+#        user_id: 2adbd618c4f44e28ae091db107c59870
+#      - chat_id: 1560910091
+#        user_id: e46830ca0d344b8e8bfe897f376170b8
+#      - chat_id: 5891746911
+#        user_id: 49c6cba386e64e7ba7d380146f5a546c
 
 telegram_bot_conversation:
 
@@ -610,6 +619,9 @@ notify:
   - platform: telegram
     name: telegram_1560910091
     chat_id: 1560910091
+  - platform: telegram
+    name: telegram_5891746911
+    chat_id: 5891746911
 
 shell_command:
   hassd_update: 'ssh shulyaka.org.ru /usr/lib/hassd/hassd_update.sh'
@@ -619,8 +631,9 @@ shell_command:
 zha:
   database_path: /srv/homeassistant/zigbee.db
   zigpy_config:
-    topology_scan_period: 20
+    topology_scan_period: 360
     topology_scan_skip_coordinator: 1
+    max_concurrent_requests: 128
 
 media_player:
   - platform: universal
@@ -630,8 +643,6 @@ media_player:
       - media_player.philips_tv_3
   - platform: mpd
     host: speaker
-
-media_extractor:
 
 yandex_station:
   username: !secret yandex_username
@@ -674,14 +685,69 @@ template:
 #        name: "{{state_attr('sensor.wcounter', 'counters')[2].name}}"
     - name: Backup watchdog
       unique_id: backup_watchdog_timer
-      availability: "{{ is_state('light.sonoff_10013f38ac_1', 'on') }}"
+      availability: "{{ is_state_attr('automation.backup_watchdog', 'current', 1) }}"
       state: "{{ state_attr('automation.backup_watchdog', 'last_triggered') + timedelta(minutes=31) }}"
       device_class: timestamp
     - name: Backup1 watchdog
       unique_id: backup1_watchdog_timer
-      availability: "{{ is_state('light.lumi_lumi_relay_c2acn01_light_2', 'on') }}"
+      availability: "{{ is_state_attr('automation.backup1_watchdog', 'current', 1) }}"
       state: "{{ state_attr('automation.backup1_watchdog', 'last_triggered') + timedelta(minutes=31) }}"
       device_class: timestamp
+    - name: "Weather prompt"
+      unique_id: weather_prompt
+      icon: "{{ state_attr('sensor.yandex_weather_condition_yandex', 'icon') }}"
+      state: >
+        {% if -6 <= state_attr("sun.sun","elevation") < 1 -%}
+          {% if is_state_attr("sun.sun", "rising", True) -%}
+            Утро
+          {%- else -%}
+            Вечер
+          {%- endif %}
+        {%- else -%}
+          {% if is_state("sun.sun", "above_horizon") -%}
+            День
+          {%- else -%}
+            Ночь
+          {%- endif %}
+        {%- endif %}, Москва, {{ now() | as_timestamp | timestamp_custom("%B") }}, {{ state_attr("weather.yandex_weather", "yandex_condition") }}, {% if state_attr("weather.yandex_weather", "feels_like") < -10 -%}
+          мороз
+        {%- elif state_attr("weather.yandex_weather", "feels_like") < 0 -%}
+          холодно
+        {%- elif state_attr("weather.yandex_weather", "feels_like") < 10 -%}
+          прохладно
+        {%- elif state_attr("weather.yandex_weather", "feels_like") < 20 -%}
+          умеренная температура
+        {%- elif state_attr("weather.yandex_weather", "feels_like") < 30 -%}
+          тепло
+        {%- else -%}
+          жара
+        {%- endif %}, {% if state_attr("weather.yandex_weather", "wind_speed") < 2 -%}
+          штиль
+        {%- elif state_attr("weather.yandex_weather", "wind_speed") < 6 -%}
+          тихий ветер
+        {%- elif state_attr("weather.yandex_weather", "wind_speed") < 12 -%}
+          лёгкий ветер
+        {%- elif state_attr("weather.yandex_weather", "wind_speed") < 20 -%}
+          слабый ветер
+        {%- elif state_attr("weather.yandex_weather", "wind_speed") < 29 -%}
+          умеренный ветер
+        {%- elif state_attr("weather.yandex_weather", "wind_speed") < 39 -%}
+          свежий ветер
+        {%- elif state_attr("weather.yandex_weather", "wind_speed") < 50 -%}
+          сильный ветер
+        {%- elif state_attr("weather.yandex_weather", "wind_speed") < 62 -%}
+          крепкий ветер
+        {%- elif state_attr("weather.yandex_weather", "wind_speed") < 75 -%}
+          очень крепкий ветер
+        {%- elif state_attr("weather.yandex_weather", "wind_speed") < 89 -%}
+          шторм
+        {%- elif state_attr("weather.yandex_weather", "wind_speed") < 103 -%}
+          сильный шторм
+        {%- elif state_attr("weather.yandex_weather", "wind_speed") < 118 -%}
+          жестокий шторм 
+        {%- else -%}
+          ураган
+        {%- endif %}
   - trigger:
     - platform: event
       event_type: zha_event
