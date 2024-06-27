@@ -40,3 +40,6 @@
 [submodule ".submodules/home-assistant-variables"]
 	path = .submodules/home-assistant-variables
 	url = https://github.com/snarky-snark/home-assistant-variables.git
+[submodule ".submodules/lovelace-multiline-text-input-card"]
+	path = .submodules/lovelace-multiline-text-input-card
+	url = https://github.com/faeibson/lovelace-multiline-text-input-card.git
