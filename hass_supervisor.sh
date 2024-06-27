@@ -2,6 +2,8 @@
 
 PROG=$@
 
+source /srv/homeassistant/bin/activate
+
 trap 'kill -TERM "$CPID"' TERM
 trap 'kill -INT "$CPID"' INT
 

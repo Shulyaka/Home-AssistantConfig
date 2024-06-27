@@ -1,5 +1,7 @@
 #!/bin/ash
 
+source /srv/homeassistant/bin/activate
+
 HASSUSER="homeassistant"
 TOKEN="eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJjOTYxZWFmMzhlOWY0MTA1OGIxZWU1ZWJlNzYxY2FiZiIsImlhdCI6MTYwMDg3MDUxNSwiZXhwIjoxOTE2MjMwNTE1fQ.9LgvYrV3-WvJpfLaoxxxK98OeC82YMliFgJ6R6XXCqs"
 HOSTNAME="https://shulyaka.org.ru"
@@ -29,6 +31,7 @@ find /srv/homeassistant/.submodules/ -name \*.js -exec cp '{}' /srv/homeassistan
 LANG=C git -C /srv/homeassistant status | grep -q "no changes added to commit" && git -C /srv/homeassistant add /srv/homeassistant/.submodules && git -C /srv/homeassistant commit -m "update submodules" && git -C /srv/homeassistant push
 
 echo "Updating homeassistant"
-sudo pip3 install --upgrade --upgrade-strategy=eager six==`apk info py3-six|grep installed|sed -e 's/py3-six-\([0-9\.]*\).*/\1/'` packaging==`apk info py3-packaging|grep installed|sed -e 's/py3-packaging-\([0-9\.]*\).*/\1/'` pymysql colorlog homeassistant esphome mosportal $@ && /srv/homeassistant/check_config.sh && ash -c "$CMD"
+#sudo pip3 install --upgrade --upgrade-strategy=eager six==`apk info py3-six|grep installed|sed -e 's/py3-six-\([0-9\.]*\).*/\1/'` packaging==`apk info py3-packaging|grep installed|sed -e 's/py3-packaging-\([0-9\.]*\).*/\1/'` pymysql colorlog homeassistant esphome mosportal $@ && /srv/homeassistant/check_config.sh && ash -c "$CMD"
+pip3 install --upgrade --upgrade-strategy=eager pymysql colorlog homeassistant esphome mosportal $@ && /srv/homeassistant/check_config.sh && ash -c "$CMD"
 
 echo "Done"
