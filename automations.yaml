@@ -1281,3 +1281,21 @@
     entity_id: 5de67c21ec51ad9cf53458444e31e7a8
     domain: light
   mode: single
+- id: '1707596343548'
+  alias: 'Humidifier offline '
+  description: ''
+  trigger:
+  - platform: state
+    entity_id:
+    - humidifier.bedroom
+    to: unavailable
+  condition: []
+  action:
+  - service: zha.permit
+    data:
+      duration: 254
+  - service: notify.telegram_114122164
+    metadata: {}
+    data:
+      message: Humidifier offline
+  mode: single
