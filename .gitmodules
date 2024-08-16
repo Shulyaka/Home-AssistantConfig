@@ -1,45 +1,64 @@
 [submodule ".submodules/yandex_smart_home"]
 	path = .submodules/yandex_smart_home
 	url = https://github.com/dmitry-k/yandex_smart_home.git
+	branch = master
 [submodule ".submodules/YandexStation"]
 	path = .submodules/YandexStation
 	url = https://github.com/AlexxIT/YandexStation.git
+	branch = master
 [submodule ".submodules/YandexDialogs"]
 	path = .submodules/YandexDialogs
 	url = https://github.com/AlexxIT/YandexDialogs.git
+	branch = master
 [submodule ".submodules/MorphNumbers"]
 	path = .submodules/MorphNumbers
 	url = https://github.com/AlexxIT/MorphNumbers.git
+	branch = master
 [submodule ".submodules/adaptive-lighting"]
 	path = .submodules/adaptive-lighting
 	url = https://github.com/basnijholt/adaptive-lighting.git
+	branch = master
 [submodule ".submodules/ytube_music_player"]
 	path = .submodules/ytube_music_player
 	url = https://github.com/KoljaWindeler/ytube_music_player.git
+	branch = main
 [submodule ".submodules/hass-moscow-pgu"]
 	path = .submodules/hass-moscow-pgu
 	url = https://github.com/alryaz/hass-moscow-pgu.git
+	branch = main
 [submodule ".submodules/zha-network-card"]
 	path = .submodules/zha-network-card
 	url = https://github.com/dmulcahey/zha-network-card.git
+	branch = master
 [submodule ".submodules/hass-music-assistant"]
 	path = .submodules/hass-music-assistant
 	url = https://github.com/music-assistant/hass-music-assistant.git
+	branch = main
 [submodule ".submodules/SonoffLAN"]
 	path = .submodules/SonoffLAN
 	url = https://github.com/AlexxIT/SonoffLAN.git
+	branch = master
 [submodule ".submodules/xbee_humidifier"]
 	path = .submodules/xbee_humidifier
 	url = git@github.com:Shulyaka/xbee_humidifier.git
+	branch = master
 [submodule ".submodules/hassio-r4s"]
 	path = .submodules/hassio-r4s
 	url = https://github.com/XNicON/hassio-r4s.git
+	branch = master
 [submodule ".submodules/HA-YandexWeather"]
 	path = .submodules/HA-YandexWeather
 	url = https://github.com/IATkachenko/HA-YandexWeather.git
+	branch = main
 [submodule ".submodules/home-assistant-variables"]
 	path = .submodules/home-assistant-variables
 	url = https://github.com/snarky-snark/home-assistant-variables.git
+	branch = develop
 [submodule ".submodules/lovelace-multiline-text-input-card"]
 	path = .submodules/lovelace-multiline-text-input-card
 	url = https://github.com/faeibson/lovelace-multiline-text-input-card.git
+	branch = master
+[submodule ".submodules/powerllm"]
+	path = .submodules/powerllm
+	url = git@github.com:Shulyaka/powerllm.git
+	branch = master
