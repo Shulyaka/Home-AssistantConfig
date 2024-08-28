@@ -62,3 +62,7 @@
 	path = .submodules/powerllm
 	url = git@github.com:Shulyaka/powerllm.git
 	branch = master
+[submodule ".submodules/xbee_watercounter"]
+	path = .submodules/xbee_watercounter
+	url = git@github.com:Shulyaka/xbee_watercounter.git
+	branch = master
