@@ -30,10 +30,6 @@
 	path = .submodules/zha-network-card
 	url = https://github.com/dmulcahey/zha-network-card.git
 	branch = master
-[submodule ".submodules/hass-music-assistant"]
-	path = .submodules/hass-music-assistant
-	url = https://github.com/music-assistant/hass-music-assistant.git
-	branch = main
 [submodule ".submodules/SonoffLAN"]
 	path = .submodules/SonoffLAN
 	url = https://github.com/AlexxIT/SonoffLAN.git
