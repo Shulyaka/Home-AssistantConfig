@@ -1274,6 +1274,10 @@
   - action: zha.permit
     data:
       duration: 254
+    enabled: false
+  - action: script.recover_humidifier
+    metadata: {}
+    data: {}
   - action: notify.telegram_114122164
     metadata: {}
     data:
