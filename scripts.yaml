@@ -23,3 +23,58 @@ lockdown:
         package_name: com.radefffactory.lockdown
   description: Lock Denis phone screen
   icon: mdi:cellphone-lock
+start_vacuum:
+  sequence:
+  - action: neato.custom_cleaning
+    metadata: {}
+    data:
+      mode: 2
+      navigation: 1
+      category: 4
+      zone: '{{ zone }}'
+    target:
+      entity_id: vacuum.robot
+  - stop: Done
+    response_variable: result
+  variables:
+    result: Done
+  fields:
+    zone:
+      selector:
+        select:
+          options:
+          - label: Living room
+            value: Living room
+          - label: Kitchen
+            value: Kitchen
+          - label: Kitchen table
+            value: Kitchen table
+          - label: Around the kitchen table
+            value: Around the table
+          - label: Entryway
+            value: Entryway
+          - label: Cupboard in the living room
+            value: Cupboard
+          - label: Hallway
+            value: Hallway
+          - label: Bedroom
+            value: Bedroom
+          - label: Bed in master bedroom
+            value: Main bed
+          - label: Ksusha's table
+            value: Ksusha's table
+          - label: Denis' table
+            value: Denis' table
+          - label: Children room
+            value: Kid's bedroom
+          - label: Cupboard in Children room
+            value: Under the kid's cupboard
+          - label: Table in Children room
+            value: Kid's table
+          - label: Bed in Children room
+            value: Kid's bed
+      name: Zone
+      description: Name of the zone to clean. Defaults to no zone i.e. complete house
+        cleanup.
+  alias: Start Vacuum
+  description: Start vacuum robot cleaning in certain place
