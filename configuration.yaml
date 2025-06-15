@@ -868,6 +868,54 @@ sensor:
     value_template: 'Available'
     device_class: signal_strength
     json_attributes: counters
+  - platform: kalman_combinator
+    name: Test Kalman Filter
+    unique_id: "test_kalman_filter"
+    step_duration: 10
+    std_deviation: 0.001
+    speed_std_deviation: 0.0001
+    sensors:
+      - entity_id: sensor.airthings_wave_082639_humidity
+        offset: -1
+      - entity_id: sensor.lumi_lumi_sensor_ht_agl02_humidity_2
+        offset: -0.6
+      - entity_id: sensor.lumi_lumi_sensor_ht_agl02_humidity_3
+        offset: -0.1
+      - entity_id: sensor.lumi_lumi_weather_3bfcf003_humidity
+        offset: -2.5
+    controls:
+      - entity_id: switch.bedroom_humidifier_valve
+  - platform: kalman_combinator
+    name: Living Room Humidity
+    unique_id: "living_room_humidity_kalman_filter"
+    step_duration: 10
+    std_deviation: 0.001
+    speed_std_deviation: 0.00001
+    sensors:
+      - entity_id: sensor.lumi_lumi_sens_02fbebbd_1_1029
+        offset: -2.5
+    controls:
+      - entity_id: switch.living_room_humidifier_valve
+  - platform: kalman_combinator
+    name: Children's Room Humidity
+    unique_id: "childrens_room_humidity_kalman_filter"
+    step_duration: 10
+    std_deviation: 0.01
+    speed_std_deviation: 0.0001
+    sensors:
+      - entity_id: sensor.lumi_lumi_sens_48945e02_humidity
+        offset: -2.9
+    controls:
+      - entity_id: switch.childrens_room_humidifier_valve
+  - platform: kalman_combinator
+    name: Bathroom Humidity
+    unique_id: "bathroom_humidity_kalman_filter"
+    step_duration: 10
+    std_deviation: 0.1
+    speed_std_deviation: 0.001
+    sensors:
+      - entity_id: sensor.lumi_lumi_weather_95169d01_humidity
+        offset: -1.4
 
 command_line:
   - binary_sensor:

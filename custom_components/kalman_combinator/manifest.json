@@ -1,0 +1,11 @@
+{
+  "domain": "kalman_combinator",
+  "name": "Kalman Combinator",
+  "codeowners": ["@Shulyaka"],
+  "documentation": "https://github.com/Shulyaka/kalman_combinator/blob/master/README.md",
+  "issue_tracker": "https://github.com/Shulyaka/kalman_combinator/issues",
+  "requirements": ["numpy"],
+  "dependencies": ["sensor"],
+  "iot_class": "local_polling",
+  "version": "0.0.1"
+}
