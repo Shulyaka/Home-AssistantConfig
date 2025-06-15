@@ -5,3 +5,11 @@ turn_off_tv:
     target:
       entity_id: media_player.philips_tv_3
   mode: single
+recover_humidifier:
+  alias: Recover humidifier
+  sequence:
+  - data:
+      duration: 254
+    action: zha.permit
+  description: Fix humidifier connection
+  icon: mdi:air-humidifier
