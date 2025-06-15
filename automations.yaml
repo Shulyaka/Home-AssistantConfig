@@ -901,6 +901,10 @@
         target:
           entity_id: light.bathroom_exhaust_lamp
     default:
+    - condition: numeric_state
+      entity_id: light.bathroom
+      attribute: brightness
+      below: 100
     - action: light.turn_off
       data:
         transition: 10
