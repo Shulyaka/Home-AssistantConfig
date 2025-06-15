@@ -716,8 +716,8 @@ media_player:
     children:
       - media_player.philips_tv_2
       - media_player.philips_tv_3
-  - platform: mpd
-    host: speaker
+#  - platform: mpd
+#    host: speaker
 
 yandex_station:
   username: !secret yandex_username
