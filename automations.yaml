@@ -421,7 +421,7 @@
       sequence:
       - action: device_tracker.see
         data:
-          dev_id: moskvenok
+          dev_id: school_pass
           location_name: Школа
           source_type: bluetooth_le
     - conditions:
