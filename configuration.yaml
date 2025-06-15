@@ -860,6 +860,15 @@ template:
         unique_id: mosenergosbyt_energy_cost
         state: "{% if states('sensor.energy_tariff')=='T1' -%}9.35{%- elif states('sensor.energy_tariff')=='T2' -%}2.98{%- elif states('sensor.energy_tariff')=='T3' -%}6.43{%- endif %}"
         unit_of_measurement: "₽/kWh"
+  - trigger:
+    - platform: event
+      alias: "Update image when a new image is generated"
+      event_type: image_generated
+    image:
+      unique_id: ai_generated_image
+      #name: "AI generated image"
+      name: "{{ trigger.event.data.revised_prompt }}"
+      url: "{{ trigger.event.data.url }}"
 
 sensor:
   - platform: rest
