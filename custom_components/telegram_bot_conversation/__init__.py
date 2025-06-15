@@ -36,6 +36,7 @@ _LOGGER = logging.getLogger(__name__)
 
 conversation_id_map = {}
 
+
 async def async_setup(hass: HomeAssistant, config: dict) -> bool:
     async def text_events(event: Event):
         # Only deal with private chats.
@@ -56,19 +57,24 @@ async def async_setup(hass: HomeAssistant, config: dict) -> bool:
             text=event.data[ATTR_TEXT],
             conversation_id=conversation_id,
             context=event.context,
-            agent_id='2ff759d8c03b62d828dacfc7f46edef9',
+            # agent_id='2ff759d8c03b62d828dacfc7f46edef9',
+            # agent_id='conversation.o3_mini',
+            # agent_id="conversation.openai_conversation",
+            agent_id="conversation.claude",
         )
 
-        conversation_id_map[event.data[ATTR_CHAT_ID]] = conversation_result.conversation_id
+        conversation_id_map[event.data[ATTR_CHAT_ID]] = (
+            conversation_result.conversation_id
+        )
 
         await hass.services.async_call(
             TELEGRAM_DOMAIN,
             SERVICE_SEND_MESSAGE,
             {
-                #ATTR_MESSAGE: escape_markdown(conversation_result.response.speech["plain"]["speech"]),
+                # ATTR_MESSAGE: escape_markdown(conversation_result.response.speech["plain"]["speech"]),
                 ATTR_MESSAGE: conversation_result.response.speech["plain"]["speech"],
                 ATTR_TARGET: event.data[ATTR_USER_ID],
-                #"parse_mode": "markdownv2",
+                # "parse_mode": "markdownv2",
             },
         )
 
