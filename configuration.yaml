@@ -233,25 +233,24 @@ yandex_smart_home:
       - group
       - scene
       - button
+      - event
     exclude_entities:
       - sensor.yandex_weather_feels_like_temperature
       - switch.humidifier_xbee_aux_led
       - switch.humidifier_xbee_fan
       - switch.humidifier_xbee_pump
-      - switch.humidifier_pressure_drop_valve
-      - switch.bedroom_humidifier_valve
-      - switch.childrens_room_humidifier_valve
-      - switch.living_room_humidifier_valve
       - switch.humidifier_aux_led
       - switch.humidifier_fan
       - switch.humidifier_pump
       - climate.humidifier_fan
       - sensor.lumi_lumi_weather_3bfcf003_temperature
       - sensor.lumi_lumi_weather_3bfcf003_humidity
+      - sensor.lumi_lumi_sens_48945e02_humidity
       - sensor.lumi_lumi_sens_48945e02_temperature
       - sensor.lumi_lumi_sens_48945e02_power
       - sensor.lumi_lumi_sens_02fbebbd_1_1026
       - sensor.lumi_lumi_sens_02fbebbd_1_1029
+      - sensor.lumi_lumi_sens_02fbebbd_1_1
       - sensor.humidifier_xbee_pressure_in_pct
       - sensor.humidifier_internal_temperature
       - sensor.humidifier_pump_temperature
@@ -299,9 +298,10 @@ yandex_smart_home:
       - sensor.airthings_wave_082639_illuminance
       - sensor.airthings_wave_082639_pressure
       - sensor.airthings_wave_082639_temperature
-      - sensor.airthings_wave_082639_vocs
+      - sensor.airthings_wave_082639_voc
       - sensor.airthings_wave_082639_battery
       - sensor.lumi_lumi_sen_ill_mgl01_e924773c_power
+      - sensor.lumi_lumi_weather_3bfcf003_humidity
       - sensor.lumi_lumi_weather_3bfcf003_temperature
       - sensor.lumi_lumi_weather_3bfcf003_pressure
       - sensor.lumi_lumi_weather_3bfcf003_power
@@ -340,8 +340,6 @@ yandex_smart_home:
       - sensor.lumi_lumi_relay_c2acn01_rms_voltage
       - sensor.lumi_lumi_relay_c2acn01_device_temperature
       - sensor.lumi_lumi_sen_ill_mgl01_d952773c_power
-      - sensor.lumi_lumi_sens_02fbebbd_1_1026
-      - sensor.lumi_lumi_sens_02fbebbd_1_1
       - sensor.tze200_hkdl5fmv_ts0601_active_power
       - sensor.tze200_hkdl5fmv_ts0601_rms_voltage
       - sensor.tze200_hkdl5fmv_ts0601_rms_current
@@ -362,10 +360,89 @@ yandex_smart_home:
       - sensor.lumi_lumi_sensor_switch_aq3_bf40d402_device_temperature
       - sensor.lumi_lumi_sen_ill_mgl01_7625773c_power
       - sensor.humidifier_leak_battery
+      - number.watercounter_analog_output
+      - number.watercounter_analog_output_2
+      - switch.digi_xbee3_3f259441_on_off
+      - switch.digi_xbee3_3f259441_on_off_2
+      - switch.digi_xbee3_3f259441_on_off_3
+      - switch.digi_xbee3_3f259441_on_off_4
+      - switch.digi_xbee3_3f259441_on_off_5
+      - switch.digi_xbee3_3f259441_on_off_6
+      - switch.digi_xbee3_3f259441_on_off_7
+      - switch.digi_xbee3_3f259441_on_off_8
+      - switch.digi_xbee3_3f259441_on_off_9
+      - switch.digi_xbee3_3f259441_on_off_10
+      - switch.digi_xbee3_3f259441_on_off_11
+      - switch.digi_xbee3_3f259441_on_off_12
+      - switch.digi_xbee3_3f259441_on_off_13
+      - switch.digi_xbee3_3f259441_on_off_14
+      - switch.digi_xbee3_3f259441_on_off_15
+      - sensor.watercounter_analog_input
+      - sensor.watercounter_analog_input_2
+      - sensor.watercounter_analog_input_3
+      - sensor.watercounter_analog_input_4
+      - sensor.watercounter_analog_input_5
+      - binary_sensor.digi_xbee3_3f259441_binary_input
+      - sensor.xbee_watercounter_1_counter
+      - sensor.xbee_watercounter_2_counter
+      - sensor.xbee_watercounter_3_counter
+      - input_button.generate_image
+      - sensor.clavinova_instantaneous_demand
+      - sensor.clavinova_summation_delivered
+      - sensor.air1_ultra_battery_temperature
+      - sensor.air1_ultra_light_sensor
+      - valve.humidifier_pressure_drop_valve
+      - valve.bedroom_humidifier_valve
+      - valve.children_s_room_humidifier_valve
+      - valve.living_room_humidifier_valve
+      - switch.home_assistant_active
+      - switch.telegram_proxy_active
+      - sensor.redmi_a3_battery_level
+      - script.start_vacuum
+      - sensor.vykliuchatel_instantaneous_demand
+      - sensor.vykliuchatel_summation_delivered
+      - sensor.lumi_lumi_flood_agl02_battery
+      - sensor.sm_s921b_battery_level
+      - sensor.s23_battery_temperature
+      - sensor.s23_pressure_sensor
+      - sensor.sm_s921b_light_sensor
+      - sensor.s23_light_sensor
+      - media_player.bubbleupnp_sm_s916b
+      - media_player.yandex_station_m01tdj000gckcg
+      - media_player.yandex_station_l01x4t100ssddn
+      - media_player.yandex_station_ff98f0293c2e0ee4e18dc30d
+      - sensor.s23_total_calories_burned
+      - sensor.s23_active_calories_burned
+      - script.test_script
+      - sensor.hot_water_counter
+      - sensor.cold_water_counter
+      - sensor.toilet_water_counter
+      - switch.robot_schedule
+      - light.bathroom
+      - light.bathroom_exhaust_lamp
+      - light.living_room
+      - light.children_room
+      - light.kitchen
+      - switch.humidifier_pump_block
+      - switch.automation_evening_lights_on
+      - switch.automation_evening_lights_off
+      - switch.automation_friends_of_hue_switch_1
+      - switch.automation_friends_of_hue_switch_2
+      - switch.automation_morning_lights
+      - switch.atlantis_active
+      - switch.cloud_active
+      - switch.home_assistant_active
+      - switch.mail_active
+      - switch.photos_active
+      - switch.telegram_proxy_active
+      - sensor.tze200_hkdl5fmv_ts0601_summation_delivered
+      - sensor.tze200_hkdl5fmv_ts0601_summation_received
+      - light.sonoff_10013f38ac_1
+      - light.lumi_lumi_relay_c2acn01_light_2
+      - sensor.test_kalman_filter
     include_entities:
       - light.lumi_lumi_light_aqcn02_fc363005_level_light_color_on_off
       - light.lumi_lumi_relay_fan
-      - light.bathroom_exhaust_lamp
       - light.lumi_lumi_relay_c2acn01_2321e803_2
       - light.lumi_lumi_relay_c2acn01_light
   entity_config:
@@ -383,6 +460,8 @@ yandex_smart_home:
           entity: sensor.humidifier_xbee_pressure_in_pct
         - type: water_leak
           entity: binary_sensor.humidifier_leak
+        - type: battery_level
+          entity: sensor.lumi_lumi_weather_3bfcf003_power
       custom_toggles:
         controls_locked:
           state_entity_id: switch.humidifier_pump_block
@@ -406,6 +485,8 @@ yandex_smart_home:
           entity: sensor.humidifier_xbee_pressure_in_pct
         - type: water_leak
           entity: binary_sensor.humidifier_leak
+        - type: battery_level
+          entity: sensor.lumi_lumi_sens_48945e02_power
     humidifier.living_room:
       modes:
         program:
@@ -420,10 +501,12 @@ yandex_smart_home:
           entity: sensor.humidifier_xbee_pressure_in_pct
         - type: water_leak
           entity: binary_sensor.humidifier_leak
-    sensor.airthings_wave_082639_carbon_dioxide:
+        - type: battery_level
+          entity: sensor.lumi_lumi_sens_02fbebbd_1_1
+    sensor.airthings_wave_082639_co2:
       properties:
         - type: co2_level
-          entity: sensor.airthings_wave_082639_carbon_dioxide
+          entity: sensor.airthings_wave_082639_co2
         - type: humidity
           entity: sensor.airthings_wave_082639_humidity
         - type: illumination
@@ -433,7 +516,7 @@ yandex_smart_home:
         - type: temperature
           entity: sensor.airthings_wave_082639_temperature
         - type: tvoc
-          entity: sensor.airthings_wave_082639_vocs
+          entity: sensor.airthings_wave_082639_voc
         - type: battery_level
           entity: sensor.airthings_wave_082639_battery
     sensor.lumi_lumi_sen_ill_mgl01_e924773c_illuminance:
@@ -442,16 +525,6 @@ yandex_smart_home:
           entity: sensor.lumi_lumi_sen_ill_mgl01_e924773c_illuminance
         - type: battery_level
           entity: sensor.lumi_lumi_sen_ill_mgl01_e924773c_power
-    sensor.lumi_lumi_weather_3bfcf003_humidity:
-      properties:
-        - type: humidity
-          entity: sensor.lumi_lumi_weather_3bfcf003_humidity
-        - type: temperature
-          entity: sensor.lumi_lumi_weather_3bfcf003_temperature
-        - type: pressure
-          entity: sensor.lumi_lumi_weather_3bfcf003_pressure
-        - type: battery_level
-          entity: sensor.lumi_lumi_weather_3bfcf003_power
     binary_sensor.lumi_lumi_sensor_magnet_aq2_033b73a9_1_6:
       properties:
         - type: open
@@ -516,14 +589,6 @@ yandex_smart_home:
           entity: sensor.lumi_lumi_sen_ill_mgl01_3325773c_illuminance
         - type: battery_level
           entity: sensor.lumi_lumi_sen_ill_mgl01_3325773c_power
-    sensor.lumi_lumi_sens_48945e02_humidity:
-      properties:
-        - type: humidity
-          entity: sensor.lumi_lumi_sens_48945e02_humidity
-        - type: temperature
-          entity: sensor.lumi_lumi_sens_48945e02_temperature
-        - type: battery_level
-          entity: sensor.lumi_lumi_sens_48945e02_power
     switch.lumi_lumi_plug_maeu01_fec8793c_on_off:
       properties:
         - type: power
@@ -543,14 +608,6 @@ yandex_smart_home:
           entity: sensor.lumi_lumi_sen_ill_mgl01_d952773c_illuminance
         - type: battery_level
           entity: sensor.lumi_lumi_sen_ill_mgl01_d952773c_power
-    sensor.lumi_lumi_sens_02fbebbd_1_1029:
-      properties:
-        - type: humidity
-          entity: sensor.lumi_lumi_sens_02fbebbd_1_1029
-        - type: temperature
-          entity: sensor.lumi_lumi_sens_02fbebbd_1_1026
-        - type: battery_level
-          entity: sensor.lumi_lumi_sens_02fbebbd_1_1
     switch.tze200_hkdl5fmv_ts0601_switch:
       properties:
         - type: power
@@ -586,6 +643,25 @@ yandex_smart_home:
           entity: sensor.lumi_lumi_sen_ill_mgl01_7625773c_power
     water_heater.rmc_m800s_cooker:
       type: devices.types.cooking.multicooker
+    valve.hot_water_valve:
+      type: devices.types.openable.valve
+      properties:
+        - type: water_meter
+          entity: sensor.hot_water_counter
+    valve.cold_water_valve:
+      type: devices.types.openable.valve
+      properties:
+        - type: water_meter
+          entity: sensor.cold_water_counter
+    valve.toilet_water_valve:
+      type: devices.types.openable.valve
+      properties:
+        - type: water_meter
+          entity: sensor.toilet_water_counter
+    binary_sensor.lumi_lumi_sensor_magnet_aq2_6b2b4205_on_off:
+      name: Левая клавиша
+    binary_sensor.lumi_lumi_sensor_magnet_aq2_c4702205_on_off:
+      name: Правая клавиша
 
 
 #mycroft:
