@@ -120,6 +120,10 @@ logger:
     zigpy_xbee.api: debug
     zigpy.zcl: debug
 
+log_level:
+  console_log_level: info
+  file_log_level: notset
+
 google_assistant:
   project_id: home-assistant-1404b
 #  api_key: !secret google_assistant
