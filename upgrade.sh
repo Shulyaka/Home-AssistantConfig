@@ -22,6 +22,7 @@ sudo apk update && sudo apk add --upgrade apk-tools && sudo apk upgrade
 
 echo "Updating /srv/homeassistant"
 git -C /srv/homeassistant pull --ff-only
+#git -C /srv/homeassistant submodule update --remote 
 for submodule in /srv/homeassistant/.submodules/*
 do
 	echo "Updating $submodule"
@@ -32,6 +33,10 @@ LANG=C git -C /srv/homeassistant status | grep -q "no changes added to commit" &
 
 echo "Updating homeassistant"
 #sudo pip3 install --upgrade --upgrade-strategy=eager six==`apk info py3-six|grep installed|sed -e 's/py3-six-\([0-9\.]*\).*/\1/'` packaging==`apk info py3-packaging|grep installed|sed -e 's/py3-packaging-\([0-9\.]*\).*/\1/'` pymysql colorlog homeassistant esphome mosportal $@ && /srv/homeassistant/check_config.sh && ash -c "$CMD"
-pip3 install --upgrade --upgrade-strategy=eager pymysql colorlog homeassistant esphome mosportal $@ && /srv/homeassistant/check_config.sh && ash -c "$CMD"
+#pip3 install --upgrade --upgrade-strategy=eager homeassistant $@ && pip3 install --upgrade --upgrade-strategy=eager -c /srv/homeassistant/lib/python3.12/site-packages/homeassistant/package_constraints.txt pymysql music_assistant $@ && /srv/homeassistant/install_dependencies.sh && /srv/homeassistant/check_config.sh && ash -c "$CMD"
+pip3 install --upgrade --upgrade-strategy=eager homeassistant $@
+sed -e 's/av==[0-9]*\.[0-9]*\.[0-9]*/av==12.3.0/' -i /srv/homeassistant/lib/python3.12/site-packages/homeassistant/components/generic/manifest.json -i /srv/homeassistant/lib/python3.12/site-packages/homeassistant/components/stream/manifest.json -i /srv/homeassistant/lib/python3.12/site-packages/homeassistant/package_constraints.txt
+pip3 install --upgrade --upgrade-strategy=eager -c /srv/homeassistant/lib/python3.12/site-packages/homeassistant/package_constraints.txt pymysql music_assistant $@
+/srv/homeassistant/install_dependencies.sh && /srv/homeassistant/check_config.sh && ash -c "$CMD"
 
 echo "Done"
