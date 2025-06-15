@@ -1326,3 +1326,59 @@
       url: '{{ generated_image.url }}'
       revised_prompt: '{{ generated_image.revised_prompt }}'
   mode: single
+- id: '1743592427079'
+  alias: Start vacuum in bedroom
+  description: ''
+  triggers:
+  - trigger: state
+    entity_id:
+    - input_button.start_vacuum_bedroom
+  conditions: []
+  actions:
+  - action: script.start_vacuum
+    metadata: {}
+    data:
+      zone: Bedroom
+  mode: single
+- id: '1743592483611'
+  alias: Start vacuum in children room
+  description: ''
+  triggers:
+  - trigger: state
+    entity_id:
+    - input_button.start_vacuum_children_room
+  conditions: []
+  actions:
+  - action: script.start_vacuum
+    metadata: {}
+    data:
+      zone: Kid's bedroom
+  mode: single
+- id: '1743592545936'
+  alias: Start vacuum in kitchen
+  description: ''
+  triggers:
+  - trigger: state
+    entity_id:
+    - input_button.start_vacuum_kitchen
+  conditions: []
+  actions:
+  - action: script.start_vacuum
+    metadata: {}
+    data:
+      zone: Kitchen
+  mode: single
+- id: '1743592638324'
+  alias: Start vacuum in living room
+  description: ''
+  triggers:
+  - trigger: state
+    entity_id:
+    - input_button.start_vacuum_living_room
+  conditions: []
+  actions:
+  - action: script.start_vacuum
+    metadata: {}
+    data:
+      zone: Living room
+  mode: single
