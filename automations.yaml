@@ -238,25 +238,9 @@
   description: ''
   triggers:
   - trigger: state
-    entity_id: sensor.sm_g970f_sleduiushchii_budilnik
-    to: unavailable
-  - trigger: state
-    entity_id: sensor.sm_g970f_rezhim_zvonka
-    to: normal
-  - trigger: state
-    entity_id: sensor.sm_g970f_sensor_proidennykh_shagov
-  - type: plugged_in
-    trigger: device
-    device_id: 484a3695699a615e8d4dba18da1ea929
-    entity_id: binary_sensor.sm_g970f_zariadka_ustroistva
-    domain: binary_sensor
-  - trigger: state
-    entity_id: sensor.sm_g970f_obnaruzhennaia_aktivnost
-    from: still
-  conditions:
-  - condition: time
-    after: 06:50
-    before: '12:00'
+    entity_id:
+    - sensor.sm_s921b_sleep_segment
+  conditions: []
   actions:
   - action: input_boolean.turn_off
     data: {}
@@ -266,16 +250,26 @@
   alias: Ksusha sleep tracking
   description: ''
   triggers:
+  - type: value
+    device_id: 235b1947989cfff2d3eb77b0ad4a7ceb
+    entity_id: 3fd9fe07b967c12ac0d19acf1e9a5871
+    domain: sensor
+    trigger: device
+    above: 65
   - trigger: state
-    entity_id: sensor.sm_g970f_sleduiushchii_budilnik
+    entity_id:
+    - sensor.sm_s921b_next_alarm
     from: unavailable
     for: 00:03
   conditions:
   - condition: not
     conditions:
     - condition: time
-      after: 05:00
-      before: '22:30'
+      after: 05:00:00
+      before: '22:30:00'
+    - condition: state
+      entity_id: sensor.sm_s921b_next_alarm
+      state: unavailable
   actions:
   - action: input_boolean.turn_on
     data: {}
