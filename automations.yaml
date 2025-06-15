@@ -430,32 +430,12 @@
       sequence:
       - action: device_tracker.see
         data:
-          dev_id: parents
-          location_name: '{{ states("person.ksusha") }}'
-      - action: device_tracker.see
-        data:
           dev_id: school_pass
           location_name: not_home
           source_type: bluetooth_le
     default: []
   mode: queued
   max: 10
-- id: '1612291379009'
-  alias: Dasha parents tracking
-  description: Since Dasha has no active device trackers, we use the parent's position
-  triggers:
-  - trigger: state
-    entity_id: person.ksusha
-  conditions:
-  - condition: state
-    entity_id: device_tracker.moskvenok
-    state: not_home
-  actions:
-  - action: device_tracker.see
-    data:
-      dev_id: parents
-      location_name: '{{ trigger.to_state.state }}'
-  mode: single
 - id: '1612638418194'
   alias: Bathroom fan toggle
   description: ''
