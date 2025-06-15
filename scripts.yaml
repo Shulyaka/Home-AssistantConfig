@@ -13,3 +13,13 @@ recover_humidifier:
     action: zha.permit
   description: Fix humidifier connection
   icon: mdi:air-humidifier
+lockdown:
+  alias: Lockdown
+  sequence:
+  - action: notify.mobile_app_s23
+    data:
+      message: command_launch_app
+      data:
+        package_name: com.radefffactory.lockdown
+  description: Lock Denis phone screen
+  icon: mdi:cellphone-lock
