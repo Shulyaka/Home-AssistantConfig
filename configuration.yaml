@@ -84,7 +84,7 @@ http:
   cors_allowed_origins: https://shulyaka.org.ru
 
 recorder:
-  db_url: mysql+pymysql://@/hass_db?unix_socket=/opt/mysql/mysql.sock&charset=utf8
+  #db_url: mysql+pymysql://@/hass_db?unix_socket=/opt/mysql/mysql.sock&charset=utf8
 
 logger:
   default: debug
