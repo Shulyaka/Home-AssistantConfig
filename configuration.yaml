@@ -560,12 +560,14 @@ yandex_smart_home:
         - type: battery_level
           entity: sensor.lumi_lumi_sensor_wleak_aq1_power
     binary_sensor.lumi_lumi_sensor_magnet_aq2_6b2b4205_on_off:
+      name: Левая клавиша
       properties:
         - type: open
           entity: binary_sensor.lumi_lumi_sensor_magnet_aq2_6b2b4205_on_off
         - type: battery_level
           entity: sensor.lumi_lumi_sensor_magnet_aq2_6b2b4205_power
     binary_sensor.lumi_lumi_sensor_magnet_aq2_c4702205_on_off:
+      name: Правая клавиша
       properties:
         - type: open
           entity: binary_sensor.lumi_lumi_sensor_magnet_aq2_c4702205_on_off
@@ -658,10 +660,6 @@ yandex_smart_home:
       properties:
         - type: water_meter
           entity: sensor.toilet_water_counter
-    binary_sensor.lumi_lumi_sensor_magnet_aq2_6b2b4205_on_off:
-      name: Левая клавиша
-    binary_sensor.lumi_lumi_sensor_magnet_aq2_c4702205_on_off:
-      name: Правая клавиша
 
 
 #mycroft:
