@@ -1,4 +1,4 @@
-#!/bin/ash
+#!/bin/bash
 
 source /srv/homeassistant/bin/activate
 

@@ -15,9 +15,9 @@ script: !include scripts.yaml
 homeassistant:
   customize: !include customize.yaml
   media_dirs:
-    video: /usr/share/nas/video
-    photo: /usr/share/nas/photo
-    music: /usr/share/nas/music
+    video: /raid/data/video
+    photo: /raid/data/photo
+    music: /raid/data/music
 
 mqtt:
 
@@ -698,8 +698,8 @@ notify:
 
 shell_command:
   hassd_update: 'ssh shulyaka.org.ru /usr/lib/hassd/hassd_update.sh'
-  hass_upgrade: ash -c "nohup /srv/homeassistant/upgrade.sh restart 0<&- &>/srv/homeassistant/www/upgrade_log.txt &"
-  youtube_dl: 'ssh ananas /usr/local/bin/youtube_dl.sh -d "{{ callback }}" "{{ message }}"'
+  hass_upgrade: bash -c "nohup /srv/homeassistant/upgrade.sh restart 0<&- &>/srv/homeassistant/www/upgrade_log.txt &"
+  youtube_dl: '/usr/local/bin/youtube_dl.sh -d "{{ callback }}" "{{ message }}"'
 
 zha:
   database_path: /srv/homeassistant/zigbee.db
