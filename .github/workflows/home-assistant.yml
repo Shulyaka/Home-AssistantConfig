@@ -21,7 +21,7 @@ jobs:
           ln -s ci_service_account.json service_account.json
           mkdir -p ./video ./photo ./music ./other/home-assistant-polymer-prod
           touch /tmp/dummy.crt
-          sed -e 's%/usr/share/nas%.%g' -i configuration.yaml
+          sed -e 's%/raid/data%.%g' -i configuration.yaml
           sed -e 's%/home/homeassistant/homeassistant/.*%/tmp/dummy.crt%g' -i configuration.yaml
       - name: 🚀 Run Home Assistant Configuration Check
         uses: frenck/action-home-assistant@v1
