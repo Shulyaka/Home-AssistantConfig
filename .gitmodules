@@ -40,7 +40,7 @@
 	branch = master
 [submodule ".submodules/hassio-r4s"]
 	path = .submodules/hassio-r4s
-	url = https://github.com/XNicON/hassio-r4s.git
+	url = https://github.com/BabaninFV/hassio-r4s.git
 	branch = master
 [submodule ".submodules/HA-YandexWeather"]
 	path = .submodules/HA-YandexWeather
