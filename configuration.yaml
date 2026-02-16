@@ -867,6 +867,18 @@ template:
       #name: "AI generated image"
       name: "{{ trigger.event.data.revised_prompt }}"
       url: "{{ trigger.event.data.url }}"
+  - trigger:
+    - platform: event
+      alias: "Update Deep Research Results"
+      event_type: deep_research_results
+    sensor:
+      unique_id: deep_research
+      name: "Deep Research Results"
+      device_class: timestamp
+      state: '{% if trigger.event.data.result == "Deep Research failed" -%}{{ states("sensor.deep_research_results") }}{%- else -%}{{ trigger.event.time_fired.isoformat() }}{%- endif %}'
+      attributes:
+        query: "{{ trigger.event.data.query }}"
+        contents: "{{ trigger.event.data.result }}"
 
 sensor:
   - platform: rest

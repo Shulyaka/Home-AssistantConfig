@@ -78,3 +78,51 @@ start_vacuum:
         cleanup.
   alias: Start Vacuum
   description: Start vacuum robot cleaning in certain place
+deep_research:
+  sequence:
+  - variables:
+      query: '{% if query is defined %}{{ query }}{%- else -%}{{ state_attr("sensor.deep_research_results",
+        "query") }}{%- endif %}'
+  - event: deep_research_results
+    event_data:
+      query: '{{ query }}'
+      result: Deep Research failed
+  - action: conversation.process
+    metadata: {}
+    data:
+      agent_id: conversation.deep_research
+      text: '{{ query }}'
+    response_variable: result
+  - set_conversation_response: '{{ result.response.speech.plain.speech }}'
+  - event: deep_research_results
+    event_data:
+      query: '{{ query }}'
+      result: '{{ result.response.speech.plain.speech }}'
+  - if:
+    - condition: template
+      value_template: '{{ result.response.response_type == ''error'' }}'
+    then:
+    - action: notify.persistent_notification
+      metadata: {}
+      data:
+        message: '{{ result.response.speech.plain.speech }}'
+        title: Deep Research
+    - stop: '{{ result.response.speech.plain.speech }}'
+      error: true
+    alias: Exit on error
+  - action: notify.persistent_notification
+    metadata: {}
+    data:
+      message: Your deep research results are ready
+      title: Deep Research
+  fields:
+    query:
+      selector:
+        text:
+          multiline: true
+      name: Query
+      required: true
+      description: Include every detail that matter for the research
+  alias: Deep Research
+  description: This script processes a query for deep research, notifying the user
+    once the results are ready.
