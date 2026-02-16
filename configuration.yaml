@@ -971,10 +971,3 @@ light:
     entities:
       - light.hue_color_lamp_1
       - light.hue_color_lamp_5
-
-var:
-  image_prompt:
-    friendly_name: 'Image Prompt'
-    unique_id: image_prompt
-    force_update: false
-    icon: mdi:image-edit
