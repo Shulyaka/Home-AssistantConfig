@@ -770,7 +770,7 @@
     service: zha.issue_zigbee_cluster_command
     data:
       params: {}
-      ieee: 00:13:a2:00:41:a0:7e:1a
+      ieee: 00:13:a2:00:41:98:23:f9
       endpoint_id: 230
       command: 67
       command_type: server

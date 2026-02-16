@@ -811,7 +811,7 @@ template:
     - platform: event
       event_type: zha_event
       event_data:
-        device_ieee: 00:13:a2:00:41:a0:7e:1a
+        device_ieee: 00:13:a2:00:41:98:23:f9
         command: tp_command_response
     sensor:
       - name: "Humidifier Internal Temperature"
