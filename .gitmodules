@@ -58,3 +58,6 @@
 	path = .submodules/xbee_watercounter
 	url = git@github.com:Shulyaka/xbee_watercounter.git
 	branch = master
+[submodule ".submodules/hass-lkcomu-interrao"]
+	path = .submodules/hass-lkcomu-interrao
+	url = https://github.com/alryaz/hass-lkcomu-interrao.git
