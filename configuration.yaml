@@ -665,20 +665,6 @@ yandex_smart_home:
 #mycroft:
 #  host: speaker
 
-telegram_bot:
-  - platform: webhooks
-    api_key: !secret telegram_api_key
-    allowed_chat_ids:
-      - 114122164
-      - 1560910091
-      - 5891746911
-#      - chat_id: 114122164
-#        user_id: 2adbd618c4f44e28ae091db107c59870
-#      - chat_id: 1560910091
-#        user_id: e46830ca0d344b8e8bfe897f376170b8
-#      - chat_id: 5891746911
-#        user_id: 49c6cba386e64e7ba7d380146f5a546c
-
 telegram_bot_conversation:
 
 notify:
