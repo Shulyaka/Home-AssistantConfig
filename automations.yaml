@@ -177,15 +177,12 @@
   description: ''
   triggers:
   - trigger: event
-    event_type: telegram_text
-  - trigger: event
     event_type: mobile_app.share
   conditions:
   - condition: template
-    value_template: '{{ trigger is defined and trigger.platform == "event" and ((trigger.event.event_type
-      == "telegram_text" and trigger.event.data.text | regex_search("https://(www.|)youtu*"))
-      or (trigger.event.event_type == "mobile_app.share" and trigger.event.data.url
-      | regex_search("^https://(www.|)youtu*"))) }}'
+    value_template: '{{ trigger is defined and trigger.platform == "event" and trigger.event.event_type
+      == "mobile_app.share" and trigger.event.data.url | regex_search("^https://(www.|)youtu*")
+      }}'
   actions:
   - action: shell_command.youtube_dl
     data:

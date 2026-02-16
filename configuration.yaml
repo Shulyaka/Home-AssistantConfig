@@ -685,7 +685,7 @@ notify:
 shell_command:
   hassd_update: 'ssh shulyaka.org.ru /usr/lib/hassd/hassd_update.sh'
   hass_upgrade: bash -c "nohup /srv/homeassistant/upgrade.sh restart 0<&- &>/srv/homeassistant/www/upgrade_log.txt &"
-  youtube_dl: '/usr/local/bin/youtube_dl.sh -d "{{ callback }}" "{{ message }}"'
+  youtube_dl: bash -c 'source yt_dlp_venv.sh; /usr/local/bin/youtube_dl.sh -d {{ callback }} {{ message }}'
 
 zha:
   database_path: /srv/homeassistant/zigbee.db
