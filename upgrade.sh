@@ -36,7 +36,7 @@ echo "Updating homeassistant"
 #pip3 install --upgrade --upgrade-strategy=eager homeassistant $@ && pip3 install --upgrade --upgrade-strategy=eager -c /srv/homeassistant/lib/python3.12/site-packages/homeassistant/package_constraints.txt music_assistant $@ && /srv/homeassistant/install_dependencies.sh && /srv/homeassistant/check_config.sh && ash -c "$CMD"
 pip3 install --upgrade --upgrade-strategy=eager homeassistant $@
 #sed -e 's/av==[0-9]*\.[0-9]*\.[0-9]*/av==12.3.0/' -i /srv/homeassistant/lib/python3.12/site-packages/homeassistant/components/generic/manifest.json -i /srv/homeassistant/lib/python3.12/site-packages/homeassistant/components/stream/manifest.json -i /srv/homeassistant/lib/python3.12/site-packages/homeassistant/package_constraints.txt
-pip3 install --upgrade --upgrade-strategy=eager -c /srv/homeassistant/lib/python3.13/site-packages/homeassistant/package_constraints.txt music_assistant zlib_ng isal $@
+pip3 install --upgrade --upgrade-strategy=eager -c /srv/homeassistant/lib/python3.14/site-packages/homeassistant/package_constraints.txt music_assistant zlib_ng isal $@
 /srv/homeassistant/install_dependencies.sh && /srv/homeassistant/check_config.sh && bash -c "$CMD"
 
 echo "Done"
