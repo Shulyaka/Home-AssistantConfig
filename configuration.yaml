@@ -15,8 +15,8 @@ script: !include scripts.yaml
 homeassistant:
   customize: !include customize.yaml
   media_dirs:
-    video: /raid/data/video
     photo: /raid/data/photo
+    video: /raid/data/video
     music: /raid/data/music
 
 mqtt:

@@ -1281,33 +1281,6 @@
     data:
       message: Humidifier offline
   mode: single
-- id: '1701471868954'
-  alias: Generate image
-  description: ''
-  triggers:
-  - trigger: state
-    entity_id:
-    - input_button.generate_image
-  conditions: []
-  actions:
-  - event: image_generated
-    event_data:
-      url: https://shulyaka.org.ru/local/generating_image_{{ states('input_select.image_format')
-        }}_{{ [1, 2, 3, 4, 5] | random }}.png
-      revised_prompt: '{{ states(''var.image_prompt'') }}'
-  - action: openai_conversation.generate_image
-    data:
-      config_entry: 2ff759d8c03b62d828dacfc7f46edef9
-      prompt: '{{ states(''var.image_prompt'') }}'
-      size: '{{ states(''input_select.image_format'') }}'
-      quality: '{{ states(''input_select.image_quality'') }}'
-      background: '{{ states(''input_select.image_background'') }}'
-    response_variable: generated_image
-  - event: image_generated
-    event_data:
-      url: '{{ generated_image.url }}'
-      revised_prompt: '{{ generated_image.revised_prompt }}'
-  mode: single
 - id: '1743592427079'
   alias: Start vacuum in bedroom
   description: ''

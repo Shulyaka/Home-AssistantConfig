@@ -251,3 +251,93 @@ set_cooker_timer:
   alias: Set Cooker Timer
   description: ''
   icon: mdi:timer-settings
+generate_image_2:
+  sequence:
+  - variables:
+      prompt: '{{ prompt if prompt not in (''Repeat last prompt'', '''') else state_attr(''image.template_ai_generated_image'',
+        ''friendly_name'') }}'
+      entity: '{{ entity if entity != '''' else ''ai_task.openai_ai_task'' }}'
+  - event: image_generated
+    event_data:
+      url: https://shulyaka.org.ru/local/generating_image_1024x1024_{{ [1, 2, 3, 4,
+        5] | random }}.png
+      revised_prompt: '{{ prompt }}'
+  - if:
+    - condition: template
+      value_template: '{{ attachment is defined }}'
+    then:
+    - action: ai_task.generate_image
+      metadata: {}
+      data:
+        task_name: Generate image
+        instructions: '{{ prompt }}'
+        entity_id: '{{ entity }}'
+        attachments: '{{ attachment }}'
+      response_variable: generated_image
+    else:
+    - action: ai_task.generate_image
+      metadata: {}
+      data:
+        task_name: Generate image
+        instructions: '{{ prompt }}'
+        entity_id: '{{ entity }}'
+      response_variable: generated_image
+  - event: image_generated
+    event_data:
+      url: https://shulyaka.org.ru{{ generated_image.url }}
+      revised_prompt: '{{ generated_image.revised_prompt }}'
+  fields:
+    prompt:
+      selector:
+        text:
+          multiline: true
+          multiple: false
+      default: Repeat last prompt
+      required: true
+      name: Prompt
+    entity:
+      selector:
+        entity:
+          multiple: false
+          filter:
+            domain: ai_task
+            supported_features:
+            - ai_task.AITaskEntityFeature.GENERATE_IMAGE
+      default: ai_task.openai_ai_task
+      required: true
+      name: Model
+    attachment:
+      selector:
+        media:
+          accept:
+          - '*'
+  alias: Generate Image
+  description: ''
+generate_image_for_telegram:
+  sequence:
+  - action: ai_task.generate_image
+    metadata: {}
+    data:
+      instructions: '{{ prompt }}'
+      task_name: Generate image for telegram
+    response_variable: generated_image
+  - action: telegram_bot.send_photo
+    metadata: {}
+    data:
+      verify_ssl: true
+      config_entry_id: 01JZ0Y93H64KQ6V7D1G88AF9BS
+      url: https://shulyaka.org.ru{{ generated_image.url }}
+      file: '{{ generated_image.media_source_id.replace("media-source:/", "/raid/data/photo")
+        }}'
+      caption: '{{ generated_image.revised_prompt }}'
+      target: '{{ {''2adbd618c4f44e28ae091db107c59870'': ''114122164'', ''e46830ca0d344b8e8bfe897f376170b8'':
+        ''1560910091'', ''49c6cba386e64e7ba7d380146f5a546c'': ''5891746911''}[context.user_id]
+        }}'
+  fields:
+    prompt:
+      selector:
+        text:
+      name: Prompt
+      required: true
+  alias: Generate image for Telegram
+  description: Generate an image using AI and send to the user
