@@ -126,3 +126,128 @@ deep_research:
   alias: Deep Research
   description: This script processes a query for deep research, notifying the user
     once the results are ready.
+multivarka:
+  sequence:
+  - action: ready4sky.set_manual_program
+    data:
+      prog: '{{prog}}'
+      subprog: '{{subprog or 0}}'
+      temp: '{{temp}}'
+      hours: '{{timer[''hours'']}}'
+      minutes: '{{timer[''minutes'']}}'
+      dhours: '{% if delay is defined %}{{delay[''hours'']}}{% else %}0{% endif %}'
+      dminutes: '{% if delay is defined %}{{delay[''minutes'']}}{% else %}0{% endif
+        %}'
+      heat: '{{heat}}'
+    target:
+      entity_id: water_heater.rmc_m800s_cooker
+  fields:
+    prog:
+      selector:
+        select:
+          options:
+          - label: Мультиповар
+            value: '0'
+          - label: Рис, крупы
+            value: '1'
+          - label: Томление
+            value: '2'
+          - label: Плов
+            value: '3'
+          - label: Жарка
+            value: '4'
+          - label: Тушение
+            value: '5'
+          - label: Паста
+            value: '6'
+          - label: Молочная каша
+            value: '7'
+          - label: Суп
+            value: '8'
+          - label: Йогурт
+            value: '9'
+          - label: Выпечка
+            value: '10'
+          - label: Пар
+            value: '11'
+          - label: Варка бобовые
+            value: '12'
+      name: Program
+      description: Меню
+      default: '0'
+      required: true
+    subprog:
+      selector:
+        select:
+          options:
+          - label: Овощи
+            value: '1'
+          - label: Рыба
+            value: '2'
+          - label: Мясо
+            value: '3'
+      name: Subprogram
+      description: Выбор продукта
+    temp:
+      selector:
+        number:
+          min: 30
+          max: 180
+      name: Temperature
+      description: Температура
+      default: 95
+      required: true
+    timer:
+      selector:
+        duration: {}
+      name: Timer
+      description: Таймер
+      required: true
+      default:
+        hours: 1
+        minutes: 15
+        seconds: 0
+    delay:
+      selector:
+        duration: {}
+      name: Delay
+      description: Задержка старта
+      required: false
+      default:
+        hours: 0
+        minutes: 0
+        seconds: 0
+    heat:
+      selector:
+        boolean: {}
+      name: Heat
+      description: Разогрев
+      default: true
+      required: true
+  alias: Запустить мультиварку
+  description: Run a selected program on the RMC_M800S cooker with temperature, duration,
+    optional delay and keep-warm (heat) settings.
+  icon: mdi:chef-hat
+set_cooker_timer:
+  sequence:
+  - action: ready4sky.set_timer
+    metadata: {}
+    data:
+      hours: '{{timer[''hours'']}}'
+      minutes: '{{timer[''minutes'']}}'
+    target:
+      entity_id: water_heater.rmc_m800s_cooker
+  fields:
+    timer:
+      selector:
+        duration: {}
+      name: Timer
+      description: Таймер
+      required: true
+      default:
+        hours: 0
+        minutes: 30
+        seconds: 0
+  alias: Set Cooker Timer
+  description: ''
+  icon: mdi:timer-settings
