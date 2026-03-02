@@ -665,8 +665,6 @@ yandex_smart_home:
 #mycroft:
 #  host: speaker
 
-telegram_bot_conversation:
-
 notify:
   - platform: syslog
     name: syslog
