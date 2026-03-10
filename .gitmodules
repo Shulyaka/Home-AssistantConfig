@@ -61,6 +61,8 @@
 [submodule ".submodules/hass-lkcomu-interrao"]
 	path = .submodules/hass-lkcomu-interrao
 	url = https://github.com/alryaz/hass-lkcomu-interrao.git
+	branch = main
 [submodule ".submodules/telegram_bot_conversation"]
 	path = .submodules/telegram_bot_conversation
 	url = git@github.com:Shulyaka/telegram_bot_conversation.git
+	branch = main
