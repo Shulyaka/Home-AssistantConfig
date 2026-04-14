@@ -66,3 +66,7 @@
 	path = .submodules/telegram_bot_conversation
 	url = git@github.com:Shulyaka/telegram_bot_conversation.git
 	branch = main
+[submodule ".submodules/meshcore-ha"]
+	path = .submodules/meshcore-ha
+	url = https://github.com/meshcore-dev/meshcore-ha.git
+	branch = main
